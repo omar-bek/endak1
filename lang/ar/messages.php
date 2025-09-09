@@ -1,0 +1,172 @@
+<?php
+
+return [
+    // Navigation
+    'home' => 'الرئيسية',
+    'categories' => 'الأقسام',
+    'services' => 'الخدمات',
+    'my_services' => 'خدماتي',
+    'my_offers' => 'عروضي',
+    'profile' => 'الملف الشخصي',
+    'admin_panel' => 'لوحة الإدارة',
+    'logout' => 'تسجيل الخروج',
+    'login' => 'تسجيل الدخول',
+    'register' => 'التسجيل',
+    'contact_us' => 'اتصل بنا',
+    'language' => 'اللغة',
+
+    // Home Page
+    'welcome_title' => 'منصة الخدمات الأولى',
+    'welcome_subtitle' => 'اكتشف مجموعة واسعة من الخدمات المميزة من أفضل مزودي الخدمات',
+    'get_started' => 'ابدأ الآن',
+    'explore_services' => 'استكشف الخدمات',
+    'featured_services' => 'الخدمات المميزة',
+    'popular_categories' => 'الأقسام الشائعة',
+    'why_choose_us' => 'لماذا تختارنا',
+    'trusted_providers' => 'مزودو خدمات موثوقون',
+    'quality_services' => 'خدمات عالية الجودة',
+    'secure_payments' => 'مدفوعات آمنة',
+    'customer_support' => 'دعم العملاء',
+
+    // Services
+    'request_service' => 'طلب خدمة',
+    'service_details' => 'تفاصيل الخدمة',
+    'service_provider' => 'مزود الخدمة',
+    'service_location' => 'موقع الخدمة',
+    'service_price' => 'سعر الخدمة',
+    'service_rating' => 'تقييم الخدمة',
+    'related_services' => 'خدمات مشابهة',
+    'no_services' => 'لا توجد خدمات',
+    'search_services' => 'البحث في الخدمات',
+    'filter_by_category' => 'تصفية حسب القسم',
+    'all_categories' => 'جميع الأقسام',
+
+    // Offers
+    'submit_offer' => 'تقديم عرض',
+    'offer_price' => 'السعر المطلوب',
+    'offer_notes' => 'ملاحظات إضافية',
+    'offer_expires' => 'تاريخ انتهاء الصلاحية',
+    'offer_status' => 'حالة العرض',
+    'pending' => 'في الانتظار',
+    'accepted' => 'مقبول',
+    'rejected' => 'مرفوض',
+    'expired' => 'منتهي الصلاحية',
+    'accept_offer' => 'قبول العرض',
+    'reject_offer' => 'رفض العرض',
+    'no_offers' => 'لا توجد عروض',
+
+    // Forms
+    'name' => 'الاسم',
+    'email' => 'البريد الإلكتروني',
+    'phone' => 'رقم الهاتف',
+    'password' => 'كلمة المرور',
+    'confirm_password' => 'تأكيد كلمة المرور',
+    'city' => 'المدينة',
+    'notes' => 'ملاحظات',
+    'description' => 'الوصف',
+    'submit' => 'إرسال',
+    'cancel' => 'إلغاء',
+    'save' => 'حفظ',
+    'edit' => 'تعديل',
+    'delete' => 'حذف',
+    'view' => 'عرض',
+    'back' => 'العودة',
+
+    // Messages
+    'success' => 'تم بنجاح',
+    'error' => 'خطأ',
+    'warning' => 'تحذير',
+    'info' => 'معلومات',
+    'confirm_delete' => 'هل أنت متأكد من الحذف؟',
+    'data_saved' => 'تم حفظ البيانات بنجاح',
+    'data_updated' => 'تم تحديث البيانات بنجاح',
+    'data_deleted' => 'تم حذف البيانات بنجاح',
+
+    // Footer
+    'about_us' => 'من نحن',
+    'privacy_policy' => 'سياسة الخصوصية',
+    'terms_conditions' => 'الشروط والأحكام',
+    'quick_links' => 'روابط سريعة',
+    'contact_info' => 'معلومات التواصل',
+    'follow_us' => 'تابعنا',
+    'all_rights_reserved' => 'جميع الحقوق محفوظة',
+
+    // Categories
+    'category' => 'القسم',
+    'category_name' => 'اسم القسم',
+    'category_description' => 'وصف القسم',
+    'category_icon' => 'أيقونة القسم',
+    'category_image' => 'صورة القسم',
+    'subcategories' => 'الأقسام الفرعية',
+    'main_categories' => 'الأقسام الرئيسية',
+
+    // Custom Fields
+    'custom_fields' => 'الحقول المخصصة',
+    'field_name' => 'اسم الحقل',
+    'field_type' => 'نوع الحقل',
+    'field_required' => 'مطلوب',
+    'field_optional' => 'اختياري',
+    'field_group' => 'مجموعة الحقل',
+    'field_options' => 'خيارات الحقل',
+    'field_default_value' => 'القيمة الافتراضية',
+
+    // User Types
+    'customer' => 'عميل',
+    'provider' => 'مزود خدمة',
+    'admin' => 'مدير',
+
+    // Status
+    'active' => 'نشط',
+    'inactive' => 'غير نشط',
+    'featured' => 'مميز',
+    'available' => 'متاح',
+    'unavailable' => 'غير متاح',
+
+    // Time
+    'created_at' => 'تاريخ الإنشاء',
+    'updated_at' => 'تاريخ التحديث',
+    'expires_at' => 'تاريخ انتهاء الصلاحية',
+    'today' => 'اليوم',
+    'yesterday' => 'أمس',
+    'tomorrow' => 'غداً',
+
+    // Actions
+    'add_new' => 'إضافة جديد',
+    'create_new' => 'إنشاء جديد',
+    'manage' => 'إدارة',
+    'settings' => 'الإعدادات',
+    'dashboard' => 'لوحة التحكم',
+    'reports' => 'التقارير',
+    'statistics' => 'الإحصائيات',
+
+    // Common
+    'loading' => 'جاري التحميل...',
+    'no_data' => 'لا توجد بيانات',
+    'search' => 'بحث',
+    'filter' => 'تصفية',
+    'sort' => 'ترتيب',
+    'refresh' => 'تحديث',
+    'download' => 'تحميل',
+    'print' => 'طباعة',
+    'share' => 'مشاركة',
+    'copy' => 'نسخ',
+    'select' => 'اختيار',
+    'choose' => 'اختر',
+    'select_all' => 'اختيار الكل',
+    'clear_all' => 'مسح الكل',
+
+    // Notifications
+    'notifications' => 'الإشعارات',
+    'new_notification' => 'إشعار جديد',
+    'no_notifications' => 'لا توجد إشعارات',
+    'mark_as_read' => 'تحديد كمقروء',
+    'mark_all_as_read' => 'تحديد الكل كمقروء',
+    'delete_notification' => 'حذف الإشعار',
+    'view_all_notifications' => 'عرض جميع الإشعارات',
+    'offer_received_title' => 'عرض جديد لخدمتك',
+    'offer_received_message' => 'قدم {provider} عرضاً جديداً لخدمتك: {service}',
+    'offer_accepted_title' => 'تم قبول عرضك',
+    'offer_accepted_message' => 'قبل {customer} عرضك لخدمة: {service}',
+    'offer_rejected_title' => 'تم رفض عرضك',
+    'offer_rejected_message' => 'رفض {customer} عرضك لخدمة: {service}',
+];

@@ -1,0 +1,172 @@
+<?php
+
+return [
+    // Navigation
+    'home' => 'Home',
+    'categories' => 'Categories',
+    'services' => 'Services',
+    'my_services' => 'My Services',
+    'my_offers' => 'My Offers',
+    'profile' => 'Profile',
+    'admin_panel' => 'Admin Panel',
+    'logout' => 'Logout',
+    'login' => 'Login',
+    'register' => 'Register',
+    'contact_us' => 'Contact Us',
+    'language' => 'Language',
+
+    // Home Page
+    'welcome_title' => 'The Leading Services Platform',
+    'welcome_subtitle' => 'Discover a wide range of premium services from the best providers',
+    'get_started' => 'Get Started',
+    'explore_services' => 'Explore Services',
+    'featured_services' => 'Featured Services',
+    'popular_categories' => 'Popular Categories',
+    'why_choose_us' => 'Why Choose Us',
+    'trusted_providers' => 'Trusted Providers',
+    'quality_services' => 'Quality Services',
+    'secure_payments' => 'Secure Payments',
+    'customer_support' => 'Customer Support',
+
+    // Services
+    'request_service' => 'Request Service',
+    'service_details' => 'Service Details',
+    'service_provider' => 'Service Provider',
+    'service_location' => 'Service Location',
+    'service_price' => 'Service Price',
+    'service_rating' => 'Service Rating',
+    'related_services' => 'Related Services',
+    'no_services' => 'No Services Found',
+    'search_services' => 'Search Services',
+    'filter_by_category' => 'Filter by Category',
+    'all_categories' => 'All Categories',
+
+    // Offers
+    'submit_offer' => 'Submit Offer',
+    'offer_price' => 'Offer Price',
+    'offer_notes' => 'Additional Notes',
+    'offer_expires' => 'Offer Expiry Date',
+    'offer_status' => 'Offer Status',
+    'pending' => 'Pending',
+    'accepted' => 'Accepted',
+    'rejected' => 'Rejected',
+    'expired' => 'Expired',
+    'accept_offer' => 'Accept Offer',
+    'reject_offer' => 'Reject Offer',
+    'no_offers' => 'No Offers Found',
+
+    // Forms
+    'name' => 'Name',
+    'email' => 'Email',
+    'phone' => 'Phone Number',
+    'password' => 'Password',
+    'confirm_password' => 'Confirm Password',
+    'city' => 'City',
+    'notes' => 'Notes',
+    'description' => 'Description',
+    'submit' => 'Submit',
+    'cancel' => 'Cancel',
+    'save' => 'Save',
+    'edit' => 'Edit',
+    'delete' => 'Delete',
+    'view' => 'View',
+    'back' => 'Back',
+
+    // Messages
+    'success' => 'Success',
+    'error' => 'Error',
+    'warning' => 'Warning',
+    'info' => 'Information',
+    'confirm_delete' => 'Are you sure you want to delete?',
+    'data_saved' => 'Data saved successfully',
+    'data_updated' => 'Data updated successfully',
+    'data_deleted' => 'Data deleted successfully',
+
+    // Footer
+    'about_us' => 'About Us',
+    'privacy_policy' => 'Privacy Policy',
+    'terms_conditions' => 'Terms & Conditions',
+    'quick_links' => 'Quick Links',
+    'contact_info' => 'Contact Information',
+    'follow_us' => 'Follow Us',
+    'all_rights_reserved' => 'All Rights Reserved',
+
+    // Categories
+    'category' => 'Category',
+    'category_name' => 'Category Name',
+    'category_description' => 'Category Description',
+    'category_icon' => 'Category Icon',
+    'category_image' => 'Category Image',
+    'subcategories' => 'Subcategories',
+    'main_categories' => 'Main Categories',
+
+    // Custom Fields
+    'custom_fields' => 'Custom Fields',
+    'field_name' => 'Field Name',
+    'field_type' => 'Field Type',
+    'field_required' => 'Required',
+    'field_optional' => 'Optional',
+    'field_group' => 'Field Group',
+    'field_options' => 'Field Options',
+    'field_default_value' => 'Default Value',
+
+    // User Types
+    'customer' => 'Customer',
+    'provider' => 'Service Provider',
+    'admin' => 'Administrator',
+
+    // Status
+    'active' => 'Active',
+    'inactive' => 'Inactive',
+    'featured' => 'Featured',
+    'available' => 'Available',
+    'unavailable' => 'Unavailable',
+
+    // Time
+    'created_at' => 'Created At',
+    'updated_at' => 'Updated At',
+    'expires_at' => 'Expires At',
+    'today' => 'Today',
+    'yesterday' => 'Yesterday',
+    'tomorrow' => 'Tomorrow',
+
+    // Actions
+    'add_new' => 'Add New',
+    'create_new' => 'Create New',
+    'manage' => 'Manage',
+    'settings' => 'Settings',
+    'dashboard' => 'Dashboard',
+    'reports' => 'Reports',
+    'statistics' => 'Statistics',
+
+    // Common
+    'loading' => 'Loading...',
+    'no_data' => 'No Data Found',
+    'search' => 'Search',
+    'filter' => 'Filter',
+    'sort' => 'Sort',
+    'refresh' => 'Refresh',
+    'download' => 'Download',
+    'print' => 'Print',
+    'share' => 'Share',
+    'copy' => 'Copy',
+    'select' => 'Select',
+    'choose' => 'Choose',
+    'select_all' => 'Select All',
+    'clear_all' => 'Clear All',
+
+    // Notifications
+    'notifications' => 'Notifications',
+    'new_notification' => 'New Notification',
+    'no_notifications' => 'No Notifications',
+    'mark_as_read' => 'Mark as Read',
+    'mark_all_as_read' => 'Mark All as Read',
+    'delete_notification' => 'Delete Notification',
+    'view_all_notifications' => 'View All Notifications',
+    'offer_received_title' => 'New Offer for Your Service',
+    'offer_received_message' => '{provider} submitted a new offer for your service: {service}',
+    'offer_accepted_title' => 'Your Offer Was Accepted',
+    'offer_accepted_message' => '{customer} accepted your offer for service: {service}',
+    'offer_rejected_title' => 'Your Offer Was Rejected',
+    'offer_rejected_message' => '{customer} rejected your offer for service: {service}',
+];

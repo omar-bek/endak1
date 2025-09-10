@@ -12,6 +12,35 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('messages', function (Blueprint $table) {
+            // إضافة الأعمدة الأساسية أولاً
+            if (!Schema::hasColumn('messages', 'sender_id')) {
+                $table->foreignId('sender_id')->constrained('users')->onDelete('cascade');
+            }
+
+            if (!Schema::hasColumn('messages', 'receiver_id')) {
+                $table->foreignId('receiver_id')->constrained('users')->onDelete('cascade');
+            }
+
+            if (!Schema::hasColumn('messages', 'message')) {
+                $table->text('message');
+            }
+
+            if (!Schema::hasColumn('messages', 'is_read')) {
+                $table->boolean('is_read')->default(false);
+            }
+
+            if (!Schema::hasColumn('messages', 'read_at')) {
+                $table->timestamp('read_at')->nullable();
+            }
+
+            if (!Schema::hasColumn('messages', 'service_id')) {
+                $table->foreignId('service_id')->nullable()->constrained()->onDelete('cascade');
+            }
+
+            if (!Schema::hasColumn('messages', 'media')) {
+                $table->json('media')->nullable();
+            }
+
             // إضافة الأعمدة المفقودة
             if (!Schema::hasColumn('messages', 'is_deleted')) {
                 $table->boolean('is_deleted')->default(false)->after('read_at');

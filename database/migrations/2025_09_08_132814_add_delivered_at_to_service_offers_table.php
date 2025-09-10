@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('service_offers', function (Blueprint $table) {
-            $table->timestamp('delivered_at')->nullable()->after('accepted_at');
+            if (!Schema::hasColumn('service_offers', 'delivered_at')) {
+                $table->timestamp('delivered_at')->nullable()->after('accepted_at');
+            }
         });
     }
 

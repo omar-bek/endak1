@@ -14,9 +14,11 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        // Clear existing data
+        // Clear existing data - disable foreign key checks temporarily
+        \DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         CategoryField::truncate();
         Category::truncate();
+        \DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         $categories = [
             [

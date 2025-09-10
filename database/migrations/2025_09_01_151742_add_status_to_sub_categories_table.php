@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('sub_categories', function (Blueprint $table) {
-            $table->boolean('status')->default(true)->after('description_en');
+            if (!Schema::hasColumn('sub_categories', 'status')) {
+                $table->boolean('status')->default(true)->after('description_en');
+            }
         });
     }
 

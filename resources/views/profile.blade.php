@@ -69,24 +69,16 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="email" class="form-label">البريد الإلكتروني *</label>
-                                    <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                           id="email" name="email" value="{{ old('email', $user->email) }}" required>
-                                    @error('email')
+                                    <label for="phone" class="form-label">رقم الهاتف *</label>
+                                    <input type="tel" class="form-control @error('phone') is-invalid @enderror"
+                                           id="phone" name="phone" value="{{ old('phone', $user->phone) }}" required>
+                                    @error('phone')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="phone" class="form-label">رقم الهاتف</label>
-                            <input type="tel" class="form-control @error('phone') is-invalid @enderror"
-                                   id="phone" name="phone" value="{{ old('phone', $user->phone) }}">
-                            @error('phone')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
 
                         <div class="mb-3">
                             <label for="bio" class="form-label">نبذة شخصية</label>

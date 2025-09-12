@@ -29,19 +29,23 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email' => 'required|email',
+            'phone' => 'required|string',
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+        // البحث عن المستخدم بالهاتف
+        $user = User::where('phone', $credentials['phone'])->first();
+
+        if ($user && Hash::check($credentials['password'], $user->password)) {
+            Auth::login($user, $request->boolean('remember'));
             $request->session()->regenerate();
 
             return redirect()->intended('/');
         }
 
         return back()->withErrors([
-            'email' => 'بيانات الدخول غير صحيحة.',
-        ])->onlyInput('email');
+            'phone' => 'رقم الهاتف أو كلمة المرور غير صحيحة.',
+        ])->onlyInput('phone');
     }
 
     /**
@@ -59,19 +63,18 @@ class AuthController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'phone' => 'nullable|string|max:20',
+            'phone' => 'required|string|max:20|unique:users',
+            'password' => 'required|string|min:4|max:15|confirmed',
             'user_type' => 'required|in:customer,provider',
             'terms' => 'required|accepted',
         ]);
 
         $user = User::create([
             'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
             'phone' => $request->phone,
+            'password' => Hash::make($request->password),
             'user_type' => $request->user_type,
+            'phone_verified_at' => now(), // نعتبر الهاتف محقق تلقائياً
         ]);
 
         Auth::login($user);
@@ -116,13 +119,12 @@ class AuthController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'phone' => 'nullable|string|max:20',
+            'phone' => 'required|string|max:20|unique:users,phone,' . $user->id,
             'bio' => 'nullable|string|max:1000',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $data = $request->only(['name', 'email', 'phone', 'bio']);
+        $data = $request->only(['name', 'phone', 'bio']);
 
         // رفع الصورة الشخصية
         if ($request->hasFile('avatar')) {

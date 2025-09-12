@@ -15,12 +15,12 @@
                 <div class="card-body p-4">
                     <form method="POST" action="{{ route('register') }}">
                         @csrf
-                        
+
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="name" class="form-label">الاسم الكامل *</label>
-                                    <input type="text" class="form-control @error('name') is-invalid @enderror" 
+                                    <input type="text" class="form-control @error('name') is-invalid @enderror"
                                            id="name" name="name" value="{{ old('name') }}" required>
                                     @error('name')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -29,10 +29,11 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="email" class="form-label">البريد الإلكتروني *</label>
-                                    <input type="email" class="form-control @error('email') is-invalid @enderror" 
-                                           id="email" name="email" value="{{ old('email') }}" required>
-                                    @error('email')
+                                    <label for="phone" class="form-label">رقم الهاتف *</label>
+                                    <input type="tel" class="form-control @error('phone') is-invalid @enderror"
+                                           id="phone" name="phone" value="{{ old('phone') }}" required
+                                           placeholder="مثال: +966501234567">
+                                    @error('phone')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -43,8 +44,9 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="password" class="form-label">كلمة المرور *</label>
-                                    <input type="password" class="form-control @error('password') is-invalid @enderror" 
-                                           id="password" name="password" required>
+                                    <input type="password" class="form-control @error('password') is-invalid @enderror"
+                                           id="password" name="password" required minlength="4" maxlength="15">
+                                    <small class="form-text text-muted">من 4 إلى 15 حرف أو رقم</small>
                                     @error('password')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -53,24 +55,16 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="password_confirmation" class="form-label">تأكيد كلمة المرور *</label>
-                                    <input type="password" class="form-control" 
-                                           id="password_confirmation" name="password_confirmation" required>
+                                    <input type="password" class="form-control"
+                                           id="password_confirmation" name="password_confirmation" required minlength="4" maxlength="15">
                                 </div>
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="phone" class="form-label">رقم الهاتف</label>
-                            <input type="tel" class="form-control @error('phone') is-invalid @enderror" 
-                                   id="phone" name="phone" value="{{ old('phone') }}">
-                            @error('phone')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
 
                         <div class="mb-3">
                             <label for="user_type" class="form-label">نوع الحساب *</label>
-                            <select class="form-select @error('user_type') is-invalid @enderror" 
+                            <select class="form-select @error('user_type') is-invalid @enderror"
                                     id="user_type" name="user_type" required>
                                 <option value="">اختر نوع الحساب</option>
                                 <option value="customer" {{ old('user_type') == 'customer' ? 'selected' : '' }}>
@@ -87,7 +81,7 @@
 
                         <div class="mb-3">
                             <div class="form-check">
-                                <input class="form-check-input @error('terms') is-invalid @enderror" 
+                                <input class="form-check-input @error('terms') is-invalid @enderror"
                                        type="checkbox" id="terms" name="terms" value="1" required>
                                 <label class="form-check-label" for="terms">
                                     أوافق على <a href="#" class="text-primary">الشروط والأحكام</a>
@@ -106,7 +100,7 @@
                     </form>
                 </div>
                 <div class="card-footer text-center">
-                    <p class="mb-0">لديك حساب بالفعل؟ 
+                    <p class="mb-0">لديك حساب بالفعل؟
                         <a href="{{ route('login') }}" class="text-primary">سجل دخولك</a>
                     </p>
                 </div>

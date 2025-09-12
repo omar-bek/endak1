@@ -51,9 +51,15 @@
                         </div>
                     </div>
                     <div class="card-body text-center p-2">
-                        <a href="{{ route('categories.show', $category->slug) }}" class="btn btn-primary btn-sm">
-                            استكشف القسم
-                        </a>
+                        @if($category->hasChildren())
+                            <a href="{{ route('categories.subcategories', $category->slug) }}" class="btn btn-primary btn-sm">
+                                الأقسام الفرعية
+                            </a>
+                        @else
+                            <a href="{{ route('services.request', $category->id) }}" class="btn btn-primary btn-sm">
+                                اطلب خدمة
+                            </a>
+                        @endif
                     </div>
                 </div>
             </div>

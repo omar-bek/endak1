@@ -67,9 +67,7 @@
                 @if($category->subCategories && $category->subCategories->count() > 0)
                 <span class="badge bg-secondary">{{ $category->subCategories->count() }} قسم فرعي</span>
                 @endif
-                @if($category->fields && $category->fields->count() > 0)
-                <span class="badge bg-info">{{ $category->fields->count() }} حقل مخصص</span>
-                @endif
+
                     @auth
                         @if(!auth()->user()->isProvider())
                             @if($category->subCategories && $category->subCategories->count() > 0)

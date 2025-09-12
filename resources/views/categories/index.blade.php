@@ -10,7 +10,7 @@
             <h1 class="fw-bold">الأقسام</h1>
             <p class="text-muted">اختر من بين مجموعة واسعة من الأقسام والخدمات</p>
             <p class="text-muted">اختر من بين مجموعة واسعة من الأقسام والخدمات</p>
-            <p class="text-muted small">اضغط على "استكشف القسم" لطلب خدمة من القسم المطلوب</p>
+            <p class="text-muted small">اضغط على "اطلب خدمة" لطلب خدمة من القسم المطلوب</p>
         </div>
     </div>
 </section>
@@ -46,13 +46,14 @@
                         @endif  --}}
 
                         <div class="d-flex justify-content-center gap-2">
-                            <a href="{{ route('categories.show', $category->slug) }}" class="btn btn-primary">
-                                استكشف القسم
-                            </a>
                             @if($category->hasChildren())
-                            <a href="{{ route('categories.subcategories', $category->slug) }}" class="btn btn-outline-primary">
-                                الأقسام الفرعية
-                            </a>
+                                <a href="{{ route('categories.subcategories', $category->slug) }}" class="btn btn-primary">
+                                    الأقسام الفرعية
+                                </a>
+                            @else
+                                <a href="{{ route('services.request', $category->id) }}" class="btn btn-primary">
+                                    اطلب خدمة
+                                </a>
                             @endif
                         </div>
                     </div>

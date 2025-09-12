@@ -23,6 +23,7 @@ class User extends Authenticatable
         'is_admin',
         'user_type',
         'phone',
+        'phone_verified_at',
         'bio',
         'avatar',
     ];
@@ -54,12 +55,12 @@ class User extends Authenticatable
     // الحصول على اسم الدور
     public function getRoleNameAttribute()
     {
-        switch ($this->role_id) {
-            case 1:
+        switch ($this->user_type) {
+            case 'admin':
                 return 'مدير';
-            case 2:
+            case 'customer':
                 return 'مستخدم عادي';
-            case 3:
+            case 'provider':
                 return 'مزود خدمة';
             default:
                 return 'غير محدد';
@@ -210,5 +211,17 @@ class User extends Authenticatable
     public function receivedMessages()
     {
         return $this->hasMany(Message::class, 'receiver_id');
+    }
+
+    // البحث بالهاتف
+    public function findForPassport($phone)
+    {
+        return $this->where('phone', $phone)->first();
+    }
+
+    // الحصول على معرف المستخدم للمصادقة
+    public function getAuthIdentifierName()
+    {
+        return 'id';
     }
 }

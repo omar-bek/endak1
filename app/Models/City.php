@@ -10,7 +10,7 @@ class City extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
+        'name_ar',
         'name_en',
         'slug',
         'is_active',
@@ -50,7 +50,7 @@ class City extends Model
     {
         return static::where('is_active', true)
                     ->orderBy('sort_order')
-                    ->orderBy('name')
+                    ->orderBy('name_ar')
                     ->get();
     }
 
@@ -59,11 +59,11 @@ class City extends Model
     {
         return static::where('is_active', true)
                     ->where(function($q) use ($query) {
-                        $q->where('name', 'like', "%{$query}%")
+                        $q->where('name_ar', 'like', "%{$query}%")
                           ->orWhere('name_en', 'like', "%{$query}%");
                     })
                     ->orderBy('sort_order')
-                    ->orderBy('name')
+                    ->orderBy('name_ar')
                     ->get();
     }
 
@@ -81,7 +81,7 @@ class City extends Model
         return $this->belongsToMany(Category::class, 'category_cities')
                     ->wherePivot('is_active', true)
                     ->withPivot('sort_order')
-                    ->orderBy('pivot_sort_order')
+                    ->orderBy('category_cities.sort_order')
                     ->orderBy('categories.name');
     }
 }

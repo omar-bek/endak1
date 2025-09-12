@@ -219,6 +219,19 @@ class ServiceController extends Controller
             return redirect()->route('login')->with('error', 'يجب تسجيل الدخول لطلب الخدمة');
         }
 
+        // التأكد من أن المستخدم موجود في قاعدة البيانات
+        $user = auth()->user();
+        if (!$user || !$user->id) {
+            return redirect()->route('login')->with('error', 'خطأ في بيانات المستخدم، يرجى تسجيل الدخول مرة أخرى');
+        }
+
+        // Debug: Log user information
+        \Log::info('Service creation - User info:', [
+            'user_id' => $user->id,
+            'user_phone' => $user->phone,
+            'user_name' => $user->name
+        ]);
+
         $request->validate([
             'category_id' => 'required|exists:categories,id',
             'sub_category_id' => 'nullable|exists:sub_categories,id',
@@ -323,7 +336,7 @@ class ServiceController extends Controller
             'category_id' => $request->category_id,
             'sub_category_id' => $request->sub_category_id,
             'city_id' => $request->city_id,
-            'user_id' => auth()->id(),
+            'user_id' => $user->id,
             'title' => $title,
             'description' => $request->notes ?? '',
             'price' => 0, // سيتم تحديده لاحقاً

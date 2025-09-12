@@ -25,7 +25,7 @@ class UserController extends Controller
 
         // فلترة حسب الدور
         if ($request->has('role') && $request->role) {
-            $query->where('role_id', $request->role);
+            $query->where('user_type', $request->role);
         }
 
         // فلترة حسب الحالة
@@ -52,7 +52,7 @@ class UserController extends Controller
         ]);
 
         // تحميل البيانات الإضافية إذا كان المستخدم مزود خدمة
-        if ($user->role_id == 3) {
+        if ($user->user_type == 'provider') {
             $user->load([
                 'providerCategories.category',
                 'providerCities.city'
@@ -79,10 +79,10 @@ class UserController extends Controller
      */
     public function toggleRole(User $user)
     {
-        $newRole = $user->role_id === 1 ? 2 : 1;
-        $user->update(['role_id' => $newRole]);
+        $newRole = $user->user_type === 'admin' ? 'customer' : 'admin';
+        $user->update(['user_type' => $newRole]);
 
-        $role = $newRole === 1 ? 'مدير' : 'مستخدم عادي';
+        $role = $newRole === 'admin' ? 'مدير' : 'مستخدم عادي';
 
         return back()->with('success', "تم تغيير دور المستخدم إلى $role بنجاح");
     }

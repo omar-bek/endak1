@@ -29,11 +29,11 @@
                             <h4 class="mt-3 mb-1">{{ $user->name }}</h4>
                             <p class="text-muted mb-2">{{ $user->email }}</p>
 
-                            @if($user->role_id == 1)
+                            @if($user->user_type == 'admin')
                                 <span class="badge bg-danger fs-6">مدير</span>
-                            @elseif($user->role_id == 2)
+                            @elseif($user->user_type == 'customer')
                                 <span class="badge bg-primary fs-6">مستخدم عادي</span>
-                            @elseif($user->role_id == 3)
+                            @elseif($user->user_type == 'provider')
                                 <span class="badge bg-success fs-6">مزود خدمة</span>
                             @endif
                         </div>

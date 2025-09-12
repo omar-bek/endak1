@@ -19,6 +19,13 @@ use App\Http\Controllers\Admin\SystemSettingController;
 // مسار تغيير اللغة
 Route::get('/language/{locale}', [LanguageController::class, 'switch'])->name('language.switch');
 
+// مسارات المصادقة
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
 // الصفحة الرئيسية
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
@@ -32,12 +39,14 @@ Route::get('/categories/{parentSlug}/subcategories', [CategoryController::class,
 Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
 Route::get('/services/search', [ServiceController::class, 'search'])->name('services.search');
 Route::get('/services/{slug}', [ServiceController::class, 'show'])->name('services.show');
-Route::get('/services/request/{category}', [ServiceController::class, 'request'])->name('services.request');
-Route::post('/services', [ServiceController::class, 'store'])->name('services.store');
-Route::get('/my-services', [ServiceController::class, 'myServices'])->name('services.my-services');
 
-// تعديل وحذف الخدمات (لصاحب الخدمة فقط)
+// طلب وإنشاء الخدمات (يتطلب تسجيل دخول)
 Route::middleware(['auth'])->group(function () {
+    Route::get('/services/request/{category}', [ServiceController::class, 'request'])->name('services.request');
+    Route::post('/services', [ServiceController::class, 'store'])->name('services.store');
+    Route::get('/my-services', [ServiceController::class, 'myServices'])->name('services.my-services');
+    
+    // تعديل وحذف الخدمات (لصاحب الخدمة فقط)
     Route::get('/services/{service}/edit', [ServiceController::class, 'edit'])->name('services.edit');
     Route::put('/services/{service}', [ServiceController::class, 'update'])->name('services.update');
     Route::delete('/services/{service}', [ServiceController::class, 'destroy'])->name('services.destroy');

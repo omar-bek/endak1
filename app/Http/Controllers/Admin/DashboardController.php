@@ -31,7 +31,7 @@ class DashboardController extends Controller
             'featured_services' => Service::where('is_featured', true)->count(),
             'pending_orders' => Order::where('status', 'pending')->count(),
             'completed_orders' => Order::where('status', 'completed')->count(),
-            'total_providers' => User::where('role_id', 3)->count(),
+            'total_providers' => User::where('user_type', 'provider')->count(),
             'total_offers' => \App\Models\ServiceOffer::where('status', 'pending')->count(),
             'total_sub_categories' => \App\Models\SubCategory::count(),
             'total_fields' => \App\Models\CategoryField::count(),

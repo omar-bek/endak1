@@ -23,7 +23,7 @@ class CategoryCityController extends Controller
             ->orderBy('sort_order')
             ->get();
 
-        $cities = City::orderBy('sort_order')->orderBy('name')->get();
+        $cities = City::orderBy('sort_order')->orderBy('name_ar')->get();
 
         return view('admin.category-cities.index', compact('categories', 'cities'));
     }
@@ -37,7 +37,7 @@ class CategoryCityController extends Controller
             $query->orderBy('sort_order');
         }])->findOrFail($categoryId);
 
-        $cities = City::orderBy('sort_order')->orderBy('name')->get();
+        $cities = City::orderBy('sort_order')->orderBy('name_ar')->get();
 
         // الحصول على المدن المفعلة في هذا القسم
         $enabledCities = DB::table('category_cities')
@@ -115,7 +115,7 @@ class CategoryCityController extends Controller
             ->where('category_cities.is_active', true)
             ->select('cities.*', 'category_cities.is_active as category_active')
             ->orderBy('cities.sort_order')
-            ->orderBy('cities.name')
+            ->orderBy('cities.name_ar')
             ->get();
 
         return response()->json([
@@ -204,8 +204,8 @@ class CategoryCityController extends Controller
         // المدن الأكثر استخداماً
         $topCities = DB::table('category_cities')
             ->join('cities', 'category_cities.city_id', '=', 'cities.id')
-            ->select('cities.name', DB::raw('count(*) as category_count'))
-            ->groupBy('cities.id', 'cities.name')
+            ->select('cities.name_ar', DB::raw('count(*) as category_count'))
+            ->groupBy('cities.id', 'cities.name_ar')
             ->orderBy('category_count', 'desc')
             ->limit(10)
             ->get();

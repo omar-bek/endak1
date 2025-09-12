@@ -75,11 +75,11 @@
                             </td>
                             <td>{{ $user->email }}</td>
                             <td>
-                                @if($user->role_id == 1)
+                                @if($user->user_type == 'admin')
                                     <span class="badge bg-danger">مدير</span>
-                                @elseif($user->role_id == 2)
+                                @elseif($user->user_type == 'customer')
                                     <span class="badge bg-primary">مستخدم عادي</span>
-                                @elseif($user->role_id == 3)
+                                @elseif($user->user_type == 'provider')
                                     <span class="badge bg-success">مزود خدمة</span>
                                 @endif
                             </td>

@@ -76,7 +76,7 @@ class Category extends Model
         return $this->belongsToMany(City::class, 'category_cities')
                     ->wherePivot('is_active', true)
                     ->withPivot('sort_order')
-                    ->orderBy('pivot_sort_order')
+                    ->orderBy('category_cities.sort_order')
                     ->orderBy('cities.name_ar');
     }
 

@@ -13,7 +13,7 @@ class ProviderController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::where('role_id', 3) // مزود خدمة
+        $query = User::where('user_type', 'provider') // مزود خدمة
                     ->with(['providerProfile', 'services', 'offers']);
 
         // فلترة حسب البحث
@@ -44,7 +44,7 @@ class ProviderController extends Controller
      */
     public function show(User $provider)
     {
-        if ($provider->role_id !== 3) {
+        if ($provider->user_type !== 'provider') {
             abort(404);
         }
 
@@ -58,7 +58,7 @@ class ProviderController extends Controller
      */
     public function verify(User $provider)
     {
-        if ($provider->role_id !== 3) {
+        if ($provider->user_type !== 'provider') {
             abort(404);
         }
 

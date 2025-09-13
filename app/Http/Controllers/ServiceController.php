@@ -237,7 +237,7 @@ class ServiceController extends Controller
             'sub_category_id' => 'nullable|exists:sub_categories,id',
             'city_id' => 'required|exists:cities,id',
             'notes' => 'nullable|string|max:1000',
-            'voice_note' => 'nullable|string',
+            'voice_note' => 'nullable|string|max:16777215', // longText max size
             'custom_fields.*' => 'nullable',
         ]);
 
@@ -413,7 +413,7 @@ class ServiceController extends Controller
             'sub_category_id' => 'nullable|exists:sub_categories,id',
             'city_id' => 'required|exists:cities,id',
             'notes' => 'nullable|string|max:1000',
-            'voice_note' => 'nullable|string',
+            'voice_note' => 'nullable|string|max:16777215', // longText max size
             'custom_fields.*' => 'nullable',
         ]);
 

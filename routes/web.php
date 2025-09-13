@@ -45,7 +45,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/services/request/{category}', [ServiceController::class, 'request'])->name('services.request');
     Route::post('/services', [ServiceController::class, 'store'])->name('services.store');
     Route::get('/my-services', [ServiceController::class, 'myServices'])->name('services.my-services');
-    
+
     // تعديل وحذف الخدمات (لصاحب الخدمة فقط)
     Route::get('/services/{service}/edit', [ServiceController::class, 'edit'])->name('services.edit');
     Route::put('/services/{service}', [ServiceController::class, 'update'])->name('services.update');

@@ -463,13 +463,17 @@
                                 </div>
                             @else
                                 <div class="col-12 mb-3">
-                                    <label for="custom_fields_{{ $field->name }}_0" class="form-label">
-                                        <i class="fas fa-{{ $field->getTypeIconAttribute() }}"></i>
-                                        {{ $field->name_ar }}
-                                        @if($field->is_required)
-                                            <span class="text-danger">*</span>
-                                        @endif
-                                    </label>
+                                    @if($field->type === 'checkbox')
+                                        <!-- لا يوجد label للـ checkbox -->
+                                    @else
+                                        <label for="custom_fields_{{ $field->name }}_0" class="form-label">
+                                            <i class="fas fa-{{ $field->getTypeIconAttribute() }}"></i>
+                                            {{ $field->name_ar }}
+                                            @if($field->is_required)
+                                                <span class="text-danger">*</span>
+                                            @endif
+                                        </label>
+                                    @endif
 
                                     @if($field->type === 'select' && is_array($field->options))
                                         <select name="custom_fields[{{ $field->name }}][0]" id="custom_fields_{{ $field->name }}_0" class="form-control" {{ $field->is_required ? 'required' : '' }}>
@@ -481,9 +485,9 @@
                                     @elseif($field->type === 'checkbox')
                                         <div class="form-check">
                                             <input type="checkbox" name="custom_fields[{{ $field->name }}][0]" id="custom_fields_{{ $field->name }}_0" value="1" class="form-check-input" {{ old('custom_fields.' . $field->name . '.0') == '1' ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="custom_fields_{{ $field->name }}_0">
-                                                {{ $field->name_ar }}
-                                            </label>
+                                       <label for="custom_fields_{{ $field->name }}_0">
+                                        {{ $field->name_ar }}
+                                       </label>
                                         </div>
                                     @elseif($field->type === 'image')
                                         <div class="image-upload-container" data-field-name="{{ $field->name }}">

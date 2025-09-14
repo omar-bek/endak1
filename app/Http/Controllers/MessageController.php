@@ -155,6 +155,8 @@ class MessageController extends Controller
             $path = $file->store('messages/media', 'public');
             $messageData['media_path'] = $path;
             $messageData['message_type'] = $this->getFileType($file->getMimeType());
+            $messageData['file_name'] = $file->getClientOriginalName();
+            $messageData['file_size'] = $file->getSize();
 
             // إضافة metadata للملف
             $messageData['metadata'] = [
@@ -167,6 +169,8 @@ class MessageController extends Controller
             $path = $file->store('messages/voice', 'public');
             $messageData['voice_note_path'] = $path;
             $messageData['message_type'] = 'voice';
+            $messageData['file_name'] = $file->getClientOriginalName();
+            $messageData['file_size'] = $file->getSize();
 
             // إضافة metadata للرسالة الصوتية
             $messageData['metadata'] = [
@@ -174,6 +178,30 @@ class MessageController extends Controller
                 'file_name' => $file->getClientOriginalName(),
                 'duration' => $request->duration ?? 0
             ];
+        } elseif ($request->has('voice_note_data') && !empty($request->voice_note_data)) {
+            // معالجة الرسالة الصوتية من base64
+            $voiceData = $request->voice_note_data;
+            if (strpos($voiceData, 'data:audio') === 0) {
+                $voiceData = substr($voiceData, strpos($voiceData, ',') + 1);
+                $voiceData = base64_decode($voiceData);
+
+                $fileName = 'voice_' . time() . '.wav';
+                $path = 'messages/voice/' . $fileName;
+
+                Storage::disk('public')->put($path, $voiceData);
+
+                $messageData['voice_note_path'] = $path;
+                $messageData['message_type'] = 'voice';
+                $messageData['file_name'] = $fileName;
+                $messageData['file_size'] = strlen($voiceData);
+
+                // إضافة metadata للرسالة الصوتية
+                $messageData['metadata'] = [
+                    'file_size' => strlen($voiceData),
+                    'file_name' => $fileName,
+                    'duration' => $request->duration ?? 0
+                ];
+            }
         } elseif ($request->has('location')) {
             $messageData['message_type'] = 'location';
             $messageData['metadata'] = [

@@ -23,13 +23,13 @@
                 <form method="POST" action="{{ route('admin.system-settings.provider') }}">
                     @csrf
                     @method('PUT')
-                    
+
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="provider_max_categories" class="form-label">الحد الأقصى للأقسام</label>
-                                <input type="number" name="provider_max_categories" id="provider_max_categories" 
-                                       class="form-control" min="1" max="10" 
+                                <input type="number" name="provider_max_categories" id="provider_max_categories"
+                                       class="form-control" min="1" max="10"
                                        value="{{ \App\Models\SystemSetting::get('provider_max_categories', 3) }}" required>
                                 <small class="text-muted">عدد الأقسام التي يمكن لمزود الخدمة العمل فيها</small>
                             </div>
@@ -37,8 +37,8 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="provider_max_cities" class="form-label">الحد الأقصى للمدن</label>
-                                <input type="number" name="provider_max_cities" id="provider_max_cities" 
-                                       class="form-control" min="1" max="20" 
+                                <input type="number" name="provider_max_cities" id="provider_max_cities"
+                                       class="form-control" min="1" max="20"
                                        value="{{ \App\Models\SystemSetting::get('provider_max_cities', 5) }}" required>
                                 <small class="text-muted">عدد المدن التي يمكن لمزود الخدمة العمل فيها</small>
                             </div>
@@ -49,7 +49,7 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <div class="form-check">
-                                    <input type="checkbox" name="provider_verification_required" id="provider_verification_required" 
+                                    <input type="checkbox" name="provider_verification_required" id="provider_verification_required"
                                            class="form-check-input" value="1"
                                            {{ \App\Models\SystemSetting::get('provider_verification_required', false) ? 'checked' : '' }}>
                                     <label class="form-check-label" for="provider_verification_required">
@@ -62,7 +62,7 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <div class="form-check">
-                                    <input type="checkbox" name="provider_auto_approve" id="provider_auto_approve" 
+                                    <input type="checkbox" name="provider_auto_approve" id="provider_auto_approve"
                                            class="form-check-input" value="1"
                                            {{ \App\Models\SystemSetting::get('provider_auto_approve', false) ? 'checked' : '' }}>
                                     <label class="form-check-label" for="provider_auto_approve">
@@ -83,6 +83,71 @@
             </div>
         </div>
 
+        <!-- إعدادات الصورة الافتراضية للخدمات -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-image"></i> الصورة الافتراضية للخدمات
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ route('admin.system-settings.default-service-image') }}" enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="default_service_image" class="form-label">صورة افتراضية جديدة</label>
+                                <input type="file" name="default_service_image" id="default_service_image"
+                                       class="form-control" accept="image/*">
+                                <small class="text-muted">اختر صورة جديدة للخدمات (JPG, PNG, GIF - الحد الأقصى 2MB)</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input type="checkbox" name="default_service_image_enabled" id="default_service_image_enabled"
+                                           class="form-check-input" value="1"
+                                           {{ \App\Models\SystemSetting::isDefaultServiceImageEnabled() ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="default_service_image_enabled">
+                                        تفعيل الصورة الافتراضية
+                                    </label>
+                                </div>
+                                <small class="text-muted">عرض الصورة الافتراضية للخدمات التي لا تحتوي على صورة</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    @php
+                        $currentImage = \App\Models\SystemSetting::get('default_service_image', 'services/default-service.jpg');
+                        $currentImageUrl = asset('storage/' . $currentImage);
+                    @endphp
+
+                    @if($currentImage && \Illuminate\Support\Facades\Storage::disk('public')->exists($currentImage))
+                        <div class="mb-3">
+                            <label class="form-label">الصورة الحالية:</label>
+                            <div class="current-image-container">
+                                <img src="{{ $currentImageUrl }}" alt="الصورة الافتراضية الحالية"
+                                     class="img-thumbnail" style="max-width: 200px; max-height: 200px;">
+                                <div class="mt-2">
+                                    <button type="button" class="btn btn-sm btn-danger" onclick="removeCurrentImage()">
+                                        <i class="fas fa-trash"></i> حذف الصورة الحالية
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> حفظ إعدادات الصورة
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <!-- جميع الإعدادات -->
         <div class="card">
             <div class="card-header">
@@ -94,7 +159,7 @@
                 <form method="POST" action="{{ route('admin.system-settings.update') }}">
                     @csrf
                     @method('PUT')
-                    
+
                     @foreach($settings as $group => $groupSettings)
                         <div class="mb-4">
                             <h6 class="text-primary">{{ ucfirst($group) }}</h6>
@@ -104,10 +169,10 @@
                                         <label for="setting_{{ $setting->id }}" class="form-label">
                                             {{ $setting->description ?? $setting->key }}
                                         </label>
-                                        
+
                                         @if($setting->type === 'boolean')
                                             <div class="form-check">
-                                                <input type="checkbox" name="settings[{{ $setting->key }}][value]" 
+                                                <input type="checkbox" name="settings[{{ $setting->key }}][value]"
                                                        id="setting_{{ $setting->id }}" class="form-check-input" value="1"
                                                        {{ filter_var($setting->value, FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="setting_{{ $setting->id }}">
@@ -115,18 +180,18 @@
                                                 </label>
                                             </div>
                                         @elseif($setting->type === 'integer')
-                                            <input type="number" name="settings[{{ $setting->key }}][value]" 
-                                                   id="setting_{{ $setting->id }}" class="form-control" 
+                                            <input type="number" name="settings[{{ $setting->key }}][value]"
+                                                   id="setting_{{ $setting->id }}" class="form-control"
                                                    value="{{ $setting->value }}">
                                         @elseif($setting->type === 'json')
-                                            <textarea name="settings[{{ $setting->key }}][value]" 
+                                            <textarea name="settings[{{ $setting->key }}][value]"
                                                       id="setting_{{ $setting->id }}" class="form-control" rows="3">{{ $setting->value }}</textarea>
                                         @else
-                                            <input type="text" name="settings[{{ $setting->key }}][value]" 
-                                                   id="setting_{{ $setting->id }}" class="form-control" 
+                                            <input type="text" name="settings[{{ $setting->key }}][value]"
+                                                   id="setting_{{ $setting->id }}" class="form-control"
                                                    value="{{ $setting->value }}">
                                         @endif
-                                        
+
                                         <input type="hidden" name="settings[{{ $setting->key }}][key]" value="{{ $setting->key }}">
                                         <small class="text-muted">{{ $setting->description }}</small>
                                     </div>
@@ -192,7 +257,7 @@
                         ->whereNotNull('address')
                         ->count();
                 @endphp
-                
+
                 <div class="mb-3">
                     <div class="d-flex justify-content-between">
                         <span>إجمالي مزودي الخدمة:</span>
@@ -221,4 +286,21 @@
         </div>
     </div>
 </div>
+
+<script>
+function removeCurrentImage() {
+    if (confirm('هل أنت متأكد من حذف الصورة الحالية؟')) {
+        // إضافة حقل مخفي لحذف الصورة
+        const form = document.querySelector('form[action*="default-service-image"]');
+        const removeInput = document.createElement('input');
+        removeInput.type = 'hidden';
+        removeInput.name = 'remove_image';
+        removeInput.value = '1';
+        form.appendChild(removeInput);
+
+        // إرسال النموذج
+        form.submit();
+    }
+}
+</script>
 @endsection

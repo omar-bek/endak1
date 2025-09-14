@@ -161,13 +161,7 @@
                         <p class="text-muted text-center">لم يتم إضافة أي مدن بعد</p>
                     @endif
 
-                    @if($profile->canAddCity())
-                        <div class="text-center mt-3">
-                            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#addCityModal">
-                                <i class="fas fa-plus"></i> إضافة مدينة جديدة
-                            </button>
-                        </div>
-                    @endif
+
                 </div>
             </div>
         </div>

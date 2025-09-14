@@ -72,4 +72,35 @@ class SystemSetting extends Model
     {
         return static::getGroup('provider');
     }
+
+    // الحصول على الصورة الافتراضية للخدمات
+    public static function getDefaultServiceImage()
+    {
+        $imagePath = static::get('default_service_image', 'services/default-service.jpg');
+        $isEnabled = static::get('default_service_image_enabled', true);
+
+        if (!$isEnabled) {
+            return null;
+        }
+
+        return asset('storage/' . $imagePath);
+    }
+
+    // التحقق من تفعيل الصورة الافتراضية للخدمات
+    public static function isDefaultServiceImageEnabled()
+    {
+        return static::get('default_service_image_enabled', true);
+    }
+
+    // تعيين الصورة الافتراضية للخدمات
+    public static function setDefaultServiceImage($imagePath)
+    {
+        static::set('default_service_image', $imagePath, 'string', 'general', 'الصورة الافتراضية للخدمات');
+    }
+
+    // تفعيل/إلغاء تفعيل الصورة الافتراضية للخدمات
+    public static function setDefaultServiceImageEnabled($enabled)
+    {
+        static::set('default_service_image_enabled', $enabled, 'boolean', 'general', 'تفعيل الصورة الافتراضية للخدمات');
+    }
 }

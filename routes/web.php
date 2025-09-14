@@ -107,6 +107,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
             Route::get('/system-settings', [SystemSettingController::class, 'index'])->name('system-settings.index');
             Route::put('/system-settings', [SystemSettingController::class, 'update'])->name('system-settings.update');
             Route::put('/system-settings/provider', [SystemSettingController::class, 'updateProviderSettings'])->name('system-settings.provider');
+            Route::put('/system-settings/default-service-image', [SystemSettingController::class, 'updateDefaultServiceImage'])->name('system-settings.default-service-image');
 
             // إدارة الأقسام والمدن
             Route::get('/category-cities', [App\Http\Controllers\Admin\CategoryCityController::class, 'index'])->name('category-cities.index');

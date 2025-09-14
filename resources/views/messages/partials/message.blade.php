@@ -18,16 +18,29 @@
 
         @if($message->isImage())
             <div class="image-message">
-                <img src="{{ $message->media_url }}" alt="صورة الرسالة" onerror="this.style.display='none';">
+                <img src="{{ $message->media_url }}" alt="صورة الرسالة"
+                     onerror="this.onerror=null; this.src='{{ asset('images/no-image.png') }}'; this.style.display='block';"
+                     style="max-width: 300px; max-height: 300px; border-radius: 10px; cursor: pointer;"
+                     onclick="openImageModal('{{ $message->media_url }}')">
             </div>
         @endif
 
         @if($message->isVoice())
             <div class="audio-message">
-                <audio controls>
-                    <source src="{{ $message->voice_note_url }}" type="audio/wav">
-                    متصفحك لا يدعم عنصر الصوت.
-                </audio>
+                <div class="voice-message-container">
+                    <div class="voice-icon">
+                        <i class="fas fa-microphone"></i>
+                    </div>
+                    <audio controls preload="metadata" style="flex: 1; margin: 0 10px;">
+                        <source src="{{ $message->voice_note_url }}" type="audio/wav">
+                        <source src="{{ $message->voice_note_url }}" type="audio/mpeg">
+                        <source src="{{ $message->voice_note_url }}" type="audio/ogg">
+                        متصفحك لا يدعم عنصر الصوت.
+                    </audio>
+                    @if($message->getVoiceDuration())
+                        <div class="voice-duration">{{ $message->getVoiceDuration() }}</div>
+                    @endif
+                </div>
             </div>
         @endif
 

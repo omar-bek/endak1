@@ -154,6 +154,14 @@ class Service extends Model
         if ($this->image) {
             return asset('storage/' . $this->image);
         }
+
+        // استخدام الصورة الافتراضية من إعدادات النظام
+        $defaultImage = SystemSetting::getDefaultServiceImage();
+        if ($defaultImage) {
+            return $defaultImage;
+        }
+
+        // fallback للصورة الافتراضية القديمة
         return asset('images/default-service.jpg');
     }
 

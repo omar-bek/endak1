@@ -124,16 +124,29 @@
 
                                 @if($message->isImage())
                                     <div class="image-message">
-                                        <img src="{{ $message->media_url }}" alt="صورة الرسالة" onerror="this.style.display='none';">
+                                        <img src="{{ $message->media_url }}" alt="صورة الرسالة"
+                                             onerror="this.onerror=null; this.src='{{ asset('images/no-image.png') }}'; this.style.display='block';"
+                                             style="max-width: 300px; max-height: 300px; border-radius: 10px; cursor: pointer;"
+                                             onclick="openImageModal('{{ $message->media_url }}')">
                                     </div>
                                 @endif
 
                                 @if($message->isVoice())
                                     <div class="audio-message">
-                                        <audio controls>
-                                            <source src="{{ $message->voice_note_url }}" type="audio/wav">
-                                            متصفحك لا يدعم عنصر الصوت.
-                                        </audio>
+                                        <div class="voice-message-container">
+                                            <div class="voice-icon">
+                                                <i class="fas fa-microphone"></i>
+                                            </div>
+                                            <audio controls preload="metadata" style="flex: 1; margin: 0 10px;">
+                                                <source src="{{ $message->voice_note_url }}" type="audio/wav">
+                                                <source src="{{ $message->voice_note_url }}" type="audio/mpeg">
+                                                <source src="{{ $message->voice_note_url }}" type="audio/ogg">
+                                                متصفحك لا يدعم عنصر الصوت.
+                                            </audio>
+                                            @if($message->getVoiceDuration())
+                                                <div class="voice-duration">{{ $message->getVoiceDuration() }}</div>
+                                            @endif
+                                        </div>
                                     </div>
                                 @endif
 
@@ -254,6 +267,14 @@
                 </div>
             </form>
         </div>
+    </div>
+</div>
+
+<!-- Image Modal -->
+<div id="imageModal" class="image-modal" style="display: none;">
+    <div class="image-modal-content">
+        <span class="image-modal-close">&times;</span>
+        <img id="modalImage" src="" alt="صورة الرسالة">
     </div>
 </div>
 
@@ -711,9 +732,39 @@
         margin-top: 10px;
     }
 
+    .voice-message-container {
+        display: flex;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 25px;
+        padding: 10px 15px;
+        min-width: 200px;
+    }
+
+    .voice-icon {
+        background: #007bff;
+        color: white;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+    }
+
+    .voice-duration {
+        font-size: 12px;
+        color: #666;
+        font-weight: bold;
+        min-width: 40px;
+        text-align: center;
+    }
+
     .audio-message audio {
         border-radius: 25px;
         background: rgba(255, 255, 255, 0.1);
+        height: 40px;
     }
 
     .file-message {
@@ -912,6 +963,58 @@
         .image-message {
             max-width: 250px;
         }
+    }
+
+    /* Image Modal Styles */
+    .image-modal {
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .image-modal-content {
+        position: relative;
+        max-width: 90%;
+        max-height: 90%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .image-modal-content img {
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .image-modal-close {
+        position: absolute;
+        top: -40px;
+        right: 0;
+        color: white;
+        font-size: 40px;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 1001;
+        transition: color 0.3s ease;
+    }
+
+    .image-modal-close:hover {
+        color: #ff6b6b;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
     }
 </style>
 
@@ -1345,6 +1448,42 @@
         if (window.innerWidth <= 768 && sidebar && !sidebar.contains(event.target) && !mobileToggle.contains(event.target)) {
             sidebar.classList.add('hidden');
         }
+    });
+
+    // Image modal functionality
+    function openImageModal(imageSrc) {
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImage');
+
+        modal.style.display = 'flex';
+        modalImg.src = imageSrc;
+
+        // Close modal when clicking outside
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeImageModal();
+            }
+        });
+    }
+
+    function closeImageModal() {
+        const modal = document.getElementById('imageModal');
+        modal.style.display = 'none';
+    }
+
+    // Close modal with close button
+    document.addEventListener('DOMContentLoaded', function() {
+        const closeBtn = document.querySelector('.image-modal-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeImageModal);
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeImageModal();
+            }
+        });
     });
 </script>
 @endsection

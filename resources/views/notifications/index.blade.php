@@ -62,10 +62,10 @@
                                                                     <i class="fas fa-handshake"></i> عرض عرضي
                                                                 </a>
                                                             @elseif(auth()->id() == $offer->service->user_id)
-                                                                <!-- صاحب الخدمة - يرى عروض خدمته -->
-                                                                <a href="{{ route('services.show', $offer->service->slug) }}"
+                                                                <!-- صاحب الخدمة - يرى العرض مباشرة -->
+                                                                <a href="{{ route('service-offers.show', $offer->id) }}"
                                                                    class="btn btn-sm btn-outline-success me-2">
-                                                                    <i class="fas fa-eye"></i> عرض عروض الخدمة
+                                                                    <i class="fas fa-handshake"></i> عرض العرض
                                                                 </a>
                                                             @endif
                                                         @elseif($offer && !$offer->service)

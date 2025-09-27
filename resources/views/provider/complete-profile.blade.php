@@ -33,7 +33,7 @@
 
 
 
-                    <form method="POST" action="{{ route('provider.profile.store') }}">
+                    <form method="POST" action="{{ route('provider.profile.store') }}" enctype="multipart/form-data">
                         @csrf
 
                         <!-- المعلومات الأساسية -->
@@ -57,12 +57,9 @@
 
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="phone" class="form-label">رقم الهاتف <span class="text-danger">*</span></label>
-                                    <input type="text" name="phone" id="phone" class="form-control @error('phone') is-invalid @enderror"
-                                           value="{{ old('phone', $profile ? $profile->phone : '') }}" placeholder="مثال: 0501234567">
-                                    @error('phone')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                    <label class="form-label">رقم الهاتف</label>
+                                    <input type="text" class="form-control" value="{{ Auth::user()->phone }}" readonly>
+                                    <small class="form-text text-muted">رقم الهاتف المسجل في حسابك</small>
                                 </div>
 
                                 <div class="mb-3">
@@ -72,6 +69,26 @@
                                     @error('address')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="image" class="form-label">الصورة الشخصية</label>
+                                    <input type="file" class="form-control @error('image') is-invalid @enderror"
+                                           id="image" name="image" accept="image/*">
+                                    <small class="form-text text-muted">الأبعاد المفضلة: 300x300 بكسل. الأنواع المدعومة: JPG, PNG, GIF</small>
+                                    @error('image')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+
+                                    @if(Auth::user()->image)
+                                        <div class="mt-2">
+                                            <small class="text-muted">الصورة الحالية:</small>
+                                            <div class="mt-1">
+                                                <img src="{{ asset('storage/' . Auth::user()->image) }}" alt="الصورة الحالية"
+                                                     class="rounded" style="width: 80px; height: 80px; object-fit: cover;">
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>

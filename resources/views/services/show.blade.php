@@ -420,40 +420,40 @@
                             @endforeach
                     @endif
 
-                    <!-- معلومات الاتصال والحالة -->
+                    <!-- معلومات الاتصال وحالة الخدمة -->
                     <div class="row mb-4">
                         <div class="col-md-8">
                             <h5 class="mb-3">
                                 <i class="fas fa-phone text-primary me-2"></i>
                                 معلومات الاتصال
                             </h5>
-                    <div class="row">
-                            @if($service->contact_phone)
-                                <div class="col-md-6 mb-3">
-                                    <div class="card border-0 bg-light">
-                                        <div class="card-body text-center">
-                                            <i class="fas fa-phone text-success mb-2" style="font-size: 1.5rem;"></i>
-                                            <h6 class="text-muted mb-2">رقم الهاتف</h6>
-                                            <a href="tel:{{ $service->contact_phone }}" class="btn btn-success btn-sm">
-                                                <i class="fas fa-phone me-1"></i>{{ $service->contact_phone }}
-                                            </a>
+                            <div class="row">
+                                @if($service->contact_phone)
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card border-0 bg-light">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-phone text-success mb-2" style="font-size: 1.5rem;"></i>
+                                                <h6 class="text-muted mb-2">رقم الهاتف</h6>
+                                                <a href="tel:{{ $service->contact_phone }}" class="btn btn-success btn-sm">
+                                                    <i class="fas fa-phone me-1"></i>{{ $service->contact_phone }}
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            @endif
-                            @if($service->contact_email)
-                                <div class="col-md-6 mb-3">
-                                    <div class="card border-0 bg-light">
-                                        <div class="card-body text-center">
-                                            <i class="fas fa-envelope text-primary mb-2" style="font-size: 1.5rem;"></i>
-                                            <h6 class="text-muted mb-2">البريد الإلكتروني</h6>
-                                            <a href="mailto:{{ $service->contact_email }}" class="btn btn-primary btn-sm">
-                                                <i class="fas fa-envelope me-1"></i>إرسال رسالة
-                                            </a>
+                                @endif
+                                @if($service->contact_email)
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card border-0 bg-light">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-envelope text-primary mb-2" style="font-size: 1.5rem;"></i>
+                                                <h6 class="text-muted mb-2">البريد الإلكتروني</h6>
+                                                <a href="mailto:{{ $service->contact_email }}" class="btn btn-primary btn-sm">
+                                                    <i class="fas fa-envelope me-1"></i>إرسال رسالة
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            @endif
+                                @endif
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -496,18 +496,6 @@
                     @if($service->user->bio)
                         <p class="text-muted small">{{ $service->user->bio }}</p>
                     @endif
-                    <div class="d-grid gap-2">
-                        @if($service->user->phone)
-                            <a href="tel:{{ $service->user->phone }}" class="btn btn-outline-primary btn-sm">
-                                <i class="fas fa-phone"></i> اتصل
-                            </a>
-                        @endif
-                        @if($service->user->email)
-                            <a href="mailto:{{ $service->user->email }}" class="btn btn-outline-secondary btn-sm">
-                                <i class="fas fa-envelope"></i> راسل
-                            </a>
-                        @endif
-                    </div>
                 </div>
             </div>
 

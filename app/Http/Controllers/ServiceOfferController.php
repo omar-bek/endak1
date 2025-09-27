@@ -74,7 +74,6 @@ class ServiceOfferController extends Controller
         $request->validate([
             'price' => 'required|numeric|min:0',
             'notes' => 'nullable|string|max:1000',
-            'expires_at' => 'nullable|date|after:now',
         ]);
 
         // التحقق من عدم تقديم عرض سابق
@@ -93,7 +92,6 @@ class ServiceOfferController extends Controller
             'provider_id' => Auth::id(),
             'price' => $request->price,
             'notes' => $request->notes,
-            'expires_at' => $request->expires_at,
             'status' => 'pending'
         ]);
 
@@ -180,12 +178,66 @@ class ServiceOfferController extends Controller
      */
     public function show(ServiceOffer $offer)
     {
-        // التأكد من أن المستخدم مزود الخدمة وصاحب العرض
-        if (!Auth::check() || Auth::id() !== $offer->provider_id) {
+        // التأكد من أن المستخدم مسجل دخول
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'يجب تسجيل الدخول أولاً');
+        }
+
+        // التحقق من أن المستخدم إما مزود الخدمة (صاحب العرض) أو صاحب الخدمة
+        if (Auth::id() !== $offer->provider_id && Auth::id() !== $offer->service->user_id) {
             return redirect()->route('services.index')->with('error', 'غير مصرح لك بعرض هذا العرض');
         }
 
         return view('service-offers.show', compact('offer'));
+    }
+
+    /**
+     * عرض نموذج تعديل العرض للمزود
+     */
+    public function edit(ServiceOffer $offer)
+    {
+        // التأكد من أن المستخدم مزود الخدمة وصاحب العرض
+        if (!Auth::check() || Auth::id() !== $offer->provider_id) {
+            return redirect()->route('services.index')->with('error', 'غير مصرح لك بتعديل هذا العرض');
+        }
+
+        // التحقق من أن العرض لم يتم قبوله أو تسليمه
+        if (in_array($offer->status, ['accepted', 'delivered'])) {
+            return redirect()->route('service-offers.my-offers')
+                ->with('error', 'لا يمكن تعديل العرض بعد قبوله أو تسليمه');
+        }
+
+        return view('service-offers.edit', compact('offer'));
+    }
+
+    /**
+     * تحديث العرض للمزود
+     */
+    public function update(Request $request, ServiceOffer $offer)
+    {
+        // التأكد من أن المستخدم مزود الخدمة وصاحب العرض
+        if (!Auth::check() || Auth::id() !== $offer->provider_id) {
+            return redirect()->route('services.index')->with('error', 'غير مصرح لك بتعديل هذا العرض');
+        }
+
+        // التحقق من أن العرض لم يتم قبوله أو تسليمه
+        if (in_array($offer->status, ['accepted', 'delivered'])) {
+            return redirect()->route('service-offers.my-offers')
+                ->with('error', 'لا يمكن تعديل العرض بعد قبوله أو تسليمه');
+        }
+
+        $request->validate([
+            'price' => 'required|numeric|min:0',
+            'notes' => 'nullable|string|max:1000',
+        ]);
+
+        $offer->update([
+            'price' => $request->price,
+            'notes' => $request->notes,
+        ]);
+
+        return redirect()->route('service-offers.my-offers')
+            ->with('success', 'تم تحديث العرض بنجاح');
     }
 
     /**

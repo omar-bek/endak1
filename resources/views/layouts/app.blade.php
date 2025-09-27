@@ -20,20 +20,20 @@
 
     <style>
         :root {
-            --primary-color: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary-color: #8b5cf6;
-            --accent-color: #ec4899;
+            --primary-color: #685C84;
+            --primary-dark: #675B83;
+            --secondary-color: #6A5E86;
+            --accent-color: #766A90;
             --success-color: #10b981;
             --warning-color: #f59e0b;
             --danger-color: #ef4444;
-            --dark-color: #1f2937;
-            --darker-color: #111827;
-            --light-color: #f9fafb;
-            --lighter-color: #ffffff;
-            --text-color: #1f2937;
-            --text-muted: #6b7280;
-            --border-color: #e5e7eb;
+            --dark-color: #675B83;
+            --darker-color: #685C84;
+            --light-color: #F8F6F7;
+            --lighter-color: #F6F4F5;
+            --text-color: #675B83;
+            --text-muted: #9E96AE;
+            --border-color: #B1A9BE;
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
@@ -46,7 +46,7 @@
 
         body {
             font-family: 'Cairo', 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #685C84 0%, #6A5E86 25%, #766A90 50%, #B1A9BE 75%, #F8F6F7 100%);
             background-attachment: fixed;
             color: var(--text-color);
             line-height: 1.7;
@@ -81,7 +81,7 @@
 
         /* Navigation */
         .navbar {
-            background: rgba(31, 41, 55, 0.95) !important;
+            background: rgba(104, 92, 132, 0.95) !important;
             backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: var(--shadow-lg);
@@ -92,14 +92,14 @@
         }
 
         .navbar.scrolled {
-            background: rgba(31, 41, 55, 0.98) !important;
+            background: rgba(103, 91, 131, 0.98) !important;
             padding: 0.5rem 0;
         }
 
         .navbar-brand {
             font-weight: 700;
             font-size: 1.5rem;
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            background: linear-gradient(135deg, #B1A9BE, #F8F6F7);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -135,7 +135,7 @@
 
         /* Hero Section */
         .hero-section {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 50%, var(--accent-color) 100%);
+            background: linear-gradient(135deg, #685C84 0%, #6A5E86 25%, #766A90 50%, #B1A9BE 75%, #F8F6F7 100%);
             color: white;
             padding: 80px 0 60px;
             position: relative;
@@ -271,7 +271,7 @@
         }
 
         .card-header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background: linear-gradient(135deg, #685C84, #6A5E86);
             color: white;
             border: none;
             padding: 1rem;
@@ -317,7 +317,7 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            background: linear-gradient(135deg, #685C84, #675B83);
             color: white;
             box-shadow: var(--shadow-md);
         }
@@ -325,7 +325,7 @@
         .btn-primary:hover {
             transform: translateY(-3px);
             box-shadow: var(--shadow-xl);
-            background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+            background: linear-gradient(135deg, #675B83, #685C84);
         }
 
         .btn-success {
@@ -342,19 +342,19 @@
 
         .btn-outline {
             background: transparent;
-            border: 2px solid var(--primary-color);
-            color: var(--primary-color);
+            border: 2px solid #685C84;
+            color: #685C84;
         }
 
         .btn-outline:hover {
-            background: var(--primary-color);
+            background: #685C84;
             color: white;
             transform: translateY(-3px);
         }
 
         /* Footer */
         .footer {
-            background: linear-gradient(135deg, var(--darker-color) 0%, var(--dark-color) 100%);
+            background: linear-gradient(135deg, #675B83 0%, #685C84 100%);
             color: white;
             padding: 80px 0 40px;
             position: relative;
@@ -374,7 +374,7 @@
         .footer h5 {
             font-weight: 700;
             margin-bottom: 1.5rem;
-            color: var(--primary-color);
+            color: #F8F6F7;
         }
 
         .footer a {
@@ -384,7 +384,7 @@
         }
 
         .footer a:hover {
-            color: var(--primary-color);
+            color: #B1A9BE;
             transform: translateX(5px);
         }
 
@@ -591,7 +591,7 @@
         }
 
         .dropdown-item:hover {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background: linear-gradient(135deg, #685C84, #6A5E86);
             color: white;
             transform: translateX(5px);
             text-decoration: none;
@@ -1188,7 +1188,7 @@
         .footer-nav-icon-center {
             width: 48px;
             height: 48px;
-            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            background: linear-gradient(135deg, #8b5cf6, #a855f7);
             border-radius: 50%;
             margin-bottom: 4px;
             box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
@@ -1426,8 +1426,17 @@
                                 </li>
                                 @if(Auth::user()->unread_notifications->count() > 0)
                                     @foreach(Auth::user()->unread_notifications->take(4) as $notification)
+                                        @php
+                                            $notificationUrl = route('notifications.index');
+                                            if ($notification->data && isset($notification->data['offer_id'])) {
+                                                $offer = \App\Models\ServiceOffer::find($notification->data['offer_id']);
+                                                if ($offer) {
+                                                    $notificationUrl = route('service-offers.show', $offer->id);
+                                                }
+                                            }
+                                        @endphp
                                         <li>
-                                            <a class="dropdown-item py-1" href="{{ route('notifications.index') }}" style="padding: 0.4rem 0.75rem;">
+                                            <a class="dropdown-item py-1" href="{{ $notificationUrl }}" style="padding: 0.4rem 0.75rem;">
                                                 <div class="d-flex align-items-start">
                                                     <i class="{{ $notification->icon }} me-2 mt-1" style="font-size: 0.9rem;"></i>
                                                     <div class="flex-grow-1">
@@ -1450,8 +1459,20 @@
 
                     @auth
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button">
-                                <i class="fas fa-user me-1"></i>{{ Auth::user()->name }}
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button">
+                                @if(Auth::user()->image && file_exists(public_path('storage/' . Auth::user()->image)))
+                                    <img src="{{ asset('storage/' . Auth::user()->image) }}"
+                                         alt="{{ Auth::user()->name }}"
+                                         class="rounded-circle me-2"
+                                         style="width: 30px; height: 30px; object-fit: cover;"
+                                         onerror="this.onerror=null;this.src='{{ asset('images/default-avatar.png') }}';">
+                                @else
+                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center bg-primary text-white"
+                                         style="width: 30px; height: 30px; font-size: 14px; font-weight: bold;">
+                                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                    </div>
+                                @endif
+                                <span>{{ Auth::user()->name }}</span>
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="{{ route('messages.new-design') }}">
@@ -2347,7 +2368,7 @@
         }
 
         .dropdown-item:hover {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%) !important;
             color: white !important;
             transform: translateX(-5px) !important;
         }
@@ -2386,6 +2407,63 @@
             transform: translateY(-5px) !important;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
         }
+
+        /* أيقونة الواتساب */
+        .whatsapp-float {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            bottom: 80px;
+            left: 20px;
+            background-color: #25d366;
+            color: white;
+            border-radius: 50px;
+            text-align: center;
+            font-size: 30px;
+            box-shadow: 2px 2px 3px #999;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            animation: pulse-whatsapp 2s infinite;
+        }
+
+        .whatsapp-float:hover {
+            background-color: #128c7e;
+            color: white;
+            text-decoration: none;
+            transform: scale(1.1);
+        }
+
+        @keyframes pulse-whatsapp {
+            0% {
+                box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(37, 211, 102, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+            }
+        }
+
+        /* تحسين للهواتف */
+        @media (max-width: 768px) {
+            .whatsapp-float {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+                bottom: 70px;
+                left: 15px;
+            }
+        }
     </style>
+
+    <!-- أيقونة الواتساب -->
+    <a href="https://wa.me/966500000000" class="whatsapp-float" target="_blank" title="تواصل معنا عبر الواتساب">
+        <i class="fab fa-whatsapp"></i>
+    </a>
 </body>
 </html>

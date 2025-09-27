@@ -121,20 +121,20 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:20|unique:users,phone,' . $user->id,
             'bio' => 'nullable|string|max:1000',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $data = $request->only(['name', 'phone', 'bio']);
 
         // رفع الصورة الشخصية
-        if ($request->hasFile('avatar')) {
+        if ($request->hasFile('image')) {
             // حذف الصورة القديمة
-            if ($user->avatar) {
-                Storage::disk('public')->delete($user->avatar);
+            if ($user->image) {
+                Storage::disk('public')->delete($user->image);
             }
 
-            $avatarPath = $request->file('avatar')->store('avatars', 'public');
-            $data['avatar'] = $avatarPath;
+            $imagePath = $request->file('image')->store('users', 'public');
+            $data['image'] = $imagePath;
         }
 
         $user->update($data);

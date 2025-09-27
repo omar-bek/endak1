@@ -9,8 +9,15 @@
             <!-- Profile Card -->
             <div class="card">
                 <div class="card-body text-center">
-                    <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}"
-                         class="rounded-circle mb-3" width="120" height="120">
+                    @if($user->image && file_exists(public_path('storage/' . $user->image)))
+                        <img src="{{ asset('storage/' . $user->image) }}" alt="{{ $user->name }}"
+                             class="rounded-circle mb-3" width="120" height="120" style="object-fit: cover;">
+                    @else
+                        <div class="rounded-circle mb-3 mx-auto d-flex align-items-center justify-content-center bg-primary text-white"
+                             style="width: 120px; height: 120px; font-size: 48px; font-weight: bold;">
+                            {{ strtoupper(substr($user->name, 0, 1)) }}
+                        </div>
+                    @endif
                     <h4>{{ $user->name }}</h4>
                     <p class="text-muted">
                         @if($user->isProvider())
@@ -90,13 +97,23 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="avatar" class="form-label">الصورة الشخصية</label>
-                            <input type="file" class="form-control @error('avatar') is-invalid @enderror"
-                                   id="avatar" name="avatar" accept="image/*">
-                            <small class="form-text text-muted">الأبعاد المفضلة: 300x300 بكسل</small>
-                            @error('avatar')
+                            <label for="image" class="form-label">الصورة الشخصية</label>
+                            <input type="file" class="form-control @error('image') is-invalid @enderror"
+                                   id="image" name="image" accept="image/*">
+                            <small class="form-text text-muted">الأبعاد المفضلة: 300x300 بكسل. الأنواع المدعومة: JPG, PNG, GIF</small>
+                            @error('image')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+
+                            @if($user->image)
+                                <div class="mt-2">
+                                    <small class="text-muted">الصورة الحالية:</small>
+                                    <div class="mt-1">
+                                        <img src="{{ asset('storage/' . $user->image) }}" alt="الصورة الحالية"
+                                             class="rounded" style="width: 80px; height: 80px; object-fit: cover;">
+                                    </div>
+                                </div>
+                            @endif
                         </div>
 
                         <div class="d-flex justify-content-end">

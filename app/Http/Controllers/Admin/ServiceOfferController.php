@@ -56,6 +56,58 @@ class ServiceOfferController extends Controller
     }
 
         /**
+     * عرض نموذج تعديل العرض
+     */
+    public function edit(ServiceOffer $offer)
+    {
+        $offer->load(['service.category', 'service.user', 'provider']);
+
+        return view('admin.service-offers.edit', compact('offer'));
+    }
+
+    /**
+     * تحديث العرض
+     */
+    public function update(Request $request, ServiceOffer $offer)
+    {
+        $request->validate([
+            'price' => 'required|numeric|min:0',
+            'notes' => 'nullable|string|max:1000',
+            'status' => 'required|in:pending,accepted,rejected,expired',
+        ]);
+
+        // التحقق من أن العرض لم يتم قبوله أو تسليمه
+        if (in_array($offer->status, ['accepted', 'delivered'])) {
+            return back()->with('error', 'لا يمكن تعديل العرض بعد قبوله أو تسليمه');
+        }
+
+        $offer->update([
+            'price' => $request->price,
+            'notes' => $request->notes,
+            'status' => $request->status,
+        ]);
+
+        return redirect()->route('admin.service-offers.index')
+            ->with('success', 'تم تحديث العرض بنجاح');
+    }
+
+    /**
+     * حذف العرض
+     */
+    public function destroy(ServiceOffer $offer)
+    {
+        // التحقق من أن العرض لم يتم قبوله أو تسليمه
+        if (in_array($offer->status, ['accepted', 'delivered'])) {
+            return back()->with('error', 'لا يمكن حذف العرض بعد قبوله أو تسليمه');
+        }
+
+        $offer->delete();
+
+        return redirect()->route('admin.service-offers.index')
+            ->with('success', 'تم حذف العرض بنجاح');
+    }
+
+    /**
      * تبديل حالة العرض
      */
     public function toggleStatus(Request $request, ServiceOffer $offer)

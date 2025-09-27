@@ -67,10 +67,6 @@
                                         </div>
                                     @endif
                                 </div>
-                                <div class="col-md-4 text-md-end">
-                                    <div class="h5 text-success mb-2">{{ $offer->service->formatted_price }}</div>
-                                    <small class="text-muted">السعر المطلوب</small>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -126,32 +122,6 @@
                         </div>
                     </div>
 
-                    <!-- معلومات صاحب الخدمة -->
-                    <div class="card mb-4 border-info">
-                        <div class="card-header bg-light">
-                            <h5 class="mb-0 text-info">
-                                <i class="fas fa-user"></i>
-                                صاحب الخدمة
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-grow-1">
-                                    <h6 class="fw-bold mb-1">{{ $offer->service->user->name }}</h6>
-                                    <small class="text-muted">
-                                        <i class="fas fa-envelope me-1"></i>
-                                        {{ $offer->service->user->email }}
-                                    </small>
-                                </div>
-                                <div class="text-md-end">
-                                    <a href="{{ route('services.show', $offer->service->slug) }}" class="btn btn-outline-primary">
-                                        <i class="fas fa-eye"></i>
-                                        عرض الخدمة
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- أزرار الإجراءات -->
                     <div class="d-flex gap-2 justify-content-center">
@@ -159,10 +129,39 @@
                             <i class="fas fa-arrow-left"></i>
                             العودة للخدمات
                         </a>
-                        <a href="{{ route('service-offers.my-offers') }}" class="btn btn-outline-primary">
-                            <i class="fas fa-list"></i>
-                            عروضي
-                        </a>
+
+                        @if(Auth::id() == $offer->provider_id)
+                            <!-- مزود الخدمة - يرى عروضه -->
+                            <a href="{{ route('service-offers.my-offers') }}" class="btn btn-outline-primary">
+                                <i class="fas fa-list"></i>
+                                عروضي
+                            </a>
+                        @elseif(Auth::id() == $offer->service->user_id)
+                            <!-- صاحب الخدمة - يرى عروض خدمته -->
+                            <a href="{{ route('services.show', $offer->service->slug) }}" class="btn btn-outline-primary">
+                                <i class="fas fa-eye"></i>
+                                عرض عروض الخدمة
+                            </a>
+
+                            <!-- أزرار قبول/رفض للعرض -->
+                            @if($offer->status === 'pending')
+                                <form method="POST" action="{{ route('service-offers.accept', $offer->id) }}" class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="btn btn-success" onclick="return confirm('هل أنت متأكد من قبول هذا العرض؟')">
+                                        <i class="fas fa-check"></i>
+                                        قبول العرض
+                                    </button>
+                                </form>
+
+                                <form method="POST" action="{{ route('service-offers.reject', $offer->id) }}" class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('هل أنت متأكد من رفض هذا العرض؟')">
+                                        <i class="fas fa-times"></i>
+                                        رفض العرض
+                                    </button>
+                                </form>
+                            @endif
+                        @endif
                     </div>
                 </div>
             </div>

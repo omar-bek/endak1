@@ -123,16 +123,27 @@
                                     <a href="{{ route('admin.service-offers.show', $offer->id) }}" class="btn btn-info" title="عرض">
                                         <i class="fas fa-eye"></i>
                                     </a>
+                                    @if(!in_array($offer->status, ['accepted', 'delivered']))
+                                        <a href="{{ route('admin.service-offers.edit', $offer->id) }}" class="btn btn-warning" title="تعديل">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    @endif
                                     <a href="{{ route('services.show', $offer->service->slug) }}" class="btn btn-outline-primary" title="عرض الخدمة">
                                         <i class="fas fa-external-link-alt"></i>
                                     </a>
                                     <form action="{{ route('admin.service-offers.toggle-status', $offer->id) }}" method="POST" style="display:inline-block">
                                         @csrf
                                         @method('PATCH')
-                                        <button type="submit" class="btn btn-warning" title="{{ $offer->status === 'pending' ? 'قبول' : 'إعادة إلى الانتظار' }}">
+                                        <button type="submit" class="btn btn-success" title="{{ $offer->status === 'pending' ? 'قبول' : 'إعادة إلى الانتظار' }}">
                                             <i class="fas fa-{{ $offer->status === 'pending' ? 'check' : 'undo' }}"></i>
                                         </button>
                                     </form>
+                                    @if(!in_array($offer->status, ['accepted', 'delivered']))
+                                        <button type="button" class="btn btn-danger" title="حذف"
+                                                onclick="confirmDelete({{ $offer->id }}, '{{ $offer->service->title }}')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -171,5 +182,33 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+function confirmDelete(offerId, serviceTitle) {
+    if (confirm(`هل أنت متأكد من حذف العرض للخدمة "${serviceTitle}"؟\n\nلا يمكن التراجع عن هذا الإجراء.`)) {
+        // إنشاء نموذج حذف مخفي
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/service-offers/${offerId}`;
+
+        // إضافة token CSRF
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        // إضافة method spoofing
+        const methodField = document.createElement('input');
+        methodField.type = 'hidden';
+        methodField.name = '_method';
+        methodField.value = 'DELETE';
+
+        form.appendChild(csrfToken);
+        form.appendChild(methodField);
+
+        // إرسال النموذج
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
 </script>
 @endsection

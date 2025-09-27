@@ -10,6 +10,7 @@ use App\Models\City;
 use App\Models\SystemSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ProviderProfileController extends Controller
 {
@@ -85,8 +86,8 @@ class ProviderProfileController extends Controller
 
         $request->validate([
             'bio' => 'required|string|max:1000',
-            'phone' => 'required|string|max:20',
             'address' => 'required|string|max:500',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'categories' => 'required|array|min:1',
             'categories.*' => 'exists:categories,id',
             'cities' => 'required|array|min:1',
@@ -98,6 +99,17 @@ class ProviderProfileController extends Controller
         $maxCategories = SystemSetting::get('provider_max_categories', 3);
         $maxCities = SystemSetting::get('provider_max_cities', 10);
 
+        // معالجة رفع الصورة الشخصية
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            // حذف الصورة القديمة إذا كانت موجودة
+            if ($user->image) {
+                Storage::disk('public')->delete($user->image);
+            }
+
+            $imagePath = $request->file('image')->store('users', 'public');
+        }
+
         // التحقق من عدد الأقسام
         if (count($request->categories) > $maxCategories) {
             return back()->withErrors(['categories' => "يمكنك اختيار حد أقصى {$maxCategories} أقسام"]);
@@ -108,10 +120,15 @@ class ProviderProfileController extends Controller
             return back()->withErrors(['cities' => "يمكنك اختيار حد أقصى {$maxCities} مدن"]);
         }
 
+        // تحديث صورة المستخدم إذا تم رفع صورة جديدة
+        if ($imagePath) {
+            $user->update(['image' => $imagePath]);
+        }
+
         // تحديث الملف الشخصي
         $profile->update([
             'bio' => $request->bio,
-            'phone' => $request->phone,
+            'phone' => $user->phone, // استخدام رقم الهاتف من المستخدم
             'address' => $request->address,
         ]);
 
@@ -152,8 +169,8 @@ class ProviderProfileController extends Controller
 
         $request->validate([
             'bio' => 'required|string|max:1000',
-            'phone' => 'required|string|max:20',
             'address' => 'required|string|max:500',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'categories' => 'required|array|min:1',
             'categories.*' => 'exists:categories,id',
             'cities' => 'required|array|min:1',
@@ -163,6 +180,17 @@ class ProviderProfileController extends Controller
         $user = Auth::user();
         $maxCategories = SystemSetting::get('provider_max_categories', 3);
         $maxCities = SystemSetting::get('provider_max_cities', 10);
+
+        // معالجة رفع الصورة الشخصية
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            // حذف الصورة القديمة إذا كانت موجودة
+            if ($user->image) {
+                \Storage::disk('public')->delete($user->image);
+            }
+
+            $imagePath = $request->file('image')->store('users', 'public');
+        }
 
         // التحقق من عدد الأقسام
         if (count($request->categories) > $maxCategories) {
@@ -174,12 +202,17 @@ class ProviderProfileController extends Controller
             return back()->withErrors(['cities' => "يمكنك اختيار حد أقصى {$maxCities} مدن"]);
         }
 
+        // تحديث صورة المستخدم إذا تم رفع صورة جديدة
+        if ($imagePath) {
+            $user->update(['image' => $imagePath]);
+        }
+
         // إنشاء أو تحديث الملف الشخصي
         $profile = $user->providerProfile()->updateOrCreate(
             ['user_id' => $user->id],
             [
                 'bio' => $request->bio,
-                'phone' => $request->phone,
+                'phone' => $user->phone, // استخدام رقم الهاتف من المستخدم
                 'address' => $request->address,
                 'max_categories' => $maxCategories,
                 'max_cities' => $maxCities,

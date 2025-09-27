@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'لوحة الإدارة') - Endak</title>
 
     <!-- Bootstrap RTL CSS -->
@@ -33,7 +34,7 @@
             right: 0;
             width: 280px;
             height: 100vh;
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            background: linear-gradient(135deg, #685C84 0%, #675B83 100%);
             color: white;
             z-index: 1000;
             transition: all 0.3s ease;
@@ -362,10 +363,6 @@
                     <i class="fas fa-layer-group"></i>
                     <span>الأقسام الفرعية</span>
                 </a>
-                <a href="{{ route('admin.categories.fields.index', 1) }}" class="menu-item {{ request()->routeIs('admin.categories.fields.*') ? 'active' : '' }}">
-                    <i class="fas fa-list-alt"></i>
-                    <span>حقول الأقسام</span>
-                </a>
             </div>
 
             <!-- إدارة المواقع -->
@@ -433,6 +430,8 @@
                 </a>
             </div>
 
+            <!-- إدارة الواتساب -->
+
             <!-- روابط خارجية -->
             <div class="menu-section">
                 <div class="menu-section-title">روابط سريعة</div>
@@ -457,11 +456,19 @@
         <header class="main-header">
             <div class="d-flex justify-content-between align-items-center">
                 <h4>@yield('page-title', 'لوحة الإدارة')</h4>
-                <div class="user-info">
-                    <span>مرحباً، {{ Auth::user()->name }}</span>
-                    <div class="user-avatar">
-                        {{ substr(Auth::user()->name, 0, 1) }}
-                    </div>
+                <div class="user-info d-flex align-items-center">
+                    <span class="me-3">مرحباً، {{ Auth::user()->name }}</span>
+                    @if(Auth::user()->image && file_exists(public_path('storage/' . Auth::user()->image)))
+                        <img src="{{ asset('storage/' . Auth::user()->image) }}"
+                             alt="{{ Auth::user()->name }}"
+                             class="rounded-circle"
+                             style="width: 40px; height: 40px; object-fit: cover;"
+                             onerror="this.onerror=null;this.src='{{ asset('images/default-avatar.png') }}';">
+                    @else
+                        <div class="user-avatar">
+                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                        </div>
+                    @endif
                 </div>
             </div>
         </header>

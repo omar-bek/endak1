@@ -56,17 +56,6 @@
                                 </div>
                             </div>
                             @endif
-                            @if($offer->expires_at)
-                            <div class="mb-3">
-                                <strong>تاريخ انتهاء الصلاحية:</strong>
-                                <span class="ms-2">{{ $offer->expires_at->format('Y-m-d H:i') }}</span>
-                                @if($offer->expires_at->isPast())
-                                    <span class="badge bg-danger ms-2">منتهي الصلاحية</span>
-                                @else
-                                    <span class="badge bg-success ms-2">صالح</span>
-                                @endif
-                            </div>
-                            @endif
                         </div>
                     </div>
                 </div>
@@ -205,6 +194,17 @@
                             </button>
                         </form>
                         @endif
+
+                        @if(!in_array($offer->status, ['accepted', 'delivered']))
+                        <a href="{{ route('admin.service-offers.edit', $offer->id) }}" class="btn btn-warning w-100">
+                            <i class="fas fa-edit"></i> تعديل العرض
+                        </a>
+
+                        <button type="button" class="btn btn-outline-danger w-100"
+                                onclick="confirmDelete({{ $offer->id }}, '{{ $offer->service->title }}')">
+                            <i class="fas fa-trash"></i> حذف العرض
+                        </button>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -240,3 +240,35 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+function confirmDelete(offerId, serviceTitle) {
+    if (confirm(`هل أنت متأكد من حذف العرض للخدمة "${serviceTitle}"؟\n\nلا يمكن التراجع عن هذا الإجراء.`)) {
+        // إنشاء نموذج حذف مخفي
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/service-offers/${offerId}`;
+
+        // إضافة token CSRF
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        // إضافة method spoofing
+        const methodField = document.createElement('input');
+        methodField.type = 'hidden';
+        methodField.name = '_method';
+        methodField.value = 'DELETE';
+
+        form.appendChild(csrfToken);
+        form.appendChild(methodField);
+
+        // إرسال النموذج
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
+@endpush

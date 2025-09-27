@@ -73,15 +73,6 @@
                             <small class="form-text text-muted">أدخل السعر الذي تريد تقديمه لهذه الخدمة</small>
                         </div>
 
-                        <!-- تاريخ انتهاء الصلاحية -->
-                        <div class="mb-3">
-                            <label for="expires_at" class="form-label">
-                                <i class="fas fa-calendar-times text-warning"></i> تاريخ انتهاء صلاحية العرض
-                            </label>
-                            <input type="datetime-local" name="expires_at" id="expires_at"
-                                   class="form-control" value="{{ old('expires_at') }}">
-                            <small class="form-text text-muted">اختياري - إذا لم تحدد تاريخ، سيبقى العرض صالحاً</small>
-                        </div>
 
                         <!-- الملاحظات -->
                         <div class="mb-3">

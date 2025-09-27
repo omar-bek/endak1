@@ -62,6 +62,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/offers/{offer}/deliver', [ServiceOfferController::class, 'markAsDelivered'])->name('service-offers.deliver');
     Route::post('/offers/{offer}/review', [ServiceOfferController::class, 'review'])->name('service-offers.review');
     Route::get('/my-offers', [ServiceOfferController::class, 'myOffers'])->name('service-offers.my-offers');
+    Route::get('/offers/{offer}/edit', [ServiceOfferController::class, 'edit'])->name('service-offers.edit');
+    Route::put('/offers/{offer}', [ServiceOfferController::class, 'update'])->name('service-offers.update');
 
     // مسارات الإشعارات
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');

@@ -87,13 +87,6 @@
                                         {{ $offer->created_at }}
                                     </p>
 
-                                    <!-- تاريخ انتهاء الصلاحية -->
-                                    @if($offer->expires_at)
-                                        <p class="text-muted mb-2">
-                                            <i class="fas fa-clock text-warning"></i>
-                                            ينتهي في {{ $offer->expires_at->format('Y-m-d') }}
-                                        </p>
-                                    @endif
 
                                     <!-- الملاحظات -->
                                     @if($offer->notes)
@@ -131,12 +124,20 @@
                                         @endif
                                     </div>
 
-                                    <!-- زر الرسائل -->
+                                    <!-- أزرار الإجراءات -->
                                     <div class="mt-2 text-center">
-                                        <a href="{{ route('messages.offer-conversation', $offer->id) }}"
-                                           class="btn btn-outline-info btn-sm">
-                                            <i class="fas fa-comments"></i> إرسال رسالة
-                                        </a>
+                                        <div class="btn-group" role="group">
+                                            @if($offer->status === 'pending')
+                                                <a href="{{ route('service-offers.edit', $offer->id) }}"
+                                                   class="btn btn-warning btn-sm">
+                                                    <i class="fas fa-edit"></i> تعديل
+                                                </a>
+                                            @endif
+                                            <a href="{{ route('messages.offer-conversation', $offer->id) }}"
+                                               class="btn btn-outline-info btn-sm">
+                                                <i class="fas fa-comments"></i> رسالة
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

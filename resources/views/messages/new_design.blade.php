@@ -32,9 +32,15 @@
                          onclick="window.location.href='{{ route('messages.show', $otherUser->id) }}'"
                          data-name="{{ strtolower($otherUser->name) }}">
                         <div class="conversation-avatar">
-                            <img src="{{ asset('storage/' . ($otherUser->image ?? 'users/user.png')) }}"
-                                 alt="{{ $otherUser->name }}"
-                                 onerror="this.onerror=null;this.src='{{ asset('storage/users/user.png') }}';">
+                            @if($otherUser->image && file_exists(public_path('storage/' . $otherUser->image)))
+                                <img src="{{ asset('storage/' . $otherUser->image) }}"
+                                     alt="{{ $otherUser->name }}"
+                                     onerror="this.onerror=null;this.src='{{ asset('images/default-avatar.png') }}';">
+                            @else
+                                <div class="default-avatar">
+                                    {{ strtoupper(substr($otherUser->name, 0, 1)) }}
+                                </div>
+                            @endif
                             <div class="online-indicator {{ $otherUser->isOnline() ? 'online' : 'offline' }}"></div>
                         </div>
                         <div class="conversation-info">
@@ -206,6 +212,20 @@
         height: 50px;
         border-radius: 50%;
         object-fit: cover;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .default-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 18px;
         border: 3px solid rgba(255, 255, 255, 0.3);
     }
 
@@ -393,7 +413,8 @@
 
         .conversations-sidebar {
             width: 100%;
-            height: 200px;
+            height: auto;
+            max-height: 60vh;
             border-right: none;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             position: relative;
@@ -408,19 +429,50 @@
         }
 
         .conversations-list {
-            display: flex;
-            overflow-x: auto;
-            padding: 10px;
+            display: block;
+            overflow-y: auto;
+            padding: 5px 0;
+            max-height: 50vh;
         }
 
         .conversation-item {
-            min-width: 200px;
-            margin: 0 5px;
+            min-width: auto;
+            margin: 2px 10px;
             flex-shrink: 0;
+            padding: 12px 15px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .conversation-item:hover {
-            transform: translateY(-2px);
+            transform: translateY(-1px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .conversation-avatar img {
+            width: 45px;
+            height: 45px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .default-avatar {
+            width: 45px;
+            height: 45px;
+            font-size: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .conversation-name {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .conversation-preview {
+            font-size: 13px;
+        }
+
+        .conversation-time {
+            font-size: 12px;
         }
 
         .conversations-sidebar.hidden {
@@ -433,6 +485,64 @@
 
         .chat-content {
             padding: 15px 10px;
+        }
+
+        .sidebar-header {
+            padding: 15px;
+        }
+
+        .sidebar-header h5 {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .search-input {
+            padding: 8px 30px 8px 12px;
+            font-size: 13px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .conversations-sidebar {
+            max-height: 50vh;
+        }
+
+        .conversations-list {
+            max-height: 40vh;
+        }
+
+        .conversation-item {
+            padding: 10px 12px;
+            margin: 1px 8px;
+        }
+
+        .conversation-avatar img {
+            width: 40px;
+            height: 40px;
+        }
+
+        .default-avatar {
+            width: 40px;
+            height: 40px;
+            font-size: 14px;
+        }
+
+        .conversation-name {
+            font-size: 14px;
+        }
+
+        .conversation-preview {
+            font-size: 12px;
+        }
+
+        .conversation-time {
+            font-size: 11px;
+        }
+
+        .unread-badge {
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
         }
     }
 </style>

@@ -11,21 +11,26 @@
     font-size: 0.8rem;
     padding: 0.25rem 0.75rem;
 }
-
 .toggle-btn:hover {
     transform: scale(1.05);
 }
-
 .status-badge {
     font-size: 0.8rem;
     padding: 0.4rem 0.8rem;
     border-radius: 15px;
 }
-
 .btn-group-sm .btn {
     margin: 0 2px;
 }
+.category-image {
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
 </style>
+
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4>جميع الأقسام</h4>
     <div>
@@ -42,10 +47,11 @@
     <div class="card-body">
         @if($categories->count() > 0)
         <div class="table-responsive">
-            <table class="table table-hover">
+            <table class="table table-hover align-middle">
                 <thead>
                     <tr>
                         <th>ID</th>
+                        <th>الصورة</th>
                         <th>الاسم</th>
                         <th>الحالة</th>
                         <th>الإجراءات</th>
@@ -55,6 +61,13 @@
                     @foreach($categories as $category)
                     <tr>
                         <td>{{ $category->id }}</td>
+                        <td>
+                            @if($category->image)
+                                <img src="{{ asset('storage/' . $category->image) }}" alt="{{ $category->name }}" class="category-image">
+                            @else
+                                <span class="text-muted">لا توجد صورة</span>
+                            @endif
+                        </td>
                         <td>{{ $category->name_ar ?? $category->name }}</td>
                         <td>
                             @if($category->is_active)
@@ -73,7 +86,6 @@
                                 <a href="{{ route('admin.categories.show', $category->id) }}" class="btn btn-sm btn-primary">عرض</a>
                                 <a href="{{ route('admin.categories.edit', $category->id) }}" class="btn btn-sm btn-warning">تعديل</a>
 
-                                <!-- زر تفعيل/تعطيل -->
                                 <form action="{{ route('admin.categories.toggle-status', $category->id) }}" method="POST" style="display:inline-block">
                                     @csrf
                                     @method('PATCH')
@@ -97,6 +109,8 @@
                             </div>
                         </td>
                     </tr>
+
+                    {{-- عرض الأقسام الفرعية --}}
                     @php
                         $subCategories = $category->subCategories ?? collect();
                     @endphp
@@ -104,6 +118,7 @@
                         @foreach($subCategories as $subCategory)
                             <tr style="background:#f9f9f9;">
                                 <td>{{ $subCategory->id }}</td>
+                                <td></td>
                                 <td style="padding-left:40px;">&raquo; {{ $subCategory->name_ar ?? $subCategory->name_en }}</td>
                                 <td>
                                     @if($subCategory->status == 'active')
@@ -128,7 +143,6 @@
                                             <i class="fas fa-plus"></i>
                                         </a>
 
-                                        <!-- زر تفعيل/تعطيل للقسم الفرعي -->
                                         <form action="{{ route('admin.sub_categories.toggle-status', $subCategory->id) }}" method="POST" style="display:inline-block">
                                             @csrf
                                             @method('PATCH')

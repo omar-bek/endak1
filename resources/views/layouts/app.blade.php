@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,7 @@
     <title>@yield('title', 'Endak - ' . __('messages.welcome_title'))</title>
 
     <!-- Bootstrap CSS -->
-    @if(app()->getLocale() === 'ar')
+    @if (app()->getLocale() === 'ar')
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
     @else
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -158,8 +159,15 @@
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
         }
 
         .hero-content {
@@ -232,6 +240,7 @@
                 transform: translateY(-100%);
                 opacity: 0;
             }
+
             to {
                 transform: translateY(0);
                 opacity: 1;
@@ -308,7 +317,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
             transition: left 0.6s ease;
         }
 
@@ -447,7 +456,7 @@
             padding: 0.375rem 0.75rem;
         }
 
-                /* Subcategory Images */
+        /* Subcategory Images */
         .subcategory-image-container {
             position: relative;
             height: 120px;
@@ -522,8 +531,8 @@
 
         /* Language Switcher */
         .language-btn {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
             padding: 10px 18px;
             border-radius: 16px;
@@ -534,7 +543,7 @@
         }
 
         .language-btn:hover {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             color: white;
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
@@ -546,9 +555,17 @@
         }
 
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.15); }
-            100% { transform: scale(1); }
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.15);
+            }
+
+            100% {
+                transform: scale(1);
+            }
         }
 
         .dropdown-menu {
@@ -556,7 +573,7 @@
             border-radius: 12px;
             box-shadow: var(--shadow-lg);
             backdrop-filter: blur(20px);
-            background: rgba(255,255,255,0.95);
+            background: rgba(255, 255, 255, 0.95);
             padding: 0.5rem 0;
             margin-top: 0.5rem;
             min-width: 200px;
@@ -705,7 +722,7 @@
         }
 
         /* Ensure proper stacking context */
-        .navbar > .container {
+        .navbar>.container {
             position: relative;
             z-index: 1001;
         }
@@ -850,9 +867,9 @@
             margin-top: 0.5rem;
             min-width: 200px;
             background: white;
-            border: 1px solid rgba(0,0,0,0.1);
+            border: 1px solid rgba(0, 0, 0, 0.1);
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         [dir="rtl"] .nav-item.dropdown .dropdown-menu {
@@ -924,9 +941,9 @@
             left: 0 !important;
             right: auto !important;
             background: white !important;
-            border: 1px solid rgba(0,0,0,0.1) !important;
+            border: 1px solid rgba(0, 0, 0, 0.1) !important;
             border-radius: 8px !important;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
             min-width: 200px !important;
             margin-top: 0.5rem !important;
         }
@@ -946,7 +963,7 @@
         }
 
         .nav-item.dropdown .dropdown-menu.show .dropdown-item:hover {
-            background: rgba(0,0,0,0.05) !important;
+            background: rgba(0, 0, 0, 0.05) !important;
         }
 
         /* Animations */
@@ -955,6 +972,7 @@
                 opacity: 0;
                 transform: translateY(40px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -966,6 +984,7 @@
                 opacity: 0;
                 transform: translateX(-40px);
             }
+
             to {
                 opacity: 1;
                 transform: translateX(0);
@@ -977,6 +996,7 @@
                 opacity: 0;
                 transform: translateX(40px);
             }
+
             to {
                 opacity: 1;
                 transform: translateX(0);
@@ -1055,14 +1075,16 @@
             display: inline-block;
             width: 24px;
             height: 24px;
-            border: 3px solid rgba(255,255,255,.3);
+            border: 3px solid rgba(255, 255, 255, .3);
             border-radius: 50%;
             border-top-color: #fff;
             animation: spin 1s ease-in-out infinite;
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* Custom Scrollbar */
@@ -1332,6 +1354,7 @@
 
     @stack('styles')
 </head>
+
 <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -1357,11 +1380,13 @@
                     </li>
                     @auth
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('services.my-services') }}">{{ __('messages.my_services') }}</a>
+                            <a class="nav-link"
+                                href="{{ route('services.my-services') }}">{{ __('messages.my_services') }}</a>
                         </li>
-                        @if(Auth::user()->isProvider())
+                        @if (Auth::user()->isProvider())
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('service-offers.my-offers') }}">{{ __('messages.my_offers') }}</a>
+                                <a class="nav-link"
+                                    href="{{ route('service-offers.my-offers') }}">{{ __('messages.my_offers') }}</a>
                             </li>
                         @endif
                     @endauth
@@ -1378,31 +1403,42 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{{ route('language.switch', 'ar') }}">
-                                <i class="fas fa-flag me-2"></i>العربية
-                            </a></li>
+                                    <i class="fas fa-flag me-2"></i>العربية
+                                </a></li>
                             <li><a class="dropdown-item" href="{{ route('language.switch', 'en') }}">
-                                <i class="fas fa-flag me-2"></i>English
-                            </a></li>
+                                    <i class="fas fa-flag me-2"></i>English
+                                </a></li>
                         </ul>
                     </li>
 
                     <!-- Messages -->
                     @auth
                         <li class="nav-item dropdown me-2">
-                            <a class="nav-link position-relative dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link position-relative dropdown-toggle" href="#" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fas fa-comments"></i>
-                                <span id="messages-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.7rem; padding: 0.2rem 0.4rem; display: none;">
+                                <span id="messages-badge"
+                                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                    style="font-size: 0.7rem; padding: 0.2rem 0.4rem; display: none;">
                                     0
                                 </span>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end" style="width: 280px; max-height: 300px; overflow-y: auto;">
-                                <li class="dropdown-header d-flex justify-content-between align-items-center" style="padding: 0.5rem 0.75rem; font-size: 0.85rem;">
+                            <ul class="dropdown-menu dropdown-menu-end"
+                                style="width: 280px; max-height: 300px; overflow-y: auto;">
+                                <li class="dropdown-header d-flex justify-content-between align-items-center"
+                                    style="padding: 0.5rem 0.75rem; font-size: 0.85rem;">
                                     <span>الرسائل</span>
-                                    <a href="{{ route('messages.index') }}" class="text-decoration-none" style="font-size: 0.75rem;">عرض الكل</a>
+                                    <a href="{{ route('messages.index') }}" class="text-decoration-none"
+                                        style="font-size: 0.75rem;">عرض الكل</a>
                                 </li>
-                                <li><span class="dropdown-item-text text-muted" style="font-size: 0.8rem; padding: 0.4rem 0.75rem;">آخر الرسائل ستظهر هنا</span></li>
-                                <li><hr class="dropdown-divider" style="margin: 0.3rem 0;"></li>
-                                <li><a class="dropdown-item text-center" href="{{ route('messages.index') }}" style="font-size: 0.8rem; padding: 0.4rem 0.75rem;">عرض جميع الرسائل</a></li>
+                                <li><span class="dropdown-item-text text-muted"
+                                        style="font-size: 0.8rem; padding: 0.4rem 0.75rem;">آخر الرسائل ستظهر هنا</span>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider" style="margin: 0.3rem 0;">
+                                </li>
+                                <li><a class="dropdown-item text-center" href="{{ route('messages.index') }}"
+                                        style="font-size: 0.8rem; padding: 0.4rem 0.75rem;">عرض جميع الرسائل</a></li>
                             </ul>
                         </li>
                     @endauth
@@ -1411,48 +1447,66 @@
                         <li class="nav-item dropdown me-2">
                             <a class="nav-link position-relative dropdown-toggle" href="#" role="button">
                                 <i class="fas fa-bell"></i>
-                                @if(Auth::user()->unread_notifications_count > 0)
-                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.7rem; padding: 0.2rem 0.4rem;">
+                                @if (Auth::user()->unread_notifications_count > 0)
+                                    <span
+                                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                        style="font-size: 0.7rem; padding: 0.2rem 0.4rem;">
                                         {{ Auth::user()->unread_notifications_count > 99 ? '99+' : Auth::user()->unread_notifications_count }}
                                     </span>
                                 @endif
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end" style="width: 280px; max-height: 300px; overflow-y: auto;">
-                                <li class="dropdown-header d-flex justify-content-between align-items-center" style="padding: 0.5rem 0.75rem; font-size: 0.85rem;">
+                            <ul class="dropdown-menu dropdown-menu-end"
+                                style="width: 280px; max-height: 300px; overflow-y: auto;">
+                                <li class="dropdown-header d-flex justify-content-between align-items-center"
+                                    style="padding: 0.5rem 0.75rem; font-size: 0.85rem;">
                                     <span>الإشعارات</span>
-                                    @if(Auth::user()->unread_notifications_count > 0)
-                                        <a href="{{ route('notifications.index') }}" class="text-decoration-none" style="font-size: 0.75rem;">عرض الكل</a>
+                                    @if (Auth::user()->unread_notifications_count > 0)
+                                        <a href="{{ route('notifications.index') }}" class="text-decoration-none"
+                                            style="font-size: 0.75rem;">عرض الكل</a>
                                     @endif
                                 </li>
-                                @if(Auth::user()->unread_notifications->count() > 0)
-                                    @foreach(Auth::user()->unread_notifications->take(4) as $notification)
+                                @if (Auth::user()->unread_notifications->count() > 0)
+                                    @foreach (Auth::user()->unread_notifications->take(4) as $notification)
                                         @php
                                             $notificationUrl = route('notifications.index');
                                             if ($notification->data && isset($notification->data['offer_id'])) {
-                                                $offer = \App\Models\ServiceOffer::find($notification->data['offer_id']);
+                                                $offer = \App\Models\ServiceOffer::find(
+                                                    $notification->data['offer_id'],
+                                                );
                                                 if ($offer) {
                                                     $notificationUrl = route('service-offers.show', $offer->id);
                                                 }
                                             }
                                         @endphp
                                         <li>
-                                            <a class="dropdown-item py-1" href="{{ $notificationUrl }}" style="padding: 0.4rem 0.75rem;">
+                                            <a class="dropdown-item py-1" href="{{ $notificationUrl }}"
+                                                style="padding: 0.4rem 0.75rem;">
                                                 <div class="d-flex align-items-start">
-                                                    <i class="{{ $notification->icon }} me-2 mt-1" style="font-size: 0.9rem;"></i>
+                                                    <i class="{{ $notification->icon }} me-2 mt-1"
+                                                        style="font-size: 0.9rem;"></i>
                                                     <div class="flex-grow-1">
-                                                        <div class="fw-bold" style="font-size: 0.8rem;">{{ $notification->title }}</div>
-                                                        <div class="text-muted" style="font-size: 0.75rem;">{{ Str::limit($notification->message, 40) }}</div>
-                                                        <div class="text-muted" style="font-size: 0.7rem;">{{ $notification->created_at ? $notification->created_at->diffForHumans() : 'غير محدد' }}</div>
+                                                        <div class="fw-bold" style="font-size: 0.8rem;">
+                                                            {{ $notification->title }}</div>
+                                                        <div class="text-muted" style="font-size: 0.75rem;">
+                                                            {{ Str::limit($notification->message, 40) }}</div>
+                                                        <div class="text-muted" style="font-size: 0.7rem;">
+                                                            {{ $notification->created_at ? $notification->created_at->diffForHumans() : 'غير محدد' }}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </a>
                                         </li>
                                     @endforeach
                                 @else
-                                    <li><span class="dropdown-item-text text-muted" style="font-size: 0.8rem; padding: 0.4rem 0.75rem;">لا توجد إشعارات جديدة</span></li>
+                                    <li><span class="dropdown-item-text text-muted"
+                                            style="font-size: 0.8rem; padding: 0.4rem 0.75rem;">لا توجد إشعارات
+                                            جديدة</span></li>
                                 @endif
-                                <li><hr class="dropdown-divider" style="margin: 0.3rem 0;"></li>
-                                <li><a class="dropdown-item text-center" href="{{ route('notifications.index') }}" style="font-size: 0.8rem; padding: 0.4rem 0.75rem;">عرض جميع الإشعارات</a></li>
+                                <li>
+                                    <hr class="dropdown-divider" style="margin: 0.3rem 0;">
+                                </li>
+                                <li><a class="dropdown-item text-center" href="{{ route('notifications.index') }}"
+                                        style="font-size: 0.8rem; padding: 0.4rem 0.75rem;">عرض جميع الإشعارات</a></li>
                             </ul>
                         </li>
                     @endauth
@@ -1460,15 +1514,14 @@
                     @auth
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button">
-                                @if(Auth::user()->image && file_exists(public_path('storage/' . Auth::user()->image)))
+                                @if (Auth::user()->image && file_exists(public_path('storage/' . Auth::user()->image)))
                                     <img src="{{ asset('storage/' . Auth::user()->image) }}"
-                                         alt="{{ Auth::user()->name }}"
-                                         class="rounded-circle me-2"
-                                         style="width: 30px; height: 30px; object-fit: cover;"
-                                         onerror="this.onerror=null;this.src='{{ asset('images/default-avatar.png') }}';">
+                                        alt="{{ Auth::user()->name }}" class="rounded-circle me-2"
+                                        style="width: 30px; height: 30px; object-fit: cover;"
+                                        onerror="this.onerror=null;this.src='{{ asset('images/default-avatar.png') }}';">
                                 @else
                                     <div class="rounded-circle me-2 d-flex align-items-center justify-content-center bg-primary text-white"
-                                         style="width: 30px; height: 30px; font-size: 14px; font-weight: bold;">
+                                        style="width: 30px; height: 30px; font-size: 14px; font-weight: bold;">
                                         {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                                     </div>
                                 @endif
@@ -1476,47 +1529,54 @@
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="{{ route('messages.new-design') }}">
-                                    <i class="fas fa-comments"></i> الرسائل الجديدة
-                                    <span id="messages-badge-menu" class="badge bg-danger ms-2" style="font-size: 0.7rem; padding: 0.2rem 0.4rem; display: none;">
-                                        0
-                                    </span>
-                                </a></li>
+                                        <i class="fas fa-comments"></i> الرسائل الجديدة
+                                        <span id="messages-badge-menu" class="badge bg-danger ms-2"
+                                            style="font-size: 0.7rem; padding: 0.2rem 0.4rem; display: none;">
+                                            0
+                                        </span>
+                                    </a></li>
                                 <li><a class="dropdown-item" href="{{ route('messages.index') }}">
-                                    <i class="fas fa-comments"></i> الرسائل القديمة
-                                </a></li>
+                                        <i class="fas fa-comments"></i> الرسائل القديمة
+                                    </a></li>
                                 <li><a class="dropdown-item" href="{{ route('notifications.index') }}">
-                                    <i class="fas fa-bell"></i> الإشعارات
-                                    @if(Auth::user()->unread_notifications_count > 0)
-                                        <span class="badge bg-danger ms-2" style="font-size: 0.7rem; padding: 0.2rem 0.4rem;">{{ Auth::user()->unread_notifications_count }}</span>
-                                    @endif
-                                </a></li>
+                                        <i class="fas fa-bell"></i> الإشعارات
+                                        @if (Auth::user()->unread_notifications_count > 0)
+                                            <span class="badge bg-danger ms-2"
+                                                style="font-size: 0.7rem; padding: 0.2rem 0.4rem;">{{ Auth::user()->unread_notifications_count }}</span>
+                                        @endif
+                                    </a></li>
                                 <li><a class="dropdown-item" href="{{ route('services.my-services') }}">
-                                    <i class="fas fa-list"></i> {{ __('messages.my_services') }}
-                                </a></li>
-                                @if(Auth::user()->isProvider())
+                                        <i class="fas fa-list"></i> {{ __('messages.my_services') }}
+                                    </a></li>
+                                @if (Auth::user()->isProvider())
                                     <li><a class="dropdown-item" href="{{ route('service-offers.my-offers') }}">
-                                        <i class="fas fa-handshake"></i> {{ __('messages.my_offers') }}
-                                    </a></li>
+                                            <i class="fas fa-handshake"></i> {{ __('messages.my_offers') }}
+                                        </a></li>
                                 @endif
-                                <li><a class="dropdown-item" href="{{ Auth::user()->isProvider() ? route('provider.profile') : route('profile') }}">
-                                    <i class="fas fa-user-edit"></i> {{ __('messages.profile') }}
-                                </a></li>
-                                @if(Auth::user()->isProvider() && !Auth::user()->hasCompleteProviderProfile())
-                                    <li><a class="dropdown-item text-warning" href="{{ route('provider.complete-profile') }}">
-                                        <i class="fas fa-exclamation-triangle"></i> إكمال الملف الشخصي
+                                <li><a class="dropdown-item"
+                                        href="{{ Auth::user()->isProvider() ? route('provider.profile') : route('profile') }}">
+                                        <i class="fas fa-user-edit"></i> {{ __('messages.profile') }}
                                     </a></li>
+                                @if (Auth::user()->isProvider() && !Auth::user()->hasCompleteProviderProfile())
+                                    <li><a class="dropdown-item text-warning"
+                                            href="{{ route('provider.complete-profile') }}">
+                                            <i class="fas fa-exclamation-triangle"></i> إكمال الملف الشخصي
+                                        </a></li>
                                 @endif
-                                @if(Auth::user()->isProvider() && Auth::user()->hasCompleteProviderProfile())
-                                    <li><a class="dropdown-item text-primary" href="{{ route('provider.profile.edit') }}">
-                                        <i class="fas fa-edit"></i> تعديل الملف الشخصي
-                                    </a></li>
+                                @if (Auth::user()->isProvider() && Auth::user()->hasCompleteProviderProfile())
+                                    <li><a class="dropdown-item text-primary"
+                                            href="{{ route('provider.profile.edit') }}">
+                                            <i class="fas fa-edit"></i> تعديل الملف الشخصي
+                                        </a></li>
                                 @endif
-                                @if(Auth::user()->is_admin)
+                                @if (Auth::user()->is_admin)
                                     <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}">
-                                        <i class="fas fa-cog"></i> {{ __('messages.admin_panel') }}
-                                    </a></li>
+                                            <i class="fas fa-cog"></i> {{ __('messages.admin_panel') }}
+                                        </a></li>
                                 @endif
-                                <li><hr class="dropdown-divider" style="margin: 0.3rem 0;"></li>
+                                <li>
+                                    <hr class="dropdown-divider" style="margin: 0.3rem 0;">
+                                </li>
                                 <li>
                                     <form method="POST" action="{{ route('logout') }}" class="d-inline">
                                         @csrf
@@ -1543,7 +1603,7 @@
     <!-- Main Content -->
     <main>
         <!-- Flash Messages -->
-        @if(session('success'))
+        @if (session('success'))
             <div class="container mt-4">
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <i class="fas fa-check-circle me-2"></i>
@@ -1553,7 +1613,7 @@
             </div>
         @endif
 
-        @if(session('error'))
+        @if (session('error'))
             <div class="container mt-4">
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     <i class="fas fa-exclamation-triangle me-2"></i>
@@ -1563,7 +1623,7 @@
             </div>
         @endif
 
-        @if(session('warning'))
+        @if (session('warning'))
             <div class="container mt-4">
                 <div class="alert alert-warning alert-dismissible fade show" role="alert">
                     <i class="fas fa-exclamation-circle me-2"></i>
@@ -1573,7 +1633,7 @@
             </div>
         @endif
 
-        @if(session('info'))
+        @if (session('info'))
             <div class="container mt-4">
                 <div class="alert alert-info alert-dismissible fade show" role="alert">
                     <i class="fas fa-info-circle me-2"></i>
@@ -1598,9 +1658,12 @@
                     <h5>{{ __('messages.quick_links') }}</h5>
                     <ul class="list-unstyled">
                         <li><a href="{{ route('home') }}" class="text-light">{{ __('messages.home') }}</a></li>
-                        <li><a href="{{ route('categories.index') }}" class="text-light">{{ __('messages.categories') }}</a></li>
-                        <li><a href="{{ route('services.index') }}" class="text-light">{{ __('messages.services') }}</a></li>
-                        <li><a href="{{ route('contact') }}" class="text-light">{{ __('messages.contact_us') }}</a></li>
+                        <li><a href="{{ route('categories.index') }}"
+                                class="text-light">{{ __('messages.categories') }}</a></li>
+                        <li><a href="{{ route('services.index') }}"
+                                class="text-light">{{ __('messages.services') }}</a></li>
+                        <li><a href="{{ route('contact') }}" class="text-light">{{ __('messages.contact_us') }}</a>
+                        </li>
                     </ul>
                 </div>
                 <div class="col-md-4">
@@ -1631,9 +1694,10 @@
             </a>
 
             @auth
-                @if(Auth::user()->isProvider())
+                @if (Auth::user()->isProvider())
                     <!-- مزود الخدمة -->
-                    <a href="{{ route('services.index') }}" class="footer-nav-item {{ request()->routeIs('services.my-services') ? 'active' : '' }}">
+                    <a href="{{ route('services.index') }}"
+                        class="footer-nav-item {{ request()->routeIs('services.my-services') ? 'active' : '' }}">
                         <div class="footer-nav-icon">
                             <i class="fas fa-concierge-bell"></i>
                         </div>
@@ -1641,7 +1705,8 @@
                     </a>
                 @else
                     <!-- مستخدم عادي -->
-                    <a href="{{ route('services.my-services') }}" class="footer-nav-item {{ request()->routeIs('services.my-services') ? 'active' : '' }}">
+                    <a href="{{ route('services.my-services') }}"
+                        class="footer-nav-item {{ request()->routeIs('services.my-services') ? 'active' : '' }}">
                         <div class="footer-nav-icon">
                             <i class="fas fa-th-large"></i>
                         </div>
@@ -1658,9 +1723,10 @@
             @endauth
 
             @auth
-                @if(Auth::user()->isProvider())
+                @if (Auth::user()->isProvider())
                     <!-- مزود الخدمة - عروضي -->
-                    <a href="{{ route('service-offers.my-offers') }}" class="footer-nav-item footer-nav-center {{ request()->routeIs('service-offers.my-offers') ? 'active' : '' }}">
+                    <a href="{{ route('service-offers.my-offers') }}"
+                        class="footer-nav-item footer-nav-center {{ request()->routeIs('service-offers.my-offers') ? 'active' : '' }}">
                         <div class="footer-nav-icon footer-nav-icon-center">
                             <i class="fas fa-handshake"></i>
                         </div>
@@ -1686,11 +1752,13 @@
             @endauth
 
             @auth
-                <a href="{{ route('messages.index') }}" class="footer-nav-item {{ request()->routeIs('messages.*') ? 'active' : '' }}">
+                <a href="{{ route('messages.index') }}"
+                    class="footer-nav-item {{ request()->routeIs('messages.*') ? 'active' : '' }}">
                     <div class="footer-nav-icon">
                         <i class="fas fa-comments"></i>
-                        @if(Auth::user()->unread_messages_count > 0)
-                            <span class="footer-nav-badge footer-nav-badge-messages">{{ Auth::user()->unread_messages_count > 99 ? '99+' : Auth::user()->unread_messages_count }}</span>
+                        @if (Auth::user()->unread_messages_count > 0)
+                            <span
+                                class="footer-nav-badge footer-nav-badge-messages">{{ Auth::user()->unread_messages_count > 99 ? '99+' : Auth::user()->unread_messages_count }}</span>
                         @endif
                     </div>
                     <span class="footer-nav-text">الرسائل</span>
@@ -1705,11 +1773,13 @@
             @endauth
 
             @auth
-                <a href="{{ route('notifications.index') }}" class="footer-nav-item {{ request()->routeIs('notifications.*') ? 'active' : '' }}">
+                <a href="{{ route('notifications.index') }}"
+                    class="footer-nav-item {{ request()->routeIs('notifications.*') ? 'active' : '' }}">
                     <div class="footer-nav-icon">
                         <i class="fas fa-bell"></i>
-                        @if(Auth::user()->unread_notifications_count > 0)
-                            <span class="footer-nav-badge footer-nav-badge-notifications">{{ Auth::user()->unread_notifications_count > 99 ? '99+' : Auth::user()->unread_notifications_count }}</span>
+                        @if (Auth::user()->unread_notifications_count > 0)
+                            <span
+                                class="footer-nav-badge footer-nav-badge-notifications">{{ Auth::user()->unread_notifications_count > 99 ? '99+' : Auth::user()->unread_notifications_count }}</span>
                         @endif
                     </div>
                     <span class="footer-nav-text">الإشعارات</span>
@@ -1735,7 +1805,7 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-        <!-- Enhanced JavaScript -->
+    <!-- Enhanced JavaScript -->
     <script>
         // Navbar scroll effect
         window.addEventListener('scroll', function() {
@@ -1749,7 +1819,7 @@
 
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
+            anchor.addEventListener('click', function(e) {
                 e.preventDefault();
                 const target = document.querySelector(this.getAttribute('href'));
                 if (target) {
@@ -1780,7 +1850,7 @@
             observer.observe(el);
         });
 
-                // Enhanced button effects
+        // Enhanced button effects
         document.querySelectorAll('.btn').forEach(btn => {
             btn.addEventListener('mouseenter', function() {
                 this.style.transform = 'translateY(-2px) scale(1.01)';
@@ -1834,7 +1904,7 @@
         });
 
         // Enhanced dropdown functionality
-                        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM loaded, initializing dropdowns...');
 
             // Simple dropdown functionality
@@ -1937,14 +2007,15 @@
 
         // Tooltip initialization
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
         });
 
         // Messages Update Script
         @auth
+
         function updateMessagesCount() {
-            fetch('{{ route("messages.unread-count") }}')
+            fetch('{{ route('messages.unread-count') }}')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -1996,7 +2067,8 @@
                             const bell = document.querySelector('.fa-bell');
                             if (bell && bell.parentElement) {
                                 const newBadge = document.createElement('span');
-                                newBadge.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-badge';
+                                newBadge.className =
+                                    'position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-badge';
                                 newBadge.textContent = notificationCount > 99 ? '99+' : notificationCount;
                                 bell.parentElement.appendChild(newBadge);
                             }
@@ -2058,40 +2130,97 @@
         function toggleMenu() {
             // Create a modal or dropdown menu for the menu button
             @auth
-                @if(Auth::user()->isProvider())
-                    // مزود الخدمة
-                    const menuItems = [
-                        { icon: 'fas fa-user', text: 'الملف الشخصي', href: '{{ route("provider.profile") }}' },
-                        { icon: 'fas fa-concierge-bell', text: 'خدماتي', href: '{{ route("services.my-services") }}' },
-                        { icon: 'fas fa-handshake', text: 'عروضي', href: '{{ route("service-offers.my-offers") }}' },
-                        { icon: 'fas fa-cog', text: 'الإعدادات', href: '#' },
-                        { icon: 'fas fa-question-circle', text: 'المساعدة', href: '{{ route("contact") }}' },
-                        { icon: 'fas fa-info-circle', text: 'حول التطبيق', href: '#' }
-                    ];
-                @else
-                    // مستخدم عادي
-                    const menuItems = [
-                        { icon: 'fas fa-user', text: 'الملف الشخصي', href: '{{ route("profile") }}' },
-                        { icon: 'fas fa-th-large', text: 'إعلاناتي', href: '{{ route("services.my-services") }}' },
-                        { icon: 'fas fa-cog', text: 'الإعدادات', href: '#' },
-                        { icon: 'fas fa-question-circle', text: 'المساعدة', href: '{{ route("contact") }}' },
-                        { icon: 'fas fa-info-circle', text: 'حول التطبيق', href: '#' }
-                    ];
-                @endif
-            @else
-                // غير مسجل دخول
-                const menuItems = [
-                    { icon: 'fas fa-sign-in-alt', text: 'تسجيل الدخول', href: '{{ route("login") }}' },
-                    { icon: 'fas fa-user-plus', text: 'إنشاء حساب', href: '{{ route("register") }}' },
-                    { icon: 'fas fa-question-circle', text: 'المساعدة', href: '{{ route("contact") }}' },
-                    { icon: 'fas fa-info-circle', text: 'حول التطبيق', href: '#' }
+            @if (Auth::user()->isProvider())
+                // مزود الخدمة
+                const menuItems = [{
+                        icon: 'fas fa-user',
+                        text: 'الملف الشخصي',
+                        href: '{{ route('provider.profile') }}'
+                    },
+                    {
+                        icon: 'fas fa-concierge-bell',
+                        text: 'خدماتي',
+                        href: '{{ route('services.my-services') }}'
+                    },
+                    {
+                        icon: 'fas fa-handshake',
+                        text: 'عروضي',
+                        href: '{{ route('service-offers.my-offers') }}'
+                    },
+                    {
+                        icon: 'fas fa-cog',
+                        text: 'الإعدادات',
+                        href: '#'
+                    },
+                    {
+                        icon: 'fas fa-question-circle',
+                        text: 'المساعدة',
+                        href: '{{ route('contact') }}'
+                    },
+                    {
+                        icon: 'fas fa-info-circle',
+                        text: 'حول التطبيق',
+                        href: '#'
+                    }
                 ];
-            @endauth
+            @else
+                // مستخدم عادي
+                const menuItems = [{
+                        icon: 'fas fa-user',
+                        text: 'الملف الشخصي',
+                        href: '{{ route('profile') }}'
+                    },
+                    {
+                        icon: 'fas fa-th-large',
+                        text: 'إعلاناتي',
+                        href: '{{ route('services.my-services') }}'
+                    },
+                    {
+                        icon: 'fas fa-cog',
+                        text: 'الإعدادات',
+                        href: '#'
+                    },
+                    {
+                        icon: 'fas fa-question-circle',
+                        text: 'المساعدة',
+                        href: '{{ route('contact') }}'
+                    },
+                    {
+                        icon: 'fas fa-info-circle',
+                        text: 'حول التطبيق',
+                        href: '#'
+                    }
+                ];
+            @endif
+        @else
+            // غير مسجل دخول
+            const menuItems = [{
+                    icon: 'fas fa-sign-in-alt',
+                    text: 'تسجيل الدخول',
+                    href: '{{ route('login') }}'
+                },
+                {
+                    icon: 'fas fa-user-plus',
+                    text: 'إنشاء حساب',
+                    href: '{{ route('register') }}'
+                },
+                {
+                    icon: 'fas fa-question-circle',
+                    text: 'المساعدة',
+                    href: '{{ route('contact') }}'
+                },
+                {
+                    icon: 'fas fa-info-circle',
+                    text: 'حول التطبيق',
+                    href: '#'
+                }
+            ];
+        @endauth
 
-            // Create menu modal
-            const menuModal = document.createElement('div');
-            menuModal.className = 'footer-menu-modal';
-            menuModal.innerHTML = `
+        // Create menu modal
+        const menuModal = document.createElement('div');
+        menuModal.className = 'footer-menu-modal';
+        menuModal.innerHTML = `
                 <div class="footer-menu-overlay" onclick="closeMenu()"></div>
                 <div class="footer-menu-content">
                     <div class="footer-menu-header">
@@ -2102,11 +2231,11 @@
                     </div>
                     <div class="footer-menu-items">
                         ${menuItems.map(item => `
-                            <a href="${item.href}" class="footer-menu-item">
-                                <i class="${item.icon}"></i>
-                                <span>${item.text}</span>
-                            </a>
-                        `).join('')}
+                                    <a href="${item.href}" class="footer-menu-item">
+                                        <i class="${item.icon}"></i>
+                                        <span>${item.text}</span>
+                                    </a>
+                                `).join('')}
                         @auth
                             <hr class="footer-menu-divider">
                             <a href="{{ route('logout') }}" class="footer-menu-item" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
@@ -2127,9 +2256,9 @@
                 </div>
             `;
 
-            // Add modal styles
-            const modalStyles = document.createElement('style');
-            modalStyles.textContent = `
+        // Add modal styles
+        const modalStyles = document.createElement('style');
+        modalStyles.textContent = `
                 .footer-menu-modal {
                     position: fixed;
                     top: 0;
@@ -2238,11 +2367,11 @@
                 }
             `;
 
-            document.head.appendChild(modalStyles);
-            document.body.appendChild(menuModal);
+        document.head.appendChild(modalStyles);
+        document.body.appendChild(menuModal);
 
-            // Prevent body scroll
-            document.body.style.overflow = 'hidden';
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
         }
 
         function closeMenu() {
@@ -2272,9 +2401,10 @@
 
         // Update footer navigation badges
         @auth
+
         function updateFooterNavBadges() {
             // Update messages badge
-            fetch('{{ route("messages.unread-count") }}')
+            fetch('{{ route('messages.unread-count') }}')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -2286,7 +2416,8 @@
                                 messagesBadge.style.display = 'flex';
                             } else {
                                 // Create badge if it doesn't exist
-                                const messagesIcon = document.querySelector('.footer-nav-item[href*="messages"] .footer-nav-icon');
+                                const messagesIcon = document.querySelector(
+                                    '.footer-nav-item[href*="messages"] .footer-nav-icon');
                                 if (messagesIcon) {
                                     const newBadge = document.createElement('span');
                                     newBadge.className = 'footer-nav-badge footer-nav-badge-messages';
@@ -2315,7 +2446,8 @@
                             notificationsBadge.style.display = 'flex';
                         } else {
                             // Create badge if it doesn't exist
-                            const notificationsIcon = document.querySelector('.footer-nav-item[href*="notifications"] .footer-nav-icon');
+                            const notificationsIcon = document.querySelector(
+                                '.footer-nav-item[href*="notifications"] .footer-nav-icon');
                             if (notificationsIcon) {
                                 const newBadge = document.createElement('span');
                                 newBadge.className = 'footer-nav-badge footer-nav-badge-notifications';
@@ -2340,12 +2472,12 @@
         // Handle login requirement for protected links
         function handleProtectedLink(event, href) {
             @guest
-                event.preventDefault();
-                // Show login modal or redirect to login
-                if (confirm('يجب تسجيل الدخول أولاً. هل تريد الانتقال لصفحة تسجيل الدخول؟')) {
-                    window.location.href = '{{ route("login") }}';
-                }
-            @endguest
+            event.preventDefault();
+            // Show login modal or redirect to login
+            if (confirm('يجب تسجيل الدخول أولاً. هل تريد الانتقال لصفحة تسجيل الدخول؟')) {
+                window.location.href = '{{ route('login') }}';
+            }
+        @endguest
         }
     </script>
 
@@ -2379,8 +2511,15 @@
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
         }
 
         /* تحسين الأزرار */
@@ -2441,9 +2580,11 @@
             0% {
                 box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
             }
+
             70% {
                 box-shadow: 0 0 0 10px rgba(37, 211, 102, 0);
             }
+
             100% {
                 box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
             }
@@ -2462,8 +2603,12 @@
     </style>
 
     <!-- أيقونة الواتساب -->
-    <a href="https://wa.me/966500000000" class="whatsapp-float" target="_blank" title="تواصل معنا عبر الواتساب">
-        <i class="fab fa-whatsapp"></i>
-    </a>
+    @if (\App\Helpers\WhatsAppHelper::isEnabled())
+        <a href="{{ \App\Helpers\WhatsAppHelper::getWhatsAppUrl() }}" class="whatsapp-float" target="_blank"
+            title="تواصل معنا عبر الواتساب">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+    @endif
 </body>
+
 </html>

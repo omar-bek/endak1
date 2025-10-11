@@ -42,6 +42,7 @@
                                     {{ strtoupper(substr($otherUserInList->name, 0, 1)) }}
                                 </div>
                             @endif
+                            
                             <div class="online-indicator {{ $otherUserInList->isOnline() ? 'online' : 'offline' }}"></div>
                         </div>
                         <div class="conversation-info">

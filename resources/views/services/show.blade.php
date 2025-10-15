@@ -70,7 +70,7 @@
 
                     <!-- صورة الخدمة -->
                     @if($service->image)
-                        <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->title }}" class="img-fluid rounded mb-3" style="max-height: 400px; width: 100%; object-fit: cover;">
+                        <img src="{{ asset('storage/' . $service->category->image_url) }}" alt="{{ $service->title }}" class="img-fluid rounded mb-3" style="max-height: 400px; width: 100%; object-fit: cover;">
                     @endif
 
                     <!-- عنوان الخدمة -->
@@ -91,61 +91,73 @@
                     </div>
 
                     <!-- معلومات أساسية -->
-                    <div class="row mb-4">
-                        <div class="col-md-8">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <div class="card border-0 bg-light h-100">
-                                        <div class="card-body text-center">
-                                            <i class="fas fa-user text-primary mb-2" style="font-size: 1.5rem;"></i>
-                                            <h6 class="text-muted mb-1">مقدم الخدمة</h6>
-                                            <span class="fw-bold">{{ $service->user->name }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <div class="card border-0 bg-light h-100">
-                                        <div class="card-body text-center">
-                                            <i class="fas fa-calendar text-primary mb-2" style="font-size: 1.5rem;"></i>
-                                            <h6 class="text-muted mb-1">تاريخ النشر</h6>
-                                            <span class="fw-bold">{{ $service->created_at->format('Y-m-d') }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <div class="card border-0 bg-light h-100">
-                                        <div class="card-body text-center">
-                                            <i class="fas fa-folder text-primary mb-2" style="font-size: 1.5rem;"></i>
-                                            <h6 class="text-muted mb-1">القسم</h6>
-                                            <span class="fw-bold">{{ $service->category->name }}</span>
-                            </div>
-                            </div>
-                            </div>
-                            @if($service->subCategory)
-                                <div class="col-md-6 mb-3">
-                                    <div class="card border-0 bg-light h-100">
-                                        <div class="card-body text-center">
-                                            <i class="fas fa-layer-group text-info mb-2" style="font-size: 1.5rem;"></i>
-                                            <h6 class="text-muted mb-1">القسم الفرعي</h6>
-                                            <span class="fw-bold text-info">{{ app()->getLocale() == 'ar' ? $service->subCategory->name_ar : $service->subCategory->name_en }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
-                            @if($service->location)
-                                <div class="col-md-6 mb-3">
-                                    <div class="card border-0 bg-light h-100">
-                                        <div class="card-body text-center">
-                                            <i class="fas fa-map-marker-alt text-primary mb-2" style="font-size: 1.5rem;"></i>
-                                            <h6 class="text-muted mb-1">الموقع</h6>
-                                            <span class="fw-bold">{{ $service->location }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
-                        </div>
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="row">
+            <!-- مقدم الخدمة -->
+            <div class="col-md-6 mb-3">
+                <div class="card border-0 shadow-sm h-100" style="background-color: #e9f8f7;">
+                    <div class="card-body text-center">
+                        <i class="fas fa-user mb-2" style="font-size: 1.6rem; color: #008b8b;"></i>
+                        <h6 class="text-muted mb-1">مقدم الخدمة</h6>
+                        <span class="fw-bold" style="color: #d4af37;">{{ $service->user->name }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- تاريخ النشر -->
+            <div class="col-md-6 mb-3">
+                <div class="card border-0 shadow-sm h-100" style="background-color: #e9f8f7;">
+                    <div class="card-body text-center">
+                        <i class="fas fa-calendar mb-2" style="font-size: 1.6rem; color: #008b8b;"></i>
+                        <h6 class="text-muted mb-1">تاريخ النشر</h6>
+                        <span class="fw-bold" style="color: #d4af37;">{{ $service->created_at->format('Y-m-d') }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- القسم -->
+            <div class="col-md-6 mb-3">
+                <div class="card border-0 shadow-sm h-100" style="background-color: #e9f8f7;">
+                    <div class="card-body text-center">
+                        <i class="fas fa-folder mb-2" style="font-size: 1.6rem; color: #008b8b;"></i>
+                        <h6 class="text-muted mb-1">القسم</h6>
+                        <span class="fw-bold" style="color: #d4af37;">{{ $service->category->name }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- القسم الفرعي -->
+            @if($service->subCategory)
+                <div class="col-md-6 mb-3">
+                    <div class="card border-0 shadow-sm h-100" style="background-color: #e9f8f7;">
+                        <div class="card-body text-center">
+                            <i class="fas fa-layer-group mb-2" style="font-size: 1.6rem; color: #008b8b;"></i>
+                            <h6 class="text-muted mb-1">القسم الفرعي</h6>
+                            <span class="fw-bold" style="color: #d4af37;">
+                                {{ app()->getLocale() == 'ar' ? $service->subCategory->name_ar : $service->subCategory->name_en }}
+                            </span>
                         </div>
                     </div>
+                </div>
+            @endif
+
+            <!-- الموقع -->
+            @if($service->location)
+                <div class="col-md-6 mb-3">
+                    <div class="card border-0 shadow-sm h-100" style="background-color: #e9f8f7;">
+                        <div class="card-body text-center">
+                            <i class="fas fa-map-marker-alt mb-2" style="font-size: 1.6rem; color: #008b8b;"></i>
+                            <h6 class="text-muted mb-1">الموقع</h6>
+                            <span class="fw-bold" style="color: #d4af37;">{{ $service->location }}</span>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </div>
+    </div>
+</div>
+
 
                     <!-- وصف الخدمة -->
                     @if($service->description)
@@ -179,246 +191,188 @@
                                                                       ->groupBy('input_group');
                         @endphp
 
-                        @foreach($groupedFields as $groupName => $fields)
-                            <div class="mb-4">
-                                <div class="card border-primary">
-                                    <div class="card-header bg-primary text-white">
-                                        <h5 class="mb-0">
-                                            <i class="fas fa-table me-2"></i>
-                                            {{ $groupName ?: 'تفاصيل الخدمة' }}
-                                        </h5>
-                                    </div>
-                                    <div class="card-body p-0">
-                                        @php
-                                            $hasRepeatableFields = $fields->where('is_repeatable', true)->count() > 0;
-                            @endphp
+                     @foreach($groupedFields as $groupName => $fields)
+    <div class="mb-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header" style="background: linear-gradient(90deg, #007b7f, #009f9c); color: #fff;">
+                <h5 class="mb-0">
+                    <i class="fas fa-table me-2 text-warning"></i>
+                    {{ $groupName ?: 'تفاصيل الخدمة' }}
+                </h5>
+            </div>
 
-                                        @if($hasRepeatableFields)
-                                            <!-- عرض البيانات المتكررة في جدول -->
-                                            @php
-                                                $repeatableFields = $fields->where('is_repeatable', true);
+            <div class="card-body p-0">
+                @php
+                    $hasRepeatableFields = $fields->where('is_repeatable', true)->count() > 0;
+                @endphp
 
-                                                // ترتيب الحقول حسب الأولوية المطلوبة
-                                                $fieldOrder = [
-                                                    'furniture_type' => 1,    // نوع العفش
-                                                    'furniture_name' => 1,    // نوع العفش (أسماء أخرى محتملة)
-                                                    'type' => 1,              // نوع العفش (أسماء أخرى محتملة)
-                                                    'quantity' => 2,          // العدد
-                                                    'count' => 2,             // العدد (أسماء أخرى محتملة)
-                                                    'number' => 2,            // العدد (أسماء أخرى محتملة)
-                                                    'disassemble' => 3,       // فك
-                                                    'dismantle' => 3,         // فك (أسماء أخرى محتملة)
-                                                    'install' => 4,           // تركيب
-                                                    'assembly' => 4,          // تركيب (أسماء أخرى محتملة)
-                                                    'setup' => 4,             // تركيب (أسماء أخرى محتملة)
-                                                ];
+                @if($hasRepeatableFields)
+                    <!-- جدول البيانات المتكررة -->
+                    @php
+                        $repeatableFields = $fields->where('is_repeatable', true);
 
-                                                // ترتيب الحقول حسب الأولوية
-                                                $sortedFields = $repeatableFields->sortBy(function($field) use ($fieldOrder) {
-                                                    $fieldName = strtolower($field->name);
-                                                    $fieldNameAr = strtolower($field->name_ar);
+                        $fieldOrder = [
+                            'furniture_type' => 1, 'furniture_name' => 1, 'type' => 1,
+                            'quantity' => 2, 'count' => 2, 'number' => 2,
+                            'disassemble' => 3, 'dismantle' => 3,
+                            'install' => 4, 'assembly' => 4, 'setup' => 4,
+                        ];
 
-                                                    // البحث في اسم الحقل الإنجليزي
-                                                    foreach($fieldOrder as $key => $priority) {
-                                                        if(strpos($fieldName, $key) !== false) {
-                                                            return $priority;
-                                                        }
-                                                    }
+                        $sortedFields = $repeatableFields->sortBy(function($field) use ($fieldOrder) {
+                            $fieldName = strtolower($field->name);
+                            $fieldNameAr = strtolower($field->name_ar);
+                            foreach($fieldOrder as $key => $priority) {
+                                if(strpos($fieldName, $key) !== false) return $priority;
+                            }
+                            if(strpos($fieldNameAr, 'نوع') !== false || strpos($fieldNameAr, 'عفش') !== false) return 1;
+                            if(strpos($fieldNameAr, 'عدد') !== false || strpos($fieldNameAr, 'كمية') !== false) return 2;
+                            if(strpos($fieldNameAr, 'فك') !== false) return 3;
+                            if(strpos($fieldNameAr, 'تركيب') !== false || strpos($fieldNameAr, 'تجميع') !== false) return 4;
+                            return 999;
+                        });
 
-                                                    // البحث في اسم الحقل العربي
-                                                    if(strpos($fieldNameAr, 'نوع') !== false || strpos($fieldNameAr, 'عفش') !== false) {
-                                                        return 1;
-                                                    } elseif(strpos($fieldNameAr, 'عدد') !== false || strpos($fieldNameAr, 'كمية') !== false) {
-                                                        return 2;
-                                                    } elseif(strpos($fieldNameAr, 'فك') !== false) {
-                                                        return 3;
-                                                    } elseif(strpos($fieldNameAr, 'تركيب') !== false || strpos($fieldNameAr, 'تجميع') !== false) {
-                                                        return 4;
-                                                    }
+                        $maxItems = 0;
+                        $fieldData = [];
+                        foreach($sortedFields as $field) {
+                            $fieldName = $field->name;
+                            $fieldValues = $service->custom_fields[$fieldName] ?? [];
+                            if(is_array($fieldValues)) {
+                                $fieldData[$fieldName] = $fieldValues;
+                                $maxItems = max($maxItems, count($fieldValues));
+                            }
+                        }
+                    @endphp
 
-                                                    return 999; // الحقول الأخرى في النهاية
-                                                });
-
-                                                $maxItems = 0;
-                                                $fieldData = [];
-
-                                                foreach($sortedFields as $field) {
+                    @if($maxItems > 0)
+                        <div class="table-responsive">
+                            <table class="table mb-0 align-middle">
+                                <thead style="background-color: #007b7f; color: white;">
+                                    <tr>
+                                        <th class="text-center"><i class="fas fa-hashtag"></i></th>
+                                        @foreach($sortedFields as $field)
+                                            <th class="text-center">
+                                                <i class="fas fa-{{ $field->type === 'checkbox' ? 'check-square' : ($field->type === 'number' ? 'calculator' : 'edit') }} me-1 text-warning"></i>
+                                                {{ $field->name_ar }}
+                                            </th>
+                                        @endforeach
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for($i = 0; $i < $maxItems; $i++)
+                                        <tr>
+                                            <td class="text-center">
+                                                <span class="badge rounded-circle text-white" style="background-color: #009f9c; width: 25px; height: 25px; display: inline-flex; align-items: center; justify-content: center;">
+                                                    {{ $i + 1 }}
+                                                </span>
+                                            </td>
+                                            @foreach($sortedFields as $field)
+                                                @php
                                                     $fieldName = $field->name;
-                                                    $fieldValues = $service->custom_fields[$fieldName] ?? [];
-                                                    if(is_array($fieldValues)) {
-                                                        $fieldData[$fieldName] = $fieldValues;
-                                                        $maxItems = max($maxItems, count($fieldValues));
-                                                    }
-                                                }
+                                                    $fieldType = $field->type;
+                                                    $value = $fieldData[$fieldName][$i] ?? '';
+                                                @endphp
+                                                <td class="text-center">
+                                                    @if($fieldType === 'checkbox')
+                                                        @php
+                                                            $isChecked = in_array($value, ['1', 1, true, 'true', 'on']);
+                                                        @endphp
+                                                        @if($isChecked)
+                                                            <span class="badge bg-success"><i class="fas fa-check me-1"></i>نعم</span>
+                                                        @else
+                                                            <span class="badge bg-danger"><i class="fas fa-times me-1"></i>لا</span>
+                                                        @endif
+                                                    @elseif($fieldType === 'image')
+                                                        @if(is_array($value) && count($value) > 0)
+                                                            @foreach($value as $imagePath)
+                                                                <img src="{{ asset('storage/' . (is_array($imagePath) ? $imagePath[0] : $imagePath)) }}" alt="صورة" class="img-thumbnail me-1 mb-1" style="width: 50px; height: 50px; object-fit: cover; border: 2px solid #009f9c;" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImageModal('{{ asset('storage/' . (is_array($imagePath) ? $imagePath[0] : $imagePath)) }}')">
+                                                            @endforeach
+                                                        @else
+                                                            <span class="text-muted">-</span>
+                                                        @endif
+                                                    @else
+                                                        <span class="fw-bold text-dark">
+                                                            @if(is_array($value))
+                                                                {{ implode(', ', array_filter($value)) }}
+                                                            @else
+                                                                {{ $value ?: '-' }}
+                                                            @endif
+                                                        </span>
+                                                    @endif
+                                                </td>
+                                            @endforeach
+                                        </tr>
+                                    @endfor
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+                @else
+                    <!-- جدول البيانات العادية -->
+                    <div class="table-responsive">
+                        <table class="table mb-0 align-middle">
+                            <thead style="background-color: #007b7f; color: white;">
+                                <tr>
+                                    <th class="text-center"><i class="fas fa-tag me-1 text-warning"></i> نوع الحقل</th>
+                                    <th class="text-center"><i class="fas fa-info-circle me-1 text-warning"></i> القيمة</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($fields as $field)
+                                    @php
+                                        $fieldName = $field->name;
+                                        $fieldValues = $service->custom_fields[$fieldName] ?? null;
+                                        $displayName = $field->name_ar;
+                                        $fieldType = $field->type;
                                     @endphp
 
-                                            @if($maxItems > 0)
-                                                <div class="table-responsive">
-                                                    <table class="table table-striped table-hover mb-0">
-                                                        <thead class="table-dark">
-                                                            <tr>
-                                                                <th class="text-center" style="width: 60px;">
-                                                                    <i class="fas fa-hashtag"></i>
-                                                                </th>
-                                                                @foreach($sortedFields as $field)
-                                                                    <th class="text-center">
-                                                                        <i class="fas fa-{{ $field->type === 'checkbox' ? 'check-square' : ($field->type === 'number' ? 'calculator' : 'edit') }} me-1"></i>
-                                                                        {{ $field->name_ar }}
-                                                                    </th>
-                                                                @endforeach
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            @for($i = 0; $i < $maxItems; $i++)
-                                                                <tr>
-                                                                    <td class="text-center">
-                                                                        <span class="badge bg-primary rounded-circle" style="width: 25px; height: 25px; display: inline-flex; align-items: center; justify-content: center;">
-                                                                            {{ $i + 1 }}
-                                                                        </span>
-                                                                    </td>
-                                                                    @foreach($sortedFields as $field)
-                                                                        @php
-                                                                            $fieldName = $field->name;
-                                                                            $fieldType = $field->type;
-                                                                            $value = $fieldData[$fieldName][$i] ?? '';
-                                                                        @endphp
-                                                                        <td class="text-center">
-                                                                            @if($fieldType === 'checkbox')
-                                                                                @php
-                                                                                    $isChecked = $value === '1' || $value === 1 || $value === true || $value === 'true' || $value === 'on';
-                                                                                @endphp
-                                                                                @if($isChecked)
-                                                                                    <span class="badge bg-success">
-                                                                                        <i class="fas fa-check me-1"></i>نعم
-                                                                                    </span>
-                                                                                @else
-                                                                                    <span class="badge bg-danger">
-                                                                                        <i class="fas fa-times me-1"></i>لا
-                                                                                    </span>
-                                                                                @endif
-                                                                            @elseif($fieldType === 'image')
-                                                                                @if(is_array($value) && count($value) > 0)
-                                                                                    <div class="image-gallery">
-                                                                                        @foreach($value as $imagePath)
-                                                                                            @if(is_array($imagePath))
-                                                                                                @foreach($imagePath as $singleImagePath)
-                                                                                                    @if(is_string($singleImagePath) && !empty($singleImagePath))
-                                                                                                        <img src="{{ asset('storage/' . $singleImagePath) }}" alt="صورة" class="img-thumbnail me-1 mb-1" style="width: 50px; height: 50px; object-fit: cover;" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImageModal('{{ asset('storage/' . $singleImagePath) }}')">
-                                                                                                    @endif
-                                                                                                @endforeach
-                                                                                            @elseif(is_string($imagePath) && !empty($imagePath))
-                                                                                                <img src="{{ asset('storage/' . $imagePath) }}" alt="صورة" class="img-thumbnail me-1 mb-1" style="width: 50px; height: 50px; object-fit: cover;" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImageModal('{{ asset('storage/' . $imagePath) }}')">
-                                                                                            @endif
-                                                                                        @endforeach
-                                                            </div>
-                                                                                @else
-                                                                                    <span class="text-muted">-</span>
-                                                                                @endif
-                                                                            @else
-                                                                                <span class="fw-bold text-dark">
-                                                                                    @if(is_array($value))
-                                                                                        {{ implode(', ', array_filter($value)) }}
-                                                                                    @else
-                                                                                        {{ $value ?: '-' }}
-                                                                                    @endif
-                                                                                </span>
-                                                                            @endif
-                                                                        </td>
-                                                                    @endforeach
-                                                                </tr>
-                                                            @endfor
-                                                        </tbody>
-                                                    </table>
-                                                    </div>
-                                                @endif
-                                        @else
-                                            <!-- عرض البيانات العادية في جدول -->
-                                            <div class="table-responsive">
-                                                <table class="table table-striped table-hover mb-0">
-                                                    <thead class="table-dark">
-                                                        <tr>
-                                                            <th class="text-center">
-                                                                <i class="fas fa-tag me-1"></i>
-                                                                نوع الحقل
-                                                            </th>
-                                                            <th class="text-center">
-                                                                <i class="fas fa-info-circle me-1"></i>
-                                                                القيمة
-                                                            </th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @foreach($fields as $field)
-                                                            @php
-                                                                $fieldName = $field->name;
-                                                                $fieldValues = $service->custom_fields[$fieldName] ?? null;
-                                                                $displayName = $field->name_ar;
-                                                                $fieldType = $field->type;
-                                                            @endphp
-
-                                                            @if($fieldValues && $fieldValues !== '')
-                                                                <tr>
-                                                                    <td class="text-center">
-                                                                        <span class="fw-bold text-primary">
-                                                                            <i class="fas fa-{{ $fieldType === 'checkbox' ? 'check-square' : ($fieldType === 'textarea' ? 'align-left' : ($fieldType === 'number' ? 'calculator' : 'edit')) }} me-1"></i>
-                                                                            {{ $displayName }}
-                                                                        </span>
-                                                                    </td>
-                                                                    <td class="text-center">
-                                                                        @if($fieldType === 'checkbox')
-                                                                            @php
-                                                                                $value = is_array($fieldValues) ? $fieldValues[0] : $fieldValues;
-                                                                                $isChecked = $value === '1' || $value === 1 || $value === true || $value === 'true' || $value === 'on';
-                                                                            @endphp
-                                                                            @if($isChecked)
-                                                                                <span class="badge bg-success">
-                                                                                    <i class="fas fa-check me-1"></i>نعم
-                                                                                </span>
-                                                                            @else
-                                                                                <span class="badge bg-danger">
-                                                                                    <i class="fas fa-times me-1"></i>لا
-                                                                                </span>
-                                                                            @endif
-                                                                        @elseif($fieldType === 'image')
-                                                                            @if(is_array($fieldValues) && count($fieldValues) > 0)
-                                                                                <div class="image-gallery">
-                                                                                    @foreach($fieldValues as $imagePath)
-                                                                                        @if(is_array($imagePath))
-                                                                                            @foreach($imagePath as $singleImagePath)
-                                                                                                @if(is_string($singleImagePath) && !empty($singleImagePath))
-                                                                                                    <img src="{{ asset('storage/' . $singleImagePath) }}" alt="صورة" class="img-thumbnail me-1 mb-1" style="width: 50px; height: 50px; object-fit: cover;" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImageModal('{{ asset('storage/' . $singleImagePath) }}')">
-                                                                                                @endif
-                                                                                            @endforeach
-                                                                                        @elseif(is_string($imagePath) && !empty($imagePath))
-                                                                                            <img src="{{ asset('storage/' . $imagePath) }}" alt="صورة" class="img-thumbnail me-1 mb-1" style="width: 50px; height: 50px; object-fit: cover;" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImageModal('{{ asset('storage/' . $imagePath) }}')">
-                                                @endif
-                                            @endforeach
-                                        </div>
-                                    @else
-                                                                                <span class="text-muted">-</span>
-                                                                            @endif
-                                                                        @else
-                                                                            <span class="fw-bold text-dark">
-                                                    @if(is_array($fieldValues))
-                                                        {{ implode(', ', array_filter($fieldValues)) }}
+                                    @if($fieldValues && $fieldValues !== '')
+                                        <tr>
+                                            <td class="text-center fw-bold text-primary">
+                                                <i class="fas fa-{{ $fieldType === 'checkbox' ? 'check-square' : ($fieldType === 'textarea' ? 'align-left' : ($fieldType === 'number' ? 'calculator' : 'edit')) }} me-1 text-warning"></i>
+                                                {{ $displayName }}
+                                            </td>
+                                            <td class="text-center">
+                                                @if($fieldType === 'checkbox')
+                                                    @php
+                                                        $value = is_array($fieldValues) ? $fieldValues[0] : $fieldValues;
+                                                        $isChecked = in_array($value, ['1', 1, true, 'true', 'on']);
+                                                    @endphp
+                                                    @if($isChecked)
+                                                        <span class="badge bg-success"><i class="fas fa-check me-1"></i>نعم</span>
                                                     @else
-                                                        {{ $fieldValues ?: '-' }}
+                                                        <span class="badge bg-danger"><i class="fas fa-times me-1"></i>لا</span>
                                                     @endif
-                                                </span>
-                                                                        @endif
-                                                                    </td>
-                                                                </tr>
-                                                            @endif
+                                                @elseif($fieldType === 'image')
+                                                    @if(is_array($fieldValues) && count($fieldValues) > 0)
+                                                        @foreach($fieldValues as $imagePath)
+                                                            <img src="{{ asset('storage/' . (is_array($imagePath) ? $imagePath[0] : $imagePath)) }}" alt="صورة" class="img-thumbnail me-1 mb-1" style="width: 50px; height: 50px; border: 2px solid #009f9c;" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImageModal('{{ asset('storage/' . (is_array($imagePath) ? $imagePath[0] : $imagePath)) }}')">
                                                         @endforeach
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        @endif
-                                    </div>
-                                            </div>
-                                        </div>
-                            @endforeach
-                    @endif
+                                                    @else
+                                                        <span class="text-muted">-</span>
+                                                    @endif
+                                                @else
+                                                    <span class="fw-bold text-dark">
+                                                        @if(is_array($fieldValues))
+                                                            {{ implode(', ', array_filter($fieldValues)) }}
+                                                        @else
+                                                            {{ $fieldValues ?: '-' }}
+                                                        @endif
+                                                    </span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endif
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+@endforeach
+
+@endif
 
                     <!-- معلومات الاتصال وحالة الخدمة -->
                     <div class="row mb-4">
@@ -603,75 +557,87 @@
             @endauth
 
             <!-- إجراءات سريعة -->
-            <div class="card mb-3">
-                <div class="card-header">
-                    <h5 class="mb-0">إجراءات سريعة</h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-grid gap-2">
-                        @auth
-                            @if(auth()->id() !== $service->user_id)
-                                @if(auth()->user()->isProvider())
-                                    @if($userOffer)
-                                        @if($userOffer->status === 'rejected' || $userOffer->is_expired)
-                                            <a href="{{ route('service-offers.create', $service) }}" class="btn btn-warning">
-                                                <i class="fas fa-redo"></i> قدم عرض جديد
-                                            </a>
-                                        @else
-                                            <button class="btn btn-info" disabled>
-                                                <i class="fas fa-check"></i> تم تقديم عرض
-                                            </button>
-                                        @endif
-                                        <a href="{{ route('service-offers.my-offers') }}" class="btn btn-outline-info">
-                                            <i class="fas fa-eye"></i> عرض تفاصيل العروض
-                                        </a>
-                                    @elseif($canProviderOffer)
-                                        <a href="{{ route('service-offers.create', $service) }}" class="btn btn-success">
-                                            <i class="fas fa-handshake"></i> قدم عرض
-                                        </a>
-                                    @else
-                                        <button class="btn btn-secondary" disabled title="لا يمكنك تقديم عرض لهذه الخدمة. تأكد من أن القسم والمدينة متطابقان مع اختياراتك في الملف الشخصي">
-                                            <i class="fas fa-times"></i> لا يمكن تقديم عرض
-                                        </button>
-                                    @endif
-                                    <a href="{{ route('messages.service-conversation', $service->id) }}" class="btn btn-outline-primary">
-                                        <i class="fas fa-comments"></i> إرسال رسالة
-                                    </a>
-                                @else
-                                    <a href="{{ route('service-offers.index', $service) }}" class="btn btn-info">
-                                        <i class="fas fa-eye"></i> عرض العروض
-                                    </a>
-                                    <a href="{{ route('messages.service-conversation', $service->id) }}" class="btn btn-outline-primary">
-                                        <i class="fas fa-comments"></i> إرسال رسالة
-                                    </a>
-                                @endif
+<div class="card mb-3 shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
+    <div class="card-header text-white" style="background: linear-gradient(135deg, #007b8f, #00a6a6);">
+        <h5 class="mb-0"><i class="fas fa-bolt me-2 text-warning"></i>إجراءات سريعة</h5>
+    </div>
+    <div class="card-body bg-light">
+        <div class="d-grid gap-2">
+            @auth
+                @if(auth()->id() !== $service->user_id)
+                    @if(auth()->user()->isProvider())
+                        @if($userOffer)
+                            @if($userOffer->status === 'rejected' || $userOffer->is_expired)
+                                <a href="{{ route('service-offers.create', $service) }}" class="btn text-white" style="background-color: #d4a017;">
+                                    <i class="fas fa-redo"></i> قدم عرض جديد
+                                </a>
                             @else
-                                <a href="{{ route('service-offers.index', $service) }}" class="btn btn-primary">
-                                    <i class="fas fa-list"></i> عرض العروض ({{ $service->pending_offers->count() }})
-                                </a>
-                                <a href="{{ route('services.edit', $service->id) }}" class="btn btn-warning">
-                                    <i class="fas fa-edit"></i> تعديل الخدمة
-                                </a>
-                                <button type="button" class="btn btn-danger" onclick="confirmDelete()">
-                                    <i class="fas fa-trash"></i> حذف الخدمة
+                                <button class="btn text-white" style="background-color: #00a6a6;" disabled>
+                                    <i class="fas fa-check"></i> تم تقديم عرض
                                 </button>
                             @endif
-                        @else
-                            <a href="{{ route('login') }}" class="btn btn-success">
-                                <i class="fas fa-sign-in-alt"></i> تسجيل دخول لتقديم عرض
+                            <a href="{{ route('service-offers.my-offers') }}" class="btn btn-outline-info" style="border-color: #00a6a6; color: #007b8f;">
+                                <i class="fas fa-eye"></i> عرض تفاصيل العروض
                             </a>
-                        @endauth
+                        @elseif($canProviderOffer)
+                            <a href="{{ route('service-offers.create', $service) }}" class="btn text-white" style="background-color: #00a6a6;">
+                                <i class="fas fa-handshake"></i> قدم عرض
+                            </a>
+                        @else
+                            <button class="btn btn-outline-secondary" disabled title="لا يمكنك تقديم عرض لهذه الخدمة. تأكد من أن القسم والمدينة متطابقان مع اختياراتك في الملف الشخصي">
+                                <i class="fas fa-times"></i> لا يمكن تقديم عرض
+                            </button>
+                        @endif
+                        <a href="{{ route('messages.service-conversation', $service->id) }}" class="btn btn-outline-primary" style="border-color: #007b8f; color: #007b8f;">
+                            <i class="fas fa-comments"></i> إرسال رسالة
+                        </a>
+                    @else
+                        <a href="{{ route('service-offers.index', $service) }}" class="btn text-white" style="background-color: #007b8f;">
+                            <i class="fas fa-eye"></i> عرض العروض
+                        </a>
+                        <a href="{{ route('messages.service-conversation', $service->id) }}" class="btn btn-outline-primary" style="border-color: #00a6a6; color: #00a6a6;">
+                            <i class="fas fa-comments"></i> إرسال رسالة
+                        </a>
+                    @endif
+                @else
+                    <a href="{{ route('service-offers.index', $service) }}" class="btn text-white" style="background-color: #007b8f;">
+                        <i class="fas fa-list"></i> عرض العروض ({{ $service->pending_offers->count() }})
+                    </a>
+                    <a href="{{ route('services.edit', $service->id) }}" class="btn text-white" style="background-color: #d4a017;">
+                        <i class="fas fa-edit"></i> تعديل الخدمة
+                    </a>
+                    <button type="button" class="btn text-white" style="background-color: #c82333;" onclick="confirmDelete()">
+                        <i class="fas fa-trash"></i> حذف الخدمة
+                    </button>
+                @endif
+            @else
+                <a href="{{ route('login') }}" class="btn text-white" style="background-color: #00a6a6;">
+                    <i class="fas fa-sign-in-alt"></i> تسجيل دخول لتقديم عرض
+                </a>
+            @endauth
 
-                        <button class="btn btn-outline-primary" onclick="window.print()">
-                            <i class="fas fa-print"></i> طباعة
-                        </button>
+            <button class="btn btn-outline-primary" style="border-color: #00a6a6; color: #00a6a6;" onclick="window.print()">
+                <i class="fas fa-print"></i> طباعة
+            </button>
 
-                        <button class="btn btn-outline-secondary" onclick="shareService()">
-                            <i class="fas fa-share"></i> مشاركة
-                        </button>
-                    </div>
-                </div>
-            </div>
+            <button class="btn btn-outline-secondary" style="border-color: #d4a017; color: #d4a017;" onclick="shareService()">
+                <i class="fas fa-share"></i> مشاركة
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+        transition: all 0.2s ease-in-out;
+    }
+    .card-header i {
+        vertical-align: middle;
+    }
+</style>
+
 
             <!-- Delete Form (Hidden) -->
             @auth

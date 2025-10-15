@@ -3,610 +3,538 @@
 @section('title', 'الرسائل')
 
 @section('content')
-<div class="chat-container">
-    <div class="chat-layout">
-        <!-- Sidebar for conversations -->
-        <div class="conversations-sidebar" id="conversationsSidebar">
-            <div class="sidebar-header">
-                <h5><i class="fas fa-comments"></i> المحادثات</h5>
-                <div class="search-container">
-                    <input type="text" id="searchConversations" placeholder="البحث في المحادثات..." class="search-input">
-                    <i class="fas fa-search search-icon"></i>
-                </div>
-                <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
-                    <i class="fas fa-times"></i>
-                </button>
+<div class="chat-container " id="chatContainer">
+    <div class="conversations-sidebar" id="conversationsSidebar">
+        <div class="sidebar-header">
+            <h5 class="sidebar-title"><i class="fas fa-comments"></i> <span>المحادثات</span></h5>
+            <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+        <div class="sidebar-search">
+             <div class="search-container">
+                <input type="text" id="searchConversations" placeholder="البحث في المحادثات..." class="search-input">
+                <i class="fas fa-search search-icon"></i>
             </div>
-            <div class="conversations-list" id="conversationsList">
-                @forelse($conversations as $conversation)
-                    @php
-                        $otherUser = $conversation->sender_id == auth()->id() ? $conversation->receiver : $conversation->sender;
-                        $lastMessage = $conversation;
-                        $unreadCount = \App\Models\Message::where('conversation_id', $conversation->conversation_id)
-                            ->where('receiver_id', auth()->id())
-                            ->where('is_read', false)
-                            ->where('is_deleted', false)
-                            ->count();
-                    @endphp
-                    <div class="conversation-item"
-                         onclick="window.location.href='{{ route('messages.show', $otherUser->id) }}'"
-                         data-name="{{ strtolower($otherUser->name) }}">
-                        <div class="conversation-avatar">
-                            @if($otherUser->image && file_exists(public_path('storage/' . $otherUser->image)))
-                                <img src="{{ asset('storage/' . $otherUser->image) }}"
-                                     alt="{{ $otherUser->name }}"
-                                     onerror="this.onerror=null;this.src='{{ asset('images/default-avatar.png') }}';">
-                            @else
-                                <div class="default-avatar">
-                                    {{ strtoupper(substr($otherUser->name, 0, 1)) }}
-                                </div>
-                            @endif
-                            <div class="online-indicator {{ $otherUser->isOnline() ? 'online' : 'offline' }}"></div>
-                        </div>
-                        <div class="conversation-info">
+        </div>
+        <div class="conversations-list" id="conversationsList">
+            @forelse($conversations as $conversation)
+                @php
+                    $otherUser = $conversation->sender_id == auth()->id() ? $conversation->receiver : $conversation->sender;
+                    $lastMessage = $conversation;
+                    $unreadCount = \App\Models\Message::where('conversation_id', $conversation->conversation_id)
+                        ->where('receiver_id', auth()->id())
+                        ->where('is_read', false)
+                        ->where('is_deleted', false)
+                        ->count();
+                @endphp
+                <div class="conversation-item"
+                     onclick="window.location.href='{{ route('messages.show', $otherUser->id) }}'"
+                     data-name="{{ strtolower($otherUser->name) }}">
+                    <div class="conversation-avatar">
+                        @if($otherUser->image && file_exists(public_path('storage/' . $otherUser->image)))
+                            <img src="{{ asset('storage/' . $otherUser->image) }}"
+                                 alt="{{ $otherUser->name }}"
+                                 onerror="this.onerror=null;this.src='{{ asset('images/default-avatar.png') }}';">
+                        @else
+                            <div class="default-avatar">
+                                {{ strtoupper(substr($otherUser->name, 0, 1)) }}
+                            </div>
+                        @endif
+                        <div class="online-indicator {{ $otherUser->isOnline() ? 'online' : 'offline' }}"></div>
+                    </div>
+                    <div class="conversation-info">
+                        <div class="info-header">
                             <div class="conversation-name">{{ $otherUser->name }}</div>
+                            @if($lastMessage)
+                                <div class="conversation-time">{{ $lastMessage->formatted_time }}</div>
+                            @endif
+                        </div>
+                        <div class="info-body">
                             @if($lastMessage)
                                 <div class="conversation-preview">
                                     @if($lastMessage->isImage())
-                                        <i class="fas fa-image"></i> صورة
+                                        <i class="fas fa-image me-1"></i> صورة
                                     @elseif($lastMessage->isVoice())
-                                        <i class="fas fa-microphone"></i> رسالة صوتية
+                                        <i class="fas fa-microphone me-1"></i> رسالة صوتية
                                     @elseif($lastMessage->isFile())
-                                        <i class="fas fa-file"></i> ملف
+                                        <i class="fas fa-file me-1"></i> ملف
                                     @elseif($lastMessage->isLocation())
-                                        <i class="fas fa-map-marker-alt"></i> موقع
+                                        <i class="fas fa-map-marker-alt me-1"></i> موقع
                                     @elseif($lastMessage->isContact())
-                                        <i class="fas fa-user"></i> معلومات اتصال
+                                         <i class="fas fa-user me-1"></i> معلومات اتصال
                                     @else
-                                        {{ Str::limit($lastMessage->content, 30) }}
+                                        {{ Str::limit($lastMessage->content, 25) }}
                                     @endif
                                 </div>
-                                <div class="conversation-time">{{ $lastMessage->formatted_time }}</div>
                             @else
                                 <div class="conversation-preview">لا توجد رسائل</div>
                             @endif
+                            @if($unreadCount > 0)
+                                <div class="unread-badge">{{ $unreadCount }}</div>
+                            @endif
                         </div>
-                        @if($unreadCount > 0)
-                            <div class="unread-badge">{{ $unreadCount }}</div>
-                        @endif
                     </div>
-                @empty
-                    <div class="no-conversations">
-                        <i class="fas fa-comment-slash"></i>
-                        <p>لا توجد محادثات</p>
-                    </div>
-                @endforelse
+                </div>
+            @empty
+                <div class="no-conversations">
+                    <i class="fas fa-comment-slash"></i>
+                    <p>لا توجد محادثات</p>
+                </div>
+            @endforelse
+        </div>
+    </div>
+
+    <div class="chat-area">
+        <div class="chat-header">
+            <button class="mobile-sidebar-toggle" id="mobileSidebarToggle" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="chat-header-info">
+                <h5>اختر محادثة للبدء</h5>
+                <small>من القائمة الجانبية</small>
             </div>
         </div>
-
-        <!-- Chat Area -->
-        <div class="chat-area">
-            <div class="chat-header">
-                <button class="mobile-sidebar-toggle" id="mobileSidebarToggle" onclick="toggleSidebar()">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div class="chat-header-info">
-                    <h5>اختر محادثة للبدء</h5>
-                    <small>من القائمة الجانبية</small>
+        <div class="chat-content" id="chatContent">
+            <div class="welcome-message">
+                <div class="welcome-icon">
+                    <i class="fas fa-comments"></i>
                 </div>
-            </div>
-            <div class="chat-content" id="chatContent">
-                <div class="welcome-message">
-                    <div class="welcome-icon">
-                        <i class="fas fa-comments"></i>
-                    </div>
-                    <h3>مرحباً بك في نظام الرسائل</h3>
-                    <p>اختر محادثة من القائمة الجانبية لبدء المحادثة</p>
-                </div>
+                <h3>مرحباً بك في نظام الرسائل</h3>
+                <p>اختر محادثة من القائمة الجانبية لبدء المحادثة</p>
             </div>
         </div>
     </div>
 </div>
 
 <style>
+    /* === Font Import (Optional, but recommended for a modern look) === */
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap');
+
+    /* === Color & Style Variables === */
+    :root {
+        --bg-dark: #2f5c69;
+        --bg-dark-transparent: rgba(47, 92, 105, 0.9);
+        --accent: #f3a446;
+        --accent-hover: #ffb861;
+        --text-light: #ffffff;
+        --text-muted: #d1e0e4;
+        --text-dark: #333;
+        --chat-bg: #f5f7fa;
+        --border-color: rgba(255, 255, 255, 0.1);
+        --sidebar-width: 340px;
+        --sidebar-collapsed-width: 90px;
+    }
+
+    /* === Main Layout === */
     .chat-container {
-        height: 100vh;
         display: flex;
-        flex-direction: column;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        height: 100vh;
+        overflow: hidden;
+        font-family: 'Cairo', sans-serif;
+        background: var(--chat-bg);
+        transition: padding-right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        margin-top:50px;
     }
 
-    .chat-layout {
-        display: flex;
-        flex: 1;
-        height: 100vh;
+    .chat-layout { /* This class is not used in the new design, kept for compatibility */
+        display: flex; flex: 1; height: 100vh;
     }
 
+    /* === Conversations Sidebar === */
     .conversations-sidebar {
-        width: 300px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        width: var(--sidebar-width);
+        background: var(--bg-dark-transparent);
+        backdrop-filter: blur(12px);
+        border-left: 1px solid var(--border-color);
         display: flex;
         flex-direction: column;
-        overflow-y: auto;
+        flex-shrink: 0;
+        transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                    transform 0.4s ease,
+                    box-shadow 0.3s ease;
+        position: relative;
+        z-index: 100;
+        box-shadow: -5px 0 25px rgba(0, 0, 0, 0.2);
     }
 
     .sidebar-header {
-        color: white;
-        padding: 20px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        background: rgba(255, 255, 255, 0.1);
-    }
-
-    .sidebar-header h5 {
-        margin: 0 0 15px 0;
-        font-weight: 600;
         display: flex;
         align-items: center;
-        gap: 10px;
+        justify-content: space-between;
+        padding: 20px 25px;
+        flex-shrink: 0;
+        border-bottom: 1px solid var(--border-color);
     }
 
-    .search-container {
-        position: relative;
+    .sidebar-title {
+        color: var(--text-light);
+        font-size: 1.25rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        white-space: nowrap;
     }
 
+    .sidebar-toggle {
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        color: var(--text-light);
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.3s ease, transform 0.3s ease;
+    }
+
+    .sidebar-toggle:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: scale(1.1);
+    }
+
+    .sidebar-toggle i {
+        transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    /* === Search Bar === */
+    .sidebar-search {
+        padding: 15px 25px;
+        flex-shrink: 0;
+        margin-top:20px;
+
+    }
+    .search-container { position: relative; }
     .search-input {
         width: 100%;
-        padding: 10px 35px 10px 15px;
-        border: none;
-        border-radius: 20px;
-        background: rgba(255, 255, 255, 0.2);
-        color: white;
+        padding: 12px 20px 12px 40px;
+        border: 1px solid var(--border-color);
+        border-radius: 25px;
+        background: rgba(0, 0, 0, 0.2);
+        color: var(--text-light);
         font-size: 14px;
         transition: all 0.3s ease;
     }
-
-    .search-input::placeholder {
-        color: rgba(255, 255, 255, 0.7);
-    }
-
+    .search-input::placeholder { color: var(--text-muted); }
     .search-input:focus {
         outline: none;
-        background: rgba(255, 255, 255, 0.3);
-        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+        background: rgba(0, 0, 0, 0.3);
+        box-shadow: 0 0 0 2px var(--accent);
+        border-color: var(--accent);
     }
-
     .search-icon {
         position: absolute;
-        right: 12px;
+        left: 15px;
         top: 50%;
         transform: translateY(-50%);
-        color: rgba(255, 255, 255, 0.7);
-        font-size: 14px;
+        color: var(--text-muted);
     }
 
+    /* === Conversations List === */
     .conversations-list {
         flex: 1;
         overflow-y: auto;
-        padding: 10px 0;
+        padding: 0 10px;
     }
+    /* Custom scrollbar */
+    .conversations-list::-webkit-scrollbar { width: 6px; }
+    .conversations-list::-webkit-scrollbar-track { background: transparent; }
+    .conversations-list::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+    .conversations-list::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
 
     .conversation-item {
         display: flex;
         align-items: center;
-        padding: 15px 20px;
+        padding: 12px 15px;
+        margin: 8px 0;
         cursor: pointer;
-        transition: all 0.3s ease;
-        border-radius: 10px;
-        margin: 5px 10px;
+        border-radius: 12px;
+        transition: background 0.3s ease, transform 0.2s ease;
         position: relative;
+        overflow: hidden;
     }
 
     .conversation-item:hover {
-        background: rgba(255, 255, 255, 0.15);
-        transform: translateX(5px);
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-2px);
     }
 
     .conversation-item.active {
-        background: rgba(255, 255, 255, 0.2);
-        border-left: 4px solid #fff;
+        background: rgba(0, 0, 0, 0.2);
+        border-right: 4px solid var(--accent);
     }
 
     .conversation-avatar {
         position: relative;
-        margin-right: 15px;
+        margin-left: 15px;
+        flex-shrink: 0;
     }
 
-    .conversation-avatar img {
-        width: 50px;
-        height: 50px;
+    .conversation-avatar img, .default-avatar {
+        width: 55px;
+        height: 55px;
         border-radius: 50%;
         object-fit: cover;
-        border: 3px solid rgba(255, 255, 255, 0.3);
+        border: 3px solid rgba(255, 255, 255, 0.2);
     }
 
     .default-avatar {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--accent), var(--accent-hover));
         display: flex;
         align-items: center;
         justify-content: center;
-        color: white;
+        color: var(--text-light);
         font-weight: bold;
-        font-size: 18px;
-        border: 3px solid rgba(255, 255, 255, 0.3);
+        font-size: 20px;
     }
 
     .online-indicator {
         position: absolute;
-        bottom: 2px;
-        right: 2px;
-        width: 12px;
-        height: 12px;
+        bottom: 3px;
+        left: 3px;
+        width: 14px;
+        height: 14px;
         border-radius: 50%;
-        border: 2px solid #667eea;
-        background-color: #28a745;
+        border: 2px solid var(--bg-dark);
+        background-color: #28a745; /* Online */
     }
-
-    .online-indicator.offline {
-        background-color: #6c757d;
-    }
+    .online-indicator.offline { background-color: #6c757d; /* Offline */ }
 
     .conversation-info {
         flex: 1;
         min-width: 0;
+        color: var(--text-light);
     }
-
-    .conversation-name {
-        font-weight: 600;
-        color: white;
-        font-size: 14px;
-        margin-bottom: 4px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .conversation-preview {
-        font-size: 12px;
-        color: rgba(255, 255, 255, 0.8);
-        margin-bottom: 2px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .conversation-time {
-        font-size: 11px;
-        color: rgba(255, 255, 255, 0.6);
-    }
-
+    .info-header { display: flex; justify-content: space-between; align-items: baseline; }
+    .conversation-name { font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .conversation-time { font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
+    .info-body { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+    .conversation-preview { font-size: 13px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .unread-badge {
-        background: #dc3545;
-        color: white;
+        background: var(--accent);
+        color: var(--text-dark);
         border-radius: 50%;
-        width: 20px;
-        height: 20px;
+        width: 22px;
+        height: 22px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 11px;
         font-weight: bold;
-        margin-right: 10px;
+        flex-shrink: 0;
     }
 
+    .no-conversations { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+    .no-conversations i { font-size: 48px; margin-bottom: 15px; display: block; }
+    .no-conversations p { margin: 0; font-size: 14px; }
+
+
+    /* === Collapsed Sidebar State (Desktop) === */
+    .chat-container.sidebar-collapsed .conversations-sidebar {
+        width: var(--sidebar-collapsed-width);
+    }
+    .chat-container.sidebar-collapsed .sidebar-title span,
+    .chat-container.sidebar-collapsed .sidebar-search,
+    .chat-container.sidebar-collapsed .conversation-info {
+        display: none;
+    }
+    .chat-container.sidebar-collapsed .sidebar-header {
+        justify-content: center;
+    }
+    .chat-container.sidebar-collapsed .sidebar-title i {
+        margin: 0;
+    }
+    .chat-container.sidebar-collapsed .sidebar-toggle i {
+        transform: rotate(180deg);
+    }
+    .chat-container.sidebar-collapsed .conversation-item {
+        justify-content: center;
+        padding: 15px 0;
+    }
+    .chat-container.sidebar-collapsed .conversation-avatar {
+        margin: 0;
+    }
+
+
+    /* === Chat Area === */
     .chat-area {
         flex: 1;
         display: flex;
         flex-direction: column;
-        padding: 0;
         overflow: hidden;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
     }
 
     .chat-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 15px 20px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        background: var(--bg-dark-transparent);
+        backdrop-filter: blur(12px);
+        color: var(--text-light);
+        padding: 18px 25px;
+        border-bottom: 1px solid var(--border-color);
         display: flex;
         align-items: center;
         gap: 15px;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         z-index: 10;
+        flex-shrink: 0;
     }
 
     .chat-header-info h5 {
-        color: white;
+        color: var(--text-light);
         margin: 0;
         font-weight: 600;
     }
-
-    .chat-header-info small {
-        color: rgba(255, 255, 255, 0.8);
-    }
+    .chat-header-info small { color: var(--text-muted); }
 
     .chat-content {
         flex: 1;
         overflow-y: auto;
-        padding: 20px;
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 30px;
+        background-color: var(--chat-bg);
         display: flex;
         align-items: center;
         justify-content: center;
     }
 
-    .welcome-message {
-        text-align: center;
-        color: #6c757d;
-    }
+    /* === Welcome Message === */
+    .welcome-message { text-align: center; color: #888; }
+    .welcome-icon { font-size: 72px; color: var(--bg-dark); opacity: 0.5; margin-bottom: 20px; }
+    .welcome-message h3 { margin-bottom: 10px; color: #444; font-weight: 600; }
+    .welcome-message p { color: #777; }
 
-    .welcome-icon {
-        font-size: 64px;
-        color: #667eea;
-        margin-bottom: 20px;
-    }
-
-    .welcome-message h3 {
-        margin-bottom: 10px;
-        color: #333;
-    }
-
-    .welcome-message p {
-        color: #6c757d;
-    }
-
-    .mobile-sidebar-toggle {
-        background: rgba(255, 255, 255, 0.2);
-        border: none;
-        color: white;
-        width: 35px;
-        height: 35px;
-        border-radius: 50%;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        margin-right: 10px;
-        transition: all 0.3s ease;
-    }
-
-    .mobile-sidebar-toggle:hover {
-        background: rgba(255, 255, 255, 0.3);
-    }
-
-    .sidebar-toggle {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        background: rgba(255, 255, 255, 0.2);
-        border: none;
-        color: white;
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .sidebar-toggle:hover {
-        background: rgba(255, 255, 255, 0.3);
-    }
-
-    .no-conversations {
-        text-align: center;
-        padding: 40px 20px;
-        color: rgba(255, 255, 255, 0.7);
-    }
-
-    .no-conversations i {
-        font-size: 48px;
-        margin-bottom: 15px;
-        display: block;
-    }
-
-    .no-conversations p {
-        margin: 0;
-        font-size: 14px;
-    }
+    /* === Mobile Responsiveness === */
+    .mobile-sidebar-toggle { display: none; background: transparent; border: none; color: white; font-size: 20px; cursor: pointer;}
 
     @media (max-width: 768px) {
-        .chat-layout {
+        .chat-container {
             flex-direction: column;
+            margin-top:50px;
+
         }
+ @media (max-width: 768px) {
+    .sidebar-header{
+        margin-top: 50px;
+    }
+}
 
         .conversations-sidebar {
-            width: 100%;
-            height: auto;
-            max-height: 60vh;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            height: 100%;
+            width: 300px;
+            transform: translateX(100%);
+            box-shadow: -10px 0 30px rgba(0,0,0,0.2);
+            border-left: 1px solid var(--border-color);
             border-right: none;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative;
         }
 
-        .sidebar-toggle {
-            display: flex;
+        .conversations-sidebar.sidebar-visible {
+            transform: translateX(0);
         }
+
+        .sidebar-toggle { /* This is the close 'X' button on mobile */
+           display: flex;
+        }
+        .sidebar-toggle i { transform: rotate(0) !important; }
 
         .mobile-sidebar-toggle {
-            display: flex;
-        }
-
-        .conversations-list {
             display: block;
-            overflow-y: auto;
-            padding: 5px 0;
-            max-height: 50vh;
-        }
-
-        .conversation-item {
-            min-width: auto;
-            margin: 2px 10px;
-            flex-shrink: 0;
-            padding: 12px 15px;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .conversation-item:hover {
-            transform: translateY(-1px);
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .conversation-avatar img {
-            width: 45px;
-            height: 45px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .default-avatar {
-            width: 45px;
-            height: 45px;
-            font-size: 16px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .conversation-name {
-            font-size: 15px;
-            font-weight: 600;
-        }
-
-        .conversation-preview {
-            font-size: 13px;
-        }
-
-        .conversation-time {
-            font-size: 12px;
-        }
-
-        .conversations-sidebar.hidden {
-            display: none;
         }
 
         .chat-header {
-            padding: 12px 15px;
+             padding: 15px 20px;
         }
 
-        .chat-content {
-            padding: 15px 10px;
+        /* Overlay for when sidebar is open on mobile */
+        .chat-container::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 99;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
         }
-
-        .sidebar-header {
-            padding: 15px;
-        }
-
-        .sidebar-header h5 {
-            font-size: 16px;
-            margin-bottom: 10px;
-        }
-
-        .search-input {
-            padding: 8px 30px 8px 12px;
-            font-size: 13px;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .conversations-sidebar {
-            max-height: 50vh;
-        }
-
-        .conversations-list {
-            max-height: 40vh;
-        }
-
-        .conversation-item {
-            padding: 10px 12px;
-            margin: 1px 8px;
-        }
-
-        .conversation-avatar img {
-            width: 40px;
-            height: 40px;
-        }
-
-        .default-avatar {
-            width: 40px;
-            height: 40px;
-            font-size: 14px;
-        }
-
-        .conversation-name {
-            font-size: 14px;
-        }
-
-        .conversation-preview {
-            font-size: 12px;
-        }
-
-        .conversation-time {
-            font-size: 11px;
-        }
-
-        .unread-badge {
-            width: 18px;
-            height: 18px;
-            font-size: 10px;
+        .chat-container.mobile-sidebar-open::after {
+            opacity: 1;
+            visibility: visible;
         }
     }
 </style>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Search functionality for conversations
-        const searchInput = document.getElementById('searchConversations');
-        const conversationsList = document.getElementById('conversationsList');
-        const conversationItems = document.querySelectorAll('.conversation-item');
+document.addEventListener('DOMContentLoaded', function() {
+    // Search functionality for conversations
+    const searchInput = document.getElementById('searchConversations');
+    const conversationsList = document.getElementById('conversationsList');
+    const conversationItems = document.querySelectorAll('.conversation-item');
 
-        if (searchInput) {
-            searchInput.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase().trim();
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
 
-                conversationItems.forEach(item => {
-                    const name = item.getAttribute('data-name') || '';
-                    if (name.includes(searchTerm)) {
-                        item.style.display = 'flex';
-                        item.style.animation = 'fadeInUp 0.3s ease-out';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-
-                // Show no results message if no conversations match
-                const visibleItems = Array.from(conversationItems).filter(item =>
-                    item.style.display !== 'none'
-                );
-
-                let noResultsMsg = document.querySelector('.no-results');
-                if (visibleItems.length === 0 && searchTerm !== '') {
-                    if (!noResultsMsg) {
-                        noResultsMsg = document.createElement('div');
-                        noResultsMsg.className = 'no-conversations no-results';
-                        noResultsMsg.innerHTML = `
-                            <i class="fas fa-search"></i>
-                            <p>لا توجد نتائج للبحث</p>
-                        `;
-                        conversationsList.appendChild(noResultsMsg);
-                    }
-                } else if (noResultsMsg) {
-                    noResultsMsg.remove();
+            conversationItems.forEach(item => {
+                const name = item.getAttribute('data-name') || '';
+                if (name.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
                 }
             });
-        }
-    });
 
-    // Sidebar toggle function
-    function toggleSidebar() {
-        const sidebar = document.getElementById('conversationsSidebar');
-        if (sidebar) {
-            sidebar.classList.toggle('hidden');
-        }
+            // Show no results message if no conversations match
+            const visibleItems = Array.from(conversationItems).filter(item =>
+                item.style.display !== 'none'
+            );
+
+            let noResultsMsg = conversationsList.querySelector('.no-results');
+            if (visibleItems.length === 0 && searchTerm !== '') {
+                if (!noResultsMsg) {
+                    noResultsMsg = document.createElement('div');
+                    noResultsMsg.className = 'no-conversations no-results';
+                    noResultsMsg.innerHTML = `<i class="fas fa-search"></i><p>لا توجد نتائج للبحث</p>`;
+                    conversationsList.appendChild(noResultsMsg);
+                }
+            } else if (noResultsMsg) {
+                noResultsMsg.remove();
+            }
+        });
     }
 
     // Auto-hide sidebar on mobile when clicking outside
-    document.addEventListener('click', function(event) {
+    const chatContainer = document.getElementById('chatContainer');
+    chatContainer.addEventListener('click', function(event) {
         const sidebar = document.getElementById('conversationsSidebar');
-        const mobileToggle = document.getElementById('mobileSidebarToggle');
-
-        if (window.innerWidth <= 768 && sidebar && !sidebar.contains(event.target) && !mobileToggle.contains(event.target)) {
-            sidebar.classList.add('hidden');
+        if (window.innerWidth <= 768 && sidebar.classList.contains('sidebar-visible')) {
+            // Check if the click was on the overlay (the container itself)
+            if (event.target === chatContainer) {
+                toggleSidebar();
+            }
         }
     });
+});
+
+// Universal Sidebar toggle function
+function toggleSidebar() {
+    const sidebar = document.getElementById('conversationsSidebar');
+    const container = document.getElementById('chatContainer');
+
+    if (window.innerWidth > 768) {
+        // Desktop: collapse/expand
+        container.classList.toggle('sidebar-collapsed');
+    } else {
+        // Mobile: show/hide
+        sidebar.classList.toggle('sidebar-visible');
+        container.classList.toggle('mobile-sidebar-open');
+    }
+}
 </script>
 @endsection

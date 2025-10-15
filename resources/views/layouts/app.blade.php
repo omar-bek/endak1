@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,7 @@
     <title>@yield('title', 'Endak - ' . __('messages.welcome_title'))</title>
 
     <!-- Bootstrap CSS -->
-    @if(app()->getLocale() === 'ar')
+    @if (app()->getLocale() === 'ar')
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
     @else
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -44,9 +45,10 @@
             box-sizing: border-box;
         }
 
+
         body {
             font-family: 'Cairo', 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #685C84 0%, #6A5E86 25%, #766A90 50%, #B1A9BE 75%, #F8F6F7 100%);
+            /* background: linear-gradient(135deg, #685C84 0%, #6A5E86 25%, #766A90 50%, #B1A9BE 75%, #F8F6F7 100%); */
             background-attachment: fixed;
             color: var(--text-color);
             line-height: 1.7;
@@ -81,13 +83,13 @@
 
         /* Navigation */
         .navbar {
-            background: rgba(104, 92, 132, 0.95) !important;
+            /* background: rgba(104, 92, 132, 0.95) !important;
             backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: var(--shadow-lg);
             padding: 1rem 0;
             transition: all 0.3s ease;
-            position: relative;
+            position: relative; */
             z-index: 1000;
         }
 
@@ -128,62 +130,12 @@
             transform: translateY(-2px);
         }
 
-        .nav-link.active {
+        /* .nav-link.active {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white !important;
-        }
+        } */
 
-        /* Hero Section */
-        .hero-section {
-            background: linear-gradient(135deg, #685C84 0%, #6A5E86 25%, #766A90 50%, #B1A9BE 75%, #F8F6F7 100%);
-            color: white;
-            padding: 80px 0 60px;
-            position: relative;
-            overflow: hidden;
-            min-height: 60vh;
-            display: flex;
-            align-items: center;
-        }
-
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="rgba(255,255,255,0.1)"><polygon points="0,100 1000,0 1000,100"/></svg>');
-            background-size: cover;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 2;
-        }
-
-        .hero-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, #ffffff, #f0f9ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hero-subtitle {
-            font-size: 1rem;
-            font-weight: 400;
-            margin-bottom: 1.5rem;
-            opacity: 0.9;
-            line-height: 1.6;
-        }
+          
 
         /* Flash Messages */
         .alert {
@@ -232,6 +184,7 @@
                 transform: translateY(-100%);
                 opacity: 0;
             }
+
             to {
                 transform: translateY(0);
                 opacity: 1;
@@ -239,127 +192,16 @@
         }
 
         /* Cards */
-        .card {
-            border: none;
-            border-radius: 16px;
-            box-shadow: var(--shadow-md);
-            transition: all 0.3s ease;
-            background: var(--lighter-color);
-            overflow: hidden;
-            position: relative;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
-
-        .card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .card:hover {
-            transform: translateY(-8px) scale(1.01);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .card-header {
-            background: linear-gradient(135deg, #685C84, #6A5E86);
-            color: white;
-            border: none;
-            padding: 1rem;
-            font-weight: 600;
-            font-size: 1rem;
-        }
-
-        .card-body {
-            padding: 1.5rem;
-        }
-
-        /* Buttons */
-        .btn {
-            border-radius: 12px;
-            font-weight: 600;
-            padding: 10px 24px;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            border: none;
-            position: relative;
-            overflow: hidden;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.4rem;
-            cursor: pointer;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.6s ease;
-        }
-
-        .btn:hover::before {
-            left: 100%;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #685C84, #675B83);
-            color: white;
-            box-shadow: var(--shadow-md);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-xl);
-            background: linear-gradient(135deg, #675B83, #685C84);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, var(--success-color), #059669);
-            color: white;
-            box-shadow: var(--shadow-md);
-        }
-
-        .btn-success:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-xl);
-            background: linear-gradient(135deg, #059669, var(--success-color));
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 2px solid #685C84;
-            color: #685C84;
-        }
-
-        .btn-outline:hover {
-            background: #685C84;
-            color: white;
-            transform: translateY(-3px);
-        }
+      
 
         /* Footer */
-        .footer {
+        /* .footer {
             background: linear-gradient(135deg, #675B83 0%, #685C84 100%);
             color: white;
             padding: 80px 0 40px;
             position: relative;
             margin-top: 100px;
-        }
+        } */
 
         .footer::before {
             content: '';
@@ -389,141 +231,11 @@
         }
 
         /* Category Cards with Images */
-        .category-card {
-            border: none;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            overflow: hidden;
-            border-radius: 16px;
-            background: var(--lighter-color);
-        }
-
-        .category-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .category-image-container {
-            position: relative;
-            height: 150px;
-            overflow: hidden;
-        }
-
-        .category-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-
-        .category-card:hover .category-image {
-            transform: scale(1.05);
-        }
-
-        .category-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
-            padding: 20px 15px 15px;
-            color: white;
-        }
-
-        .category-title {
-            margin: 0;
-            font-size: 1rem;
-            font-weight: 600;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Category card body adjustments for 5 columns */
-        .category-card .card-body {
-            padding: 0.75rem;
-        }
-
-        .category-card .btn-sm {
-            font-size: 0.8rem;
-            padding: 0.375rem 0.75rem;
-        }
-
-                /* Subcategory Images */
-        .subcategory-image-container {
-            position: relative;
-            height: 120px;
-            overflow: hidden;
-        }
-
-        .subcategory-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-
-        .subcategory-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
-            padding: 15px 10px 10px;
-            color: white;
-        }
-
-        .subcategory-title {
-            margin: 0;
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-        }
-
-        .card:hover .subcategory-image {
-            transform: scale(1.05);
-        }
-
-        /* Category Header Image */
-        .category-header-image img {
-            transition: transform 0.3s ease;
-        }
-
-        .category-header-image:hover img {
-            transform: scale(1.02);
-        }
-
-        /* Responsive adjustments for category images */
-        @media (max-width: 768px) {
-            .category-image-container {
-                height: 120px;
-            }
-
-            .category-title {
-                font-size: 0.9rem;
-            }
-
-            .subcategory-image-container {
-                height: 100px;
-            }
-
-            .subcategory-title {
-                font-size: 0.8rem;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .category-image-container {
-                height: 100px;
-            }
-
-            .category-title {
-                font-size: 0.8rem;
-            }
-        }
-
+       
         /* Language Switcher */
         .language-btn {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
             padding: 10px 18px;
             border-radius: 16px;
@@ -534,7 +246,7 @@
         }
 
         .language-btn:hover {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             color: white;
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
@@ -546,9 +258,17 @@
         }
 
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.15); }
-            100% { transform: scale(1); }
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.15);
+            }
+
+            100% {
+                transform: scale(1);
+            }
         }
 
         .dropdown-menu {
@@ -556,7 +276,7 @@
             border-radius: 12px;
             box-shadow: var(--shadow-lg);
             backdrop-filter: blur(20px);
-            background: rgba(255,255,255,0.95);
+            background: rgba(255, 255, 255, 0.95);
             padding: 0.5rem 0;
             margin-top: 0.5rem;
             min-width: 200px;
@@ -705,7 +425,7 @@
         }
 
         /* Ensure proper stacking context */
-        .navbar > .container {
+        .navbar>.container {
             position: relative;
             z-index: 1001;
         }
@@ -850,9 +570,9 @@
             margin-top: 0.5rem;
             min-width: 200px;
             background: white;
-            border: 1px solid rgba(0,0,0,0.1);
+            border: 1px solid rgba(0, 0, 0, 0.1);
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         [dir="rtl"] .nav-item.dropdown .dropdown-menu {
@@ -924,9 +644,9 @@
             left: 0 !important;
             right: auto !important;
             background: white !important;
-            border: 1px solid rgba(0,0,0,0.1) !important;
+            border: 1px solid rgba(0, 0, 0, 0.1) !important;
             border-radius: 8px !important;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
             min-width: 200px !important;
             margin-top: 0.5rem !important;
         }
@@ -946,70 +666,13 @@
         }
 
         .nav-item.dropdown .dropdown-menu.show .dropdown-item:hover {
-            background: rgba(0,0,0,0.05) !important;
+            background: rgba(0, 0, 0, 0.05) !important;
         }
 
         /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .fade-in-up {
-            animation: fadeInUp 0.8s ease-out;
-        }
-
-        .slide-in-left {
-            animation: slideInLeft 0.8s ease-out;
-        }
-
-        .slide-in-right {
-            animation: slideInRight 0.8s ease-out;
-        }
-
+  
         /* Responsive */
-        @media (max-width: 768px) {
-            .hero-section {
-                padding: 60px 0 40px;
-                min-height: 50vh;
-            }
-
-            .hero-title {
-                font-size: 2rem;
-            }
-
-            .hero-subtitle {
-                font-size: 0.9rem;
-            }
-
+ 
             .navbar-brand {
                 font-size: 1.3rem;
             }
@@ -1055,35 +718,20 @@
             display: inline-block;
             width: 24px;
             height: 24px;
-            border: 3px solid rgba(255,255,255,.3);
+            border: 3px solid rgba(255, 255, 255, .3);
             border-radius: 50%;
             border-top-color: #fff;
             animation: spin 1s ease-in-out infinite;
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 5px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            border-radius: 5px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
-        }
-
+       
         /* Utility Classes */
         .text-gradient {
             background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
@@ -1106,206 +754,149 @@
         }
 
         /* Modern Footer Navigation */
-        .footer-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
-            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            padding: 8px 0;
-            transition: all 0.3s ease;
-        }
+      .footer-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.97);
+        backdrop-filter: blur(18px);
+        border-top: 1px solid rgba(47, 92, 105, 0.1);
+        box-shadow: 0 -6px 25px rgba(47, 92, 105, 0.15);
+        z-index: 1000;
+        padding: 10px 0;
+    }
 
-        .footer-nav-container {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            max-width: 100%;
-            margin: 0 auto;
-            padding: 0 16px;
-        }
+    .footer-nav-container {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 0 12px;
+    }
 
-        .footer-nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: #6b7280;
-            transition: all 0.3s ease;
-            padding: 8px 12px;
-            border-radius: 12px;
-            position: relative;
-            min-width: 60px;
-        }
+    .footer-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-decoration: none;
+        color: #3c6f7d;
+        transition: all 0.3s ease;
+        padding: 8px 12px;
+        border-radius: 12px;
+        position: relative;
+        min-width: 60px;
+    }
 
-        .footer-nav-item:hover {
-            color: var(--primary-color);
-            transform: translateY(-2px);
-            text-decoration: none;
-        }
+    .footer-nav-item:hover {
+        color: #f3a446;
+        transform: translateY(-2px);
+    }
 
-        .footer-nav-item.active {
-            color: var(--primary-color);
-        }
+    .footer-nav-item.active {
+        color: #f3a446;
+        font-weight: 600;
+    }
 
-        .footer-nav-icon {
-            position: relative;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 4px;
-            transition: all 0.3s ease;
-        }
+    .footer-nav-icon {
+        position: relative;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 4px;
+    }
 
-        .footer-nav-icon i {
-            font-size: 20px;
-            transition: all 0.3s ease;
-        }
+    .footer-nav-icon i {
+        font-size: 20px;
+        transition: 0.3s ease;
+    }
 
-        .footer-nav-item:hover .footer-nav-icon i {
-            transform: scale(1.1);
-        }
+    .footer-nav-item:hover .footer-nav-icon i {
+        transform: scale(1.1);
+    }
 
-        .footer-nav-text {
-            font-size: 11px;
-            font-weight: 500;
-            text-align: center;
-            line-height: 1.2;
-            transition: all 0.3s ease;
-        }
+    .footer-nav-text {
+        font-size: 11px;
+        font-weight: 500;
+    }
 
-        /* Center Button (نشر إعلان) */
-        .footer-nav-center {
-            position: relative;
-        }
+    .footer-nav-center .footer-nav-icon-center {
+        width: 52px;
+        height: 52px;
+        background: linear-gradient(135deg, #2f5c69, #3c6f7d);
+        border-radius: 50%;
+        margin-bottom: 4px;
+        box-shadow: 0 4px 14px rgba(60, 111, 125, 0.3);
+        transition: 0.3s ease;
+    }
 
+    .footer-nav-center .footer-nav-icon-center i {
+        color: #fff;
+        font-size: 20px;
+    }
+
+    .footer-nav-center:hover .footer-nav-icon-center {
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(60, 111, 125, 0.4);
+    }
+
+    .footer-nav-center .footer-nav-text {
+        color: #2f5c69;
+        font-weight: 600;
+    }
+
+    .footer-nav-badge {
+        position: absolute;
+        top: -2px;
+        right: -4px;
+        color: white;
+        font-size: 10px;
+        font-weight: bold;
+        padding: 2px 6px;
+        border-radius: 10px;
+        min-width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+        animation: pulse 2s infinite;
+    }
+
+    .footer-nav-badge-messages {
+        background: #ef4444;
+    }
+
+    .footer-nav-badge-notifications {
+        background: #f3a446;
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.15);
+        }
+    }
+
+    @media (max-width: 480px) {
         .footer-nav-icon-center {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, #8b5cf6, #a855f7);
-            border-radius: 50%;
-            margin-bottom: 4px;
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-            transition: all 0.3s ease;
+            width: 44px !important;
+            height: 44px !important;
         }
 
         .footer-nav-icon-center i {
-            color: white;
-            font-size: 20px;
-            font-weight: bold;
+            font-size: 18px;
         }
 
-        .footer-nav-center:hover .footer-nav-icon-center {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
-        }
-
-        .footer-nav-center .footer-nav-text {
-            color: #8b5cf6;
-            font-weight: 600;
-        }
-
-        .footer-nav-center:hover .footer-nav-text {
-            color: #7c3aed;
-        }
-
-        /* Special styling for provider center button */
-        .footer-nav-center[href*="service-offers"] .footer-nav-icon-center {
-            background: linear-gradient(135deg, #10b981, #059669);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-        }
-
-        .footer-nav-center[href*="service-offers"]:hover .footer-nav-icon-center {
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
-        }
-
-        .footer-nav-center[href*="service-offers"] .footer-nav-text {
-            color: #10b981;
-        }
-
-        .footer-nav-center[href*="service-offers"]:hover .footer-nav-text {
-            color: #059669;
-        }
-
-        /* Badge for messages and notifications */
-        .footer-nav-badge {
-            position: absolute;
-            top: -2px;
-            right: -2px;
-            color: white;
+        .footer-nav-text {
             font-size: 10px;
-            font-weight: bold;
-            padding: 2px 6px;
-            border-radius: 10px;
-            min-width: 18px;
-            height: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-            animation: pulse 2s infinite;
         }
-
-        .footer-nav-badge-messages {
-            background: #ef4444;
-            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
-        }
-
-        .footer-nav-badge-notifications {
-            background: #f59e0b;
-            box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
-        }
-
-        /* Active state for navigation items */
-        .footer-nav-item.active .footer-nav-icon i {
-            color: var(--primary-color);
-        }
-
-        .footer-nav-item.active .footer-nav-text {
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 480px) {
-            .footer-nav-container {
-                padding: 0 8px;
-            }
-
-            .footer-nav-item {
-                padding: 6px 8px;
-                min-width: 50px;
-            }
-
-            .footer-nav-icon {
-                width: 20px;
-                height: 20px;
-            }
-
-            .footer-nav-icon i {
-                font-size: 18px;
-            }
-
-            .footer-nav-text {
-                font-size: 10px;
-            }
-
-            .footer-nav-icon-center {
-                width: 40px;
-                height: 40px;
-            }
-
-            .footer-nav-icon-center i {
-                font-size: 18px;
-            }
-        }
-
+    }
         /* Add padding to body to prevent content from being hidden behind footer */
         body {
             padding-bottom: 80px;
@@ -1332,218 +923,235 @@
 
     @stack('styles')
 </head>
+
+
 <body>
+    @php
+    $lang = app()->getLocale();
+@endphp
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="{{ route('home') }}">
-                <i class="fas fa-tools me-2"></i>Endak
-            </a>
+<nav class="navbar navbar-expand-lg fixed-top custom-navbar d-none d-lg-block">
+    <div class="container">
+        <a class="navbar-brand fw-bold d-flex align-items-center" href="{{ route('home') }}">
+    <img src="{{ asset('home.png') }}" alt="Endak Logo" class="me-2" style="height: 60px; width: auto;">
+</a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
 
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">{{ __('messages.home') }}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('categories.index') ? 'active' : '' }}" href="{{ route('categories.index') }}">{{ __('messages.categories') }}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('services.index') ? 'active' : '' }}" href="{{ route('services.index') }}">{{ __('messages.services') }}</a>
+                </li>
+                <!-- @auth
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('home') }}">{{ __('messages.home') }}</a>
+                        <a class="nav-link {{ request()->routeIs('services.my-services') ? 'active' : '' }}" href="{{ route('services.my-services') }}">{{ __('messages.my_services') }}</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('categories.index') }}">{{ __('messages.categories') }}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('services.index') }}">{{ __('messages.services') }}</a>
-                    </li>
-                    @auth
+                    @if (Auth::user()->isProvider())
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('services.my-services') }}">{{ __('messages.my_services') }}</a>
+                            <a class="nav-link {{ request()->routeIs('service-offers.my-offers') ? 'active' : '' }}" href="{{ route('service-offers.my-offers') }}">{{ __('messages.my_offers') }}</a>
                         </li>
-                        @if(Auth::user()->isProvider())
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('service-offers.my-offers') }}">{{ __('messages.my_offers') }}</a>
-                            </li>
-                        @endif
-                    @endauth
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('contact') }}">{{ __('messages.contact_us') }}</a>
-                    </li>
-                </ul>
+                    @endif
+                @endauth -->
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('contact') ? 'active' : '' }}" href="{{ route('contact') }}">{{ __('messages.contact_us') }}</a>
+                </li>
+            </ul>
 
-                <ul class="navbar-nav">
-                    <!-- Language Switcher -->
-                    <li class="nav-item dropdown me-2">
-                        <a class="nav-link dropdown-toggle language-btn" href="#" role="button">
-                            <i class="fas fa-globe me-1"></i>{{ app()->getLocale() === 'ar' ? 'العربية' : 'English' }}
+            <ul class="navbar-nav">
+                <!-- Language Switcher -->
+                <li class="nav-item dropdown me-2">
+                    <a class="nav-link dropdown-toggle language-btn" href="#" role="button">
+                        <i class="fas fa-globe me-1"></i>{{ app()->getLocale() === 'ar' ? 'العربية' : 'English' }}
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{ route('language.switch', 'ar') }}">
+                            <i class="fas fa-flag me-2"></i>العربية
+                        </a></li>
+                        <li><a class="dropdown-item" href="{{ route('language.switch', 'en') }}">
+                            <i class="fas fa-flag me-2"></i>English
+                        </a></li>
+                    </ul>
+                </li>
+
+                <!-- Messages -->
+                @auth
+                    <li class="nav-item me-3 position-relative">
+                        <a class="nav-link" href="{{ route('messages.index') }}">
+                            <i class="fas fa-comments"></i>
+                        </a>
+                    </li>
+                @endauth
+
+                <!-- Notifications -->
+                @auth
+                    <li class="nav-item me-3 position-relative">
+                        <a class="nav-link" href="{{ route('notifications.index') }}">
+                            <i class="fas fa-bell"></i>
+                            @if (Auth::user()->unread_notifications_count > 0)
+                                <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">
+                                    {{ Auth::user()->unread_notifications_count > 99 ? '99+' : Auth::user()->unread_notifications_count }}
+                                </span>
+                            @endif
+                        </a>
+                    </li>
+                @endauth
+
+                @auth
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button">
+                            @if (Auth::user()->image && file_exists(public_path('storage/' . Auth::user()->image)))
+                                <img src="{{ asset('storage/' . Auth::user()->image) }}" alt="{{ Auth::user()->name }}"
+                                    class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
+                            @else
+                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center bg-primary text-white"
+                                    style="width: 30px; height: 30px; font-size: 14px; font-weight: bold;">
+                                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                </div>
+                            @endif
+                            <span>{{ Auth::user()->name }}</span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('language.switch', 'ar') }}">
-                                <i class="fas fa-flag me-2"></i>العربية
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ route('language.switch', 'en') }}">
-                                <i class="fas fa-flag me-2"></i>English
-                            </a></li>
-                        </ul>
-                    </li>
-
-                    <!-- Messages -->
-                    @auth
-                        <li class="nav-item dropdown me-2">
-                            <a class="nav-link position-relative dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-comments"></i>
-                                <span id="messages-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.7rem; padding: 0.2rem 0.4rem; display: none;">
-                                    0
-                                </span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end" style="width: 280px; max-height: 300px; overflow-y: auto;">
-                                <li class="dropdown-header d-flex justify-content-between align-items-center" style="padding: 0.5rem 0.75rem; font-size: 0.85rem;">
-                                    <span>الرسائل</span>
-                                    <a href="{{ route('messages.index') }}" class="text-decoration-none" style="font-size: 0.75rem;">عرض الكل</a>
-                                </li>
-                                <li><span class="dropdown-item-text text-muted" style="font-size: 0.8rem; padding: 0.4rem 0.75rem;">آخر الرسائل ستظهر هنا</span></li>
-                                <li><hr class="dropdown-divider" style="margin: 0.3rem 0;"></li>
-                                <li><a class="dropdown-item text-center" href="{{ route('messages.index') }}" style="font-size: 0.8rem; padding: 0.4rem 0.75rem;">عرض جميع الرسائل</a></li>
-                            </ul>
-                        </li>
-                    @endauth
-                    <!-- Notifications -->
-                    @auth
-                        <li class="nav-item dropdown me-2">
-                            <a class="nav-link position-relative dropdown-toggle" href="#" role="button">
-                                <i class="fas fa-bell"></i>
-                                @if(Auth::user()->unread_notifications_count > 0)
-                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.7rem; padding: 0.2rem 0.4rem;">
-                                        {{ Auth::user()->unread_notifications_count > 99 ? '99+' : Auth::user()->unread_notifications_count }}
-                                    </span>
-                                @endif
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end" style="width: 280px; max-height: 300px; overflow-y: auto;">
-                                <li class="dropdown-header d-flex justify-content-between align-items-center" style="padding: 0.5rem 0.75rem; font-size: 0.85rem;">
-                                    <span>الإشعارات</span>
-                                    @if(Auth::user()->unread_notifications_count > 0)
-                                        <a href="{{ route('notifications.index') }}" class="text-decoration-none" style="font-size: 0.75rem;">عرض الكل</a>
-                                    @endif
-                                </li>
-                                @if(Auth::user()->unread_notifications->count() > 0)
-                                    @foreach(Auth::user()->unread_notifications->take(4) as $notification)
-                                        @php
-                                            $notificationUrl = route('notifications.index');
-                                            if ($notification->data && isset($notification->data['offer_id'])) {
-                                                $offer = \App\Models\ServiceOffer::find($notification->data['offer_id']);
-                                                if ($offer) {
-                                                    $notificationUrl = route('service-offers.show', $offer->id);
-                                                }
-                                            }
-                                        @endphp
-                                        <li>
-                                            <a class="dropdown-item py-1" href="{{ $notificationUrl }}" style="padding: 0.4rem 0.75rem;">
-                                                <div class="d-flex align-items-start">
-                                                    <i class="{{ $notification->icon }} me-2 mt-1" style="font-size: 0.9rem;"></i>
-                                                    <div class="flex-grow-1">
-                                                        <div class="fw-bold" style="font-size: 0.8rem;">{{ $notification->title }}</div>
-                                                        <div class="text-muted" style="font-size: 0.75rem;">{{ Str::limit($notification->message, 40) }}</div>
-                                                        <div class="text-muted" style="font-size: 0.7rem;">{{ $notification->created_at ? $notification->created_at->diffForHumans() : 'غير محدد' }}</div>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </li>
-                                    @endforeach
-                                @else
-                                    <li><span class="dropdown-item-text text-muted" style="font-size: 0.8rem; padding: 0.4rem 0.75rem;">لا توجد إشعارات جديدة</span></li>
-                                @endif
-                                <li><hr class="dropdown-divider" style="margin: 0.3rem 0;"></li>
-                                <li><a class="dropdown-item text-center" href="{{ route('notifications.index') }}" style="font-size: 0.8rem; padding: 0.4rem 0.75rem;">عرض جميع الإشعارات</a></li>
-                            </ul>
-                        </li>
-                    @endauth
-
-                    @auth
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button">
-                                @if(Auth::user()->image && file_exists(public_path('storage/' . Auth::user()->image)))
-                                    <img src="{{ asset('storage/' . Auth::user()->image) }}"
-                                         alt="{{ Auth::user()->name }}"
-                                         class="rounded-circle me-2"
-                                         style="width: 30px; height: 30px; object-fit: cover;"
-                                         onerror="this.onerror=null;this.src='{{ asset('images/default-avatar.png') }}';">
-                                @else
-                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center bg-primary text-white"
-                                         style="width: 30px; height: 30px; font-size: 14px; font-weight: bold;">
-                                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                                    </div>
-                                @endif
-                                <span>{{ Auth::user()->name }}</span>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{{ route('messages.new-design') }}">
+                            <li><a class="dropdown-item" href="{{ route('messages.new-design') }}">
                                     <i class="fas fa-comments"></i> الرسائل الجديدة
-                                    <span id="messages-badge-menu" class="badge bg-danger ms-2" style="font-size: 0.7rem; padding: 0.2rem 0.4rem; display: none;">
+                                    <span id="messages-badge-menu" class="badge bg-danger ms-2"
+                                        style="font-size: 0.7rem; padding: 0.2rem 0.4rem; display: none;">
                                         0
                                     </span>
                                 </a></li>
-                                <li><a class="dropdown-item" href="{{ route('messages.index') }}">
+                            <li><a class="dropdown-item" href="{{ route('messages.index') }}">
                                     <i class="fas fa-comments"></i> الرسائل القديمة
                                 </a></li>
-                                <li><a class="dropdown-item" href="{{ route('notifications.index') }}">
+                            <li><a class="dropdown-item" href="{{ route('notifications.index') }}">
                                     <i class="fas fa-bell"></i> الإشعارات
-                                    @if(Auth::user()->unread_notifications_count > 0)
-                                        <span class="badge bg-danger ms-2" style="font-size: 0.7rem; padding: 0.2rem 0.4rem;">{{ Auth::user()->unread_notifications_count }}</span>
+                                    @if (Auth::user()->unread_notifications_count > 0)
+                                        <span class="badge bg-danger ms-2"
+                                            style="font-size: 0.7rem; padding: 0.2rem 0.4rem;">{{ Auth::user()->unread_notifications_count }}</span>
                                     @endif
                                 </a></li>
-                                <li><a class="dropdown-item" href="{{ route('services.my-services') }}">
+                            <li><a class="dropdown-item" href="{{ route('services.my-services') }}">
                                     <i class="fas fa-list"></i> {{ __('messages.my_services') }}
                                 </a></li>
-                                @if(Auth::user()->isProvider())
-                                    <li><a class="dropdown-item" href="{{ route('service-offers.my-offers') }}">
+                            @if (Auth::user()->isProvider())
+                                <li><a class="dropdown-item" href="{{ route('service-offers.my-offers') }}">
                                         <i class="fas fa-handshake"></i> {{ __('messages.my_offers') }}
                                     </a></li>
-                                @endif
-                                <li><a class="dropdown-item" href="{{ Auth::user()->isProvider() ? route('provider.profile') : route('profile') }}">
+                            @endif
+                            <li><a class="dropdown-item"
+                                    href="{{ Auth::user()->isProvider() ? route('provider.profile') : route('profile') }}">
                                     <i class="fas fa-user-edit"></i> {{ __('messages.profile') }}
                                 </a></li>
-                                @if(Auth::user()->isProvider() && !Auth::user()->hasCompleteProviderProfile())
-                                    <li><a class="dropdown-item text-warning" href="{{ route('provider.complete-profile') }}">
+                            @if (Auth::user()->isProvider() && !Auth::user()->hasCompleteProviderProfile())
+                                <li><a class="dropdown-item text-warning"
+                                        href="{{ route('provider.complete-profile') }}">
                                         <i class="fas fa-exclamation-triangle"></i> إكمال الملف الشخصي
                                     </a></li>
-                                @endif
-                                @if(Auth::user()->isProvider() && Auth::user()->hasCompleteProviderProfile())
-                                    <li><a class="dropdown-item text-primary" href="{{ route('provider.profile.edit') }}">
+                            @endif
+                            @if (Auth::user()->isProvider() && Auth::user()->hasCompleteProviderProfile())
+                                <li><a class="dropdown-item text-primary"
+                                        href="{{ route('provider.profile.edit') }}">
                                         <i class="fas fa-edit"></i> تعديل الملف الشخصي
                                     </a></li>
-                                @endif
-                                @if(Auth::user()->is_admin)
-                                    <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}">
+                            @endif
+                            @if (Auth::user()->is_admin)
+                                <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}">
                                         <i class="fas fa-cog"></i> {{ __('messages.admin_panel') }}
                                     </a></li>
-                                @endif
-                                <li><hr class="dropdown-divider" style="margin: 0.3rem 0;"></li>
-                                <li>
-                                    <form method="POST" action="{{ route('logout') }}" class="d-inline">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item">
-                                            <i class="fas fa-sign-out-alt"></i> {{ __('messages.logout') }}
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </li>
-                    @else
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('login') }}">{{ __('messages.login') }}</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('register') }}">{{ __('messages.register') }}</a>
-                        </li>
-                    @endauth
-                </ul>
-            </div>
+                            @endif
+                            <li>
+                                <hr class="dropdown-divider" style="margin: 0.3rem 0;">
+                            </li>
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}" class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fas fa-sign-out-alt"></i> {{ __('messages.logout') }}
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                @else
+                    <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">{{ __('messages.login') }}</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('register') }}">{{ __('messages.register') }}</a></li>
+                @endauth
+            </ul>
         </div>
-    </nav>
+    </div>
+</nav>
+
+<style>
+.custom-navbar {
+    background: rgba(47, 92, 105, 0.9);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.4s ease;
+}
+
+.custom-navbar .navbar-brand {
+    color: #fff !important;
+    font-size: 1.3rem;
+    letter-spacing: 0.5px;
+}
+
+.custom-navbar .nav-link {
+    color: #fff !important;
+    font-weight: 500;
+    transition: color 0.3s ease, transform 0.2s;
+}
+
+.custom-navbar .nav-link:hover {
+    color: #f3a446 !important;
+    transform: scale(1.05);
+}
+
+.custom-navbar .nav-link.active {
+    color: #f3a446 !important;
+    font-weight: 600;
+    border-bottom: 2px solid #f3a446;
+}
+
+.dropdown-menu {
+    border-radius: 10px;
+    border: none;
+    background-color: #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.dropdown-item:hover {
+    background-color: rgba(243,164,70,0.1);
+    color: #f3a446;
+}
+
+.navbar-toggler {
+    border: none;
+}
+
+.navbar-toggler:focus {
+    box-shadow: none;
+}
+
+.badge {
+    font-size: 0.7rem;
+    padding: 0.25em 0.4em;
+    border-radius: 50%;
+}
+</style>
+
 
     <!-- Main Content -->
     <main>
         <!-- Flash Messages -->
-        @if(session('success'))
+        @if (session('success'))
             <div class="container mt-4">
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <i class="fas fa-check-circle me-2"></i>
@@ -1553,7 +1161,7 @@
             </div>
         @endif
 
-        @if(session('error'))
+        @if (session('error'))
             <div class="container mt-4">
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     <i class="fas fa-exclamation-triangle me-2"></i>
@@ -1563,7 +1171,7 @@
             </div>
         @endif
 
-        @if(session('warning'))
+        @if (session('warning'))
             <div class="container mt-4">
                 <div class="alert alert-warning alert-dismissible fade show" role="alert">
                     <i class="fas fa-exclamation-circle me-2"></i>
@@ -1573,7 +1181,7 @@
             </div>
         @endif
 
-        @if(session('info'))
+        @if (session('info'))
             <div class="container mt-4">
                 <div class="alert alert-info alert-dismissible fade show" role="alert">
                     <i class="fas fa-info-circle me-2"></i>
@@ -1587,169 +1195,269 @@
     </main>
 
     <!-- Footer -->
-    <footer class="footer mt-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <h5><i class="fas fa-tools me-2"></i>Endak</h5>
-                    <p>{{ __('messages.welcome_subtitle') }}</p>
-                </div>
-                <div class="col-md-4">
-                    <h5>{{ __('messages.quick_links') }}</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="{{ route('home') }}" class="text-light">{{ __('messages.home') }}</a></li>
-                        <li><a href="{{ route('categories.index') }}" class="text-light">{{ __('messages.categories') }}</a></li>
-                        <li><a href="{{ route('services.index') }}" class="text-light">{{ __('messages.services') }}</a></li>
-                        <li><a href="{{ route('contact') }}" class="text-light">{{ __('messages.contact_us') }}</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h5>{{ __('messages.contact_info') }}</h5>
-                    <div class="social-links">
-                        <a href="#" class="text-light me-3"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="text-light me-3"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-light me-3"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="text-light"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
+<footer class="custom-footer mt-1">
+    <div class="container">
+        <div class="row text-center text-md-start">
+            <!-- Logo & Description -->
+            <div class="col-md-4 mb-4">
+                <h5 class="footer-title">
+                    <i class="fas fa-tools me-2 text-warning"></i> Endak
+                </h5>
+                <p class="footer-text">{{ __('messages.welcome_subtitle') }}</p>
             </div>
-            <hr class="my-4">
-            <div class="text-center">
-                <p>&copy; {{ date('Y') }} Endak. {{ __('messages.all_rights_reserved') }}</p>
+
+            <!-- Quick Links -->
+            <div class="col-md-4 mb-4">
+                <h5 class="footer-title">{{ __('messages.quick_links') }}</h5>
+                <ul class="list-unstyled mt-3">
+                    <li><a href="{{ route('home') }}" class="footer-link">{{ __('messages.home') }}</a></li>
+                    <li><a href="{{ route('categories.index') }}" class="footer-link">{{ __('messages.categories') }}</a></li>
+                    <li><a href="{{ route('services.index') }}" class="footer-link">{{ __('messages.services') }}</a></li>
+                    <li><a href="{{ route('contact') }}" class="footer-link">{{ __('messages.contact_us') }}</a></li>
+                </ul>
+            </div>
+
+            <!-- Social Media -->
+            <div class="col-md-4 mb-4">
+                <h5 class="footer-title">{{ __('messages.contact_info') }}</h5>
+                <div class="social-links mt-3">
+                    <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                </div>
             </div>
         </div>
-    </footer>
+
+        <hr class="footer-divider">
+
+        <div class="text-center mt-3">
+            <p class="footer-copy">&copy; {{ date('Y') }} <strong>Endak</strong>. {{ __('messages.all_rights_reserved') }}</p>
+        </div>
+    </div>
+</footer>
+
+<style>
+/* === Footer Styling (Matches Navbar) === */
+.custom-footer {
+    background: rgba(47, 92, 105, 0.95);
+    color: #f9f9f9;
+    padding: 50px 0 10px;
+    border-top: 2px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    position: relative;
+}
+
+/* Gradient glow at the top edge */
+.custom-footer::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    height: 3px;
+    background: linear-gradient(to right, transparent, #f3a446, transparent);
+    opacity: 0.8;
+}
+
+/* Titles */
+.footer-title {
+    font-weight: 600;
+    color: #fff;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+}
+
+/* Text */
+.footer-text {
+    color: #dce8eb;
+    font-size: 0.95rem;
+    line-height: 1.7;
+}
+
+/* Links */
+.footer-link {
+    display: block;
+    color: #e9f2f4;
+    text-decoration: none;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+}
+.footer-link:hover {
+    color: #f3a446;
+    transform: translateX(5px);
+}
+
+/* Divider line */
+.footer-divider {
+    border-color: rgba(255, 255, 255, 0.1);
+    margin: 30px 0;
+}
+
+/* Social icons */
+.social-icon {
+    display: inline-block;
+    margin-right: 15px;
+    font-size: 20px;
+    color: #e9f2f4;
+    background: rgba(255, 255, 255, 0.08);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    line-height: 42px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.social-icon:hover {
+    color: #f3a446;
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-3px);
+}
+
+
+/* Copy text */
+.footer-copy {
+    color: #d3dede;
+    font-size: 0.9rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .custom-footer {
+        text-align: center;
+        padding: 40px 20px;
+    }
+}
+</style>
+
 
     <!-- Modern Footer Navigation -->
-    <nav class="footer-nav">
-        <div class="footer-nav-container">
-            <a href="{{ route('home') }}" class="footer-nav-item {{ request()->routeIs('home') ? 'active' : '' }}">
-                <div class="footer-nav-icon">
-                    <i class="fas fa-home"></i>
-                </div>
-                <span class="footer-nav-text">الرئيسية</span>
-            </a>
+<nav class="footer-nav">
+    <div class="footer-nav-container">
+        <a href="{{ route('home') }}" class="footer-nav-item {{ request()->routeIs('home') ? 'active' : '' }}">
+            <div class="footer-nav-icon">
+                <i class="fas fa-home"></i>
+            </div>
+            <span class="footer-nav-text">الرئيسية</span>
+        </a>
 
-            @auth
-                @if(Auth::user()->isProvider())
-                    <!-- مزود الخدمة -->
-                    <a href="{{ route('services.index') }}" class="footer-nav-item {{ request()->routeIs('services.my-services') ? 'active' : '' }}">
-                        <div class="footer-nav-icon">
-                            <i class="fas fa-concierge-bell"></i>
-                        </div>
-                        <span class="footer-nav-text">الخدمات</span>
-                    </a>
-                @else
-                    <!-- مستخدم عادي -->
-                    <a href="{{ route('services.my-services') }}" class="footer-nav-item {{ request()->routeIs('services.my-services') ? 'active' : '' }}">
-                        <div class="footer-nav-icon">
-                            <i class="fas fa-th-large"></i>
-                        </div>
-                        <span class="footer-nav-text">إعلاناتي</span>
-                    </a>
-                @endif
+        @auth
+            @if (Auth::user()->isProvider())
+                <a href="{{ route('services.index') }}"
+                    class="footer-nav-item {{ request()->routeIs('services.my-services') ? 'active' : '' }}">
+                    <div class="footer-nav-icon">
+                        <i class="fas fa-concierge-bell"></i>
+                    </div>
+                    <span class="footer-nav-text">الخدمات</span>
+                </a>
             @else
-                <a href="{{ route('login') }}" class="footer-nav-item">
+                <a href="{{ route('services.index') }}"
+                    class="footer-nav-item {{ request()->routeIs('services.my-services') ? 'active' : '' }}">
                     <div class="footer-nav-icon">
                         <i class="fas fa-th-large"></i>
                     </div>
                     <span class="footer-nav-text">إعلاناتي</span>
                 </a>
-            @endauth
+            @endif
+        @else
+            <a href="{{ route('login') }}" class="footer-nav-item">
+                <div class="footer-nav-icon">
+                    <i class="fas fa-th-large"></i>
+                </div>
+                <span class="footer-nav-text">إعلاناتي</span>
+            </a>
+        @endauth
 
-            @auth
-                @if(Auth::user()->isProvider())
-                    <!-- مزود الخدمة - عروضي -->
-                    <a href="{{ route('service-offers.my-offers') }}" class="footer-nav-item footer-nav-center {{ request()->routeIs('service-offers.my-offers') ? 'active' : '' }}">
-                        <div class="footer-nav-icon footer-nav-icon-center">
-                            <i class="fas fa-handshake"></i>
-                        </div>
-                        <span class="footer-nav-text">عروضي</span>
-                    </a>
-                @else
-                    <!-- مستخدم عادي - نشر إعلان -->
-                    <a href="{{ route('categories.index') }}" class="footer-nav-item footer-nav-center">
-                        <div class="footer-nav-icon footer-nav-icon-center">
-                            <i class="fas fa-plus"></i>
-                        </div>
-                        <span class="footer-nav-text">نشر إعلان</span>
-                    </a>
-                @endif
+        @auth
+            @if (Auth::user()->isProvider())
+                <a href="{{ route('service-offers.my-offers') }}"
+                    class="footer-nav-item footer-nav-center {{ request()->routeIs('service-offers.my-offers') ? 'active' : '' }}">
+                    <div class="footer-nav-icon footer-nav-icon-center">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <span class="footer-nav-text">عروضي</span>
+                </a>
             @else
-                <!-- غير مسجل دخول -->
                 <a href="{{ route('categories.index') }}" class="footer-nav-item footer-nav-center">
                     <div class="footer-nav-icon footer-nav-icon-center">
                         <i class="fas fa-plus"></i>
                     </div>
                     <span class="footer-nav-text">نشر إعلان</span>
                 </a>
-            @endauth
-
-            @auth
-                <a href="{{ route('messages.index') }}" class="footer-nav-item {{ request()->routeIs('messages.*') ? 'active' : '' }}">
-                    <div class="footer-nav-icon">
-                        <i class="fas fa-comments"></i>
-                        @if(Auth::user()->unread_messages_count > 0)
-                            <span class="footer-nav-badge footer-nav-badge-messages">{{ Auth::user()->unread_messages_count > 99 ? '99+' : Auth::user()->unread_messages_count }}</span>
-                        @endif
-                    </div>
-                    <span class="footer-nav-text">الرسائل</span>
-                </a>
-            @else
-                <a href="{{ route('login') }}" class="footer-nav-item">
-                    <div class="footer-nav-icon">
-                        <i class="fas fa-comments"></i>
-                    </div>
-                    <span class="footer-nav-text">الرسائل</span>
-                </a>
-            @endauth
-
-            @auth
-                <a href="{{ route('notifications.index') }}" class="footer-nav-item {{ request()->routeIs('notifications.*') ? 'active' : '' }}">
-                    <div class="footer-nav-icon">
-                        <i class="fas fa-bell"></i>
-                        @if(Auth::user()->unread_notifications_count > 0)
-                            <span class="footer-nav-badge footer-nav-badge-notifications">{{ Auth::user()->unread_notifications_count > 99 ? '99+' : Auth::user()->unread_notifications_count }}</span>
-                        @endif
-                    </div>
-                    <span class="footer-nav-text">الإشعارات</span>
-                </a>
-            @else
-                <a href="{{ route('login') }}" class="footer-nav-item">
-                    <div class="footer-nav-icon">
-                        <i class="fas fa-bell"></i>
-                    </div>
-                    <span class="footer-nav-text">الإشعارات</span>
-                </a>
-            @endauth
-
-            <a href="#" class="footer-nav-item" onclick="toggleMenu()">
-                <div class="footer-nav-icon">
-                    <i class="fas fa-bars"></i>
+            @endif
+        @else
+            <a href="{{ route('categories.index') }}" class="footer-nav-item footer-nav-center">
+                <div class="footer-nav-icon footer-nav-icon-center">
+                    <i class="fas fa-plus"></i>
                 </div>
-                <span class="footer-nav-text">القائمة</span>
+                <span class="footer-nav-text">نشر إعلان</span>
             </a>
-        </div>
-    </nav>
+        @endauth
+
+        @auth
+            <a href="{{ route('messages.index') }}"
+                class="footer-nav-item {{ request()->routeIs('messages.*') ? 'active' : '' }}">
+                <div class="footer-nav-icon">
+                    <i class="fas fa-comments"></i>
+                    @if (Auth::user()->unread_messages_count > 0)
+                        <span
+                            class="footer-nav-badge footer-nav-badge-messages">{{ Auth::user()->unread_messages_count > 99 ? '99+' : Auth::user()->unread_messages_count }}</span>
+                    @endif
+                </div>
+                <span class="footer-nav-text">الرسائل</span>
+            </a>
+        @else
+            <a href="{{ route('login') }}" class="footer-nav-item">
+                <div class="footer-nav-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <span class="footer-nav-text">الرسائل</span>
+            </a>
+        @endauth
+
+        @auth
+            <a href="{{ route('notifications.index') }}"
+                class="footer-nav-item {{ request()->routeIs('notifications.*') ? 'active' : '' }}">
+                <div class="footer-nav-icon">
+                    <i class="fas fa-bell"></i>
+                    @if (Auth::user()->unread_notifications_count > 0)
+                        <span
+                            class="footer-nav-badge footer-nav-badge-notifications">{{ Auth::user()->unread_notifications_count > 99 ? '99+' : Auth::user()->unread_notifications_count }}</span>
+                    @endif
+                </div>
+                <span class="footer-nav-text">الإشعارات</span>
+            </a>
+        @else
+            <a href="{{ route('login') }}" class="footer-nav-item">
+                <div class="footer-nav-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <span class="footer-nav-text">الإشعارات</span>
+            </a>
+        @endauth
+
+        <a href="#" class="footer-nav-item" onclick="toggleMenu()">
+            <div class="footer-nav-icon">
+                <i class="fas fa-bars"></i>
+            </div>
+            <span class="footer-nav-text">القائمة</span>
+        </a>
+    </div>
+</nav>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-        <!-- Enhanced JavaScript -->
+    <!-- Enhanced JavaScript -->
     <script>
         // Navbar scroll effect
-        window.addEventListener('scroll', function() {
-            const navbar = document.querySelector('.navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
+    
 
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
+            anchor.addEventListener('click', function(e) {
                 e.preventDefault();
                 const target = document.querySelector(this.getAttribute('href'));
                 if (target) {
@@ -1780,7 +1488,7 @@
             observer.observe(el);
         });
 
-                // Enhanced button effects
+        // Enhanced button effects
         document.querySelectorAll('.btn').forEach(btn => {
             btn.addEventListener('mouseenter', function() {
                 this.style.transform = 'translateY(-2px) scale(1.01)';
@@ -1834,7 +1542,7 @@
         });
 
         // Enhanced dropdown functionality
-                        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM loaded, initializing dropdowns...');
 
             // Simple dropdown functionality
@@ -1937,14 +1645,15 @@
 
         // Tooltip initialization
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
         });
 
         // Messages Update Script
         @auth
+
         function updateMessagesCount() {
-            fetch('{{ route("messages.unread-count") }}')
+            fetch('{{ route('messages.unread-count') }}')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -1996,7 +1705,8 @@
                             const bell = document.querySelector('.fa-bell');
                             if (bell && bell.parentElement) {
                                 const newBadge = document.createElement('span');
-                                newBadge.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-badge';
+                                newBadge.className =
+                                    'position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-badge';
                                 newBadge.textContent = notificationCount > 99 ? '99+' : notificationCount;
                                 bell.parentElement.appendChild(newBadge);
                             }
@@ -2011,15 +1721,7 @@
         }, 30000);
         @endauth
 
-        // Parallax effect for hero section
-        window.addEventListener('scroll', function() {
-            const scrolled = window.pageYOffset;
-            const parallax = document.querySelector('.hero-section');
-            if (parallax) {
-                const speed = scrolled * 0.5;
-                parallax.style.transform = `translateY(${speed}px)`;
-            }
-        });
+  
 
         // Search functionality enhancement
         const searchInput = document.querySelector('input[type="search"]');
@@ -2058,40 +1760,97 @@
         function toggleMenu() {
             // Create a modal or dropdown menu for the menu button
             @auth
-                @if(Auth::user()->isProvider())
-                    // مزود الخدمة
-                    const menuItems = [
-                        { icon: 'fas fa-user', text: 'الملف الشخصي', href: '{{ route("provider.profile") }}' },
-                        { icon: 'fas fa-concierge-bell', text: 'خدماتي', href: '{{ route("services.my-services") }}' },
-                        { icon: 'fas fa-handshake', text: 'عروضي', href: '{{ route("service-offers.my-offers") }}' },
-                        { icon: 'fas fa-cog', text: 'الإعدادات', href: '#' },
-                        { icon: 'fas fa-question-circle', text: 'المساعدة', href: '{{ route("contact") }}' },
-                        { icon: 'fas fa-info-circle', text: 'حول التطبيق', href: '#' }
-                    ];
-                @else
-                    // مستخدم عادي
-                    const menuItems = [
-                        { icon: 'fas fa-user', text: 'الملف الشخصي', href: '{{ route("profile") }}' },
-                        { icon: 'fas fa-th-large', text: 'إعلاناتي', href: '{{ route("services.my-services") }}' },
-                        { icon: 'fas fa-cog', text: 'الإعدادات', href: '#' },
-                        { icon: 'fas fa-question-circle', text: 'المساعدة', href: '{{ route("contact") }}' },
-                        { icon: 'fas fa-info-circle', text: 'حول التطبيق', href: '#' }
-                    ];
-                @endif
-            @else
-                // غير مسجل دخول
-                const menuItems = [
-                    { icon: 'fas fa-sign-in-alt', text: 'تسجيل الدخول', href: '{{ route("login") }}' },
-                    { icon: 'fas fa-user-plus', text: 'إنشاء حساب', href: '{{ route("register") }}' },
-                    { icon: 'fas fa-question-circle', text: 'المساعدة', href: '{{ route("contact") }}' },
-                    { icon: 'fas fa-info-circle', text: 'حول التطبيق', href: '#' }
+            @if (Auth::user()->isProvider())
+                // مزود الخدمة
+                const menuItems = [{
+                        icon: 'fas fa-user',
+                        text: 'الملف الشخصي',
+                        href: '{{ route('provider.profile') }}'
+                    },
+                    {
+                        icon: 'fas fa-concierge-bell',
+                        text: 'خدماتي',
+                        href: '{{ route('services.my-services') }}'
+                    },
+                    {
+                        icon: 'fas fa-handshake',
+                        text: 'عروضي',
+                        href: '{{ route('service-offers.my-offers') }}'
+                    },
+                    {
+                        icon: 'fas fa-cog',
+                        text: 'الإعدادات',
+                        href: '#'
+                    },
+                    {
+                        icon: 'fas fa-question-circle',
+                        text: 'المساعدة',
+                        href: '{{ route('contact') }}'
+                    },
+                    {
+                        icon: 'fas fa-info-circle',
+                        text: 'حول التطبيق',
+                        href: '#'
+                    }
                 ];
-            @endauth
+            @else
+                // مستخدم عادي
+                const menuItems = [{
+                        icon: 'fas fa-user',
+                        text: 'الملف الشخصي',
+                        href: '{{ route('profile') }}'
+                    },
+                    {
+                        icon: 'fas fa-th-large',
+                        text: 'إعلاناتي',
+                        href: '{{ route('services.index') }}'
+                    },
+                    {
+                        icon: 'fas fa-cog',
+                        text: 'الإعدادات',
+                        href: '#'
+                    },
+                    {
+                        icon: 'fas fa-question-circle',
+                        text: 'المساعدة',
+                        href: '{{ route('contact') }}'
+                    },
+                    {
+                        icon: 'fas fa-info-circle',
+                        text: 'حول التطبيق',
+                        href: '#'
+                    }
+                ];
+            @endif
+        @else
+            // غير مسجل دخول
+            const menuItems = [{
+                    icon: 'fas fa-sign-in-alt',
+                    text: 'تسجيل الدخول',
+                    href: '{{ route('login') }}'
+                },
+                {
+                    icon: 'fas fa-user-plus',
+                    text: 'إنشاء حساب',
+                    href: '{{ route('register') }}'
+                },
+                {
+                    icon: 'fas fa-question-circle',
+                    text: 'المساعدة',
+                    href: '{{ route('contact') }}'
+                },
+                {
+                    icon: 'fas fa-info-circle',
+                    text: 'حول التطبيق',
+                    href: '#'
+                }
+            ];
+        @endauth
 
-            // Create menu modal
-            const menuModal = document.createElement('div');
-            menuModal.className = 'footer-menu-modal';
-            menuModal.innerHTML = `
+        // Create menu modal
+        const menuModal = document.createElement('div');
+        menuModal.className = 'footer-menu-modal';
+        menuModal.innerHTML = `
                 <div class="footer-menu-overlay" onclick="closeMenu()"></div>
                 <div class="footer-menu-content">
                     <div class="footer-menu-header">
@@ -2102,11 +1861,11 @@
                     </div>
                     <div class="footer-menu-items">
                         ${menuItems.map(item => `
-                            <a href="${item.href}" class="footer-menu-item">
-                                <i class="${item.icon}"></i>
-                                <span>${item.text}</span>
-                            </a>
-                        `).join('')}
+                                    <a href="${item.href}" class="footer-menu-item">
+                                        <i class="${item.icon}"></i>
+                                        <span>${item.text}</span>
+                                    </a>
+                                `).join('')}
                         @auth
                             <hr class="footer-menu-divider">
                             <a href="{{ route('logout') }}" class="footer-menu-item" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
@@ -2127,9 +1886,9 @@
                 </div>
             `;
 
-            // Add modal styles
-            const modalStyles = document.createElement('style');
-            modalStyles.textContent = `
+        // Add modal styles
+        const modalStyles = document.createElement('style');
+        modalStyles.textContent = `
                 .footer-menu-modal {
                     position: fixed;
                     top: 0;
@@ -2238,100 +1997,73 @@
                 }
             `;
 
-            document.head.appendChild(modalStyles);
-            document.body.appendChild(menuModal);
+        document.head.appendChild(modalStyles);
+        document.body.appendChild(menuModal);
 
-            // Prevent body scroll
-            document.body.style.overflow = 'hidden';
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
         }
 
-        function closeMenu() {
-            const modal = document.querySelector('.footer-menu-modal');
-            if (modal) {
-                modal.style.animation = 'slideDown 0.3s ease-out';
-                setTimeout(() => {
-                    modal.remove();
-                    document.body.style.overflow = '';
-                }, 300);
-            }
-        }
+
 
         // Add slideDown animation
         const slideDownStyle = document.createElement('style');
-        slideDownStyle.textContent = `
-            @keyframes slideDown {
-                from {
-                    transform: translateY(0);
-                }
-                to {
-                    transform: translateY(100%);
-                }
-            }
-        `;
+
         document.head.appendChild(slideDownStyle);
 
         // Update footer navigation badges
         @auth
-        function updateFooterNavBadges() {
-            // Update messages badge
-            fetch('{{ route("messages.unread-count") }}')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const messagesBadge = document.querySelector('.footer-nav-badge-messages');
-                        if (data.count > 0) {
-                            const count = data.count > 99 ? '99+' : data.count;
-                            if (messagesBadge) {
-                                messagesBadge.textContent = count;
-                                messagesBadge.style.display = 'flex';
-                            } else {
-                                // Create badge if it doesn't exist
-                                const messagesIcon = document.querySelector('.footer-nav-item[href*="messages"] .footer-nav-icon');
-                                if (messagesIcon) {
-                                    const newBadge = document.createElement('span');
-                                    newBadge.className = 'footer-nav-badge footer-nav-badge-messages';
-                                    newBadge.textContent = count;
-                                    messagesIcon.appendChild(newBadge);
-                                }
-                            }
-                        } else {
-                            if (messagesBadge) {
-                                messagesBadge.style.display = 'none';
-                            }
-                        }
-                    }
-                })
-                .catch(error => console.log('Error updating messages badge:', error));
-
-            // Update notifications badge
-            fetch('/notifications/unread')
-                .then(response => response.json())
-                .then(data => {
-                    const notificationsBadge = document.querySelector('.footer-nav-badge-notifications');
-                    if (data.count > 0) {
-                        const count = data.count > 99 ? '99+' : data.count;
-                        if (notificationsBadge) {
-                            notificationsBadge.textContent = count;
-                            notificationsBadge.style.display = 'flex';
-                        } else {
-                            // Create badge if it doesn't exist
-                            const notificationsIcon = document.querySelector('.footer-nav-item[href*="notifications"] .footer-nav-icon');
-                            if (notificationsIcon) {
-                                const newBadge = document.createElement('span');
-                                newBadge.className = 'footer-nav-badge footer-nav-badge-notifications';
-                                newBadge.textContent = count;
-                                notificationsIcon.appendChild(newBadge);
-                            }
-                        }
+ function updateFooterNavBadges() {
+        fetch('{{ route('messages.unread-count') }}')
+            .then(response => response.json())
+            .then(data => {
+                const badge = document.querySelector('.footer-nav-badge-messages');
+                const icon = document.querySelector('.footer-nav-item[href*="messages"] .footer-nav-icon');
+                if (data.success && data.count > 0) {
+                    const count = data.count > 99 ? '99+' : data.count;
+                    if (badge) {
+                        badge.textContent = count;
+                        badge.style.display = 'flex';
                     } else {
-                        if (notificationsBadge) {
-                            notificationsBadge.style.display = 'none';
-                        }
+                        const newBadge = document.createElement('span');
+                        newBadge.className = 'footer-nav-badge footer-nav-badge-messages';
+                        newBadge.textContent = count;
+                        icon.appendChild(newBadge);
                     }
-                })
-                .catch(error => console.log('Error updating notifications badge:', error));
-        }
+                } else if (badge) {
+                    badge.style.display = 'none';
+                }
+            });
 
+        fetch('/notifications/unread')
+            .then(response => response.json())
+            .then(data => {
+                const badge = document.querySelector('.footer-nav-badge-notifications');
+                const icon = document.querySelector('.footer-nav-item[href*="notifications"] .footer-nav-icon');
+                if (data.count > 0) {
+                    const count = data.count > 99 ? '99+' : data.count;
+                    if (badge) {
+                        badge.textContent = count;
+                        badge.style.display = 'flex';
+                    } else {
+                        const newBadge = document.createElement('span');
+                        newBadge.className = 'footer-nav-badge footer-nav-badge-notifications';
+                        newBadge.textContent = count;
+                        icon.appendChild(newBadge);
+                    }
+                } else if (badge) {
+                    badge.style.display = 'none';
+                }
+            });
+    }
+
+    function closeMenu() {
+    const menuModal = document.querySelector('.footer-menu-modal');
+    if (menuModal) {
+        menuModal.remove();
+        document.body.style.overflow = ''; // يرجّع سكرول الصفحة
+    }
+}
         // Update badges every 30 seconds
         setInterval(updateFooterNavBadges, 30000);
         updateFooterNavBadges();
@@ -2340,12 +2072,12 @@
         // Handle login requirement for protected links
         function handleProtectedLink(event, href) {
             @guest
-                event.preventDefault();
-                // Show login modal or redirect to login
-                if (confirm('يجب تسجيل الدخول أولاً. هل تريد الانتقال لصفحة تسجيل الدخول؟')) {
-                    window.location.href = '{{ route("login") }}';
-                }
-            @endguest
+            event.preventDefault();
+            // Show login modal or redirect to login
+            if (confirm('يجب تسجيل الدخول أولاً. هل تريد الانتقال لصفحة تسجيل الدخول؟')) {
+                window.location.href = '{{ route('login') }}';
+            }
+        @endguest
         }
     </script>
 
@@ -2379,11 +2111,17 @@
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
         }
 
-        /* تحسين الأزرار */
         .btn {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
@@ -2393,12 +2131,10 @@
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
         }
 
-        /* تحسين النافبار */
         .navbar {
             backdrop-filter: blur(20px) !important;
         }
 
-        /* تحسين الكروت */
         .card {
             transition: all 0.3s ease !important;
         }
@@ -2441,9 +2177,11 @@
             0% {
                 box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
             }
+
             70% {
                 box-shadow: 0 0 0 10px rgba(37, 211, 102, 0);
             }
+
             100% {
                 box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
             }
@@ -2462,8 +2200,12 @@
     </style>
 
     <!-- أيقونة الواتساب -->
-    <a href="https://wa.me/966500000000" class="whatsapp-float" target="_blank" title="تواصل معنا عبر الواتساب">
-        <i class="fab fa-whatsapp"></i>
-    </a>
+    @if (\App\Helpers\WhatsAppHelper::isEnabled())
+        <a href="{{ \App\Helpers\WhatsAppHelper::getWhatsAppUrl() }}" class="whatsapp-float" target="_blank"
+            title="تواصل معنا عبر الواتساب">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+    @endif
 </body>
+
 </html>

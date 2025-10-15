@@ -6,7 +6,6 @@
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-8">
-            <!-- الملف الشخصي -->
             <div class="card shadow mb-4">
                 <div class="card-header bg-primary text-white">
                     <h4 class="mb-0">
@@ -131,7 +130,6 @@
                 </div>
             </div>
 
-            <!-- المدن -->
             <div class="card shadow mb-4">
                 <div class="card-header bg-info text-white">
                     <h5 class="mb-0">
@@ -167,7 +165,6 @@
         </div>
 
         <div class="col-md-4">
-            <!-- ساعات العمل -->
             <div class="card shadow mb-4">
                 <div class="card-header bg-warning text-dark">
                     <h5 class="mb-0">
@@ -293,7 +290,6 @@
     </div>
 </div>
 
-<!-- Modal إضافة مدينة -->
 <div class="modal fade" id="addCityModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -351,7 +347,6 @@ document.getElementById('addCategoryForm').addEventListener('submit', function(e
     });
 });
 
-// إضافة مدينة جديدة
 document.getElementById('addCityForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -379,7 +374,6 @@ document.getElementById('addCityForm').addEventListener('submit', function(e) {
     });
 });
 
-// حذف مدينة
 function removeCity(cityId) {
     if (confirm('هل أنت متأكد من حذف هذه المدينة؟')) {
         fetch(`{{ url('provider/cities') }}/${cityId}`, {

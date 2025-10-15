@@ -134,7 +134,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
             Route::get('/service-offers', [App\Http\Controllers\Admin\ServiceOfferController::class, 'index'])->name('service-offers.index');
             Route::get('/service-offers/{offer}', [App\Http\Controllers\Admin\ServiceOfferController::class, 'show'])->name('service-offers.show');
             Route::patch('/service-offers/{offer}/toggle-status', [App\Http\Controllers\Admin\ServiceOfferController::class, 'toggleStatus'])->name('service-offers.toggle-status');
-
+            
             // إدارة المستخدمين
             Route::get('/users', [App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
             Route::get('/users/{user}', [App\Http\Controllers\Admin\UserController::class, 'show'])->name('users.show');

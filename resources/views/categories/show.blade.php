@@ -45,140 +45,180 @@
 @endif
 
 <!-- Category Header -->
-<section class="py-5 bg-light">
+<section class="py-4 category-header-section">
     <div class="container">
-        <nav aria-label="breadcrumb">
+        <nav aria-label="breadcrumb" class="fade-in">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('home') }}">الرئيسية</a></li>
                 <li class="breadcrumb-item"><a href="{{ route('categories.index') }}">الأقسام</a></li>
                 @if($category->parent)
-                <li class="breadcrumb-item"><a href="{{ route('categories.show', $category->parent->slug) }}">{{ $category->parent->name }}</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('categories.show', $category->parent->slug) }}">{{ $category->parent->name }}</a></li>
                 @endif
                 <li class="breadcrumb-item active" aria-current="page">{{ $category->name }}</li>
             </ol>
         </nav>
 
-        <div class="row align-items-center">
-            <div class="col-md-8">
-                <h1 class="fw-bold">{{ $category->name }}</h1>
-                <p class="lead text-muted">{{ $category->description }}</p>
-                            <div class="d-flex gap-2">
-                <span class="badge bg-primary">{{ $services->total() }} خدمة</span>
-                @if($category->subCategories && $category->subCategories->count() > 0)
-                <span class="badge bg-secondary">{{ $category->subCategories->count() }} قسم فرعي</span>
-                @endif
+        <div class="row align-items-center fade-in-up">
+            <div class="col-md-8 mb-4 mb-md-0">
+                <h1 class="fw-bold  mb-3">{{ $category->name }}</h1>
+                <p class="lead text-light opacity-75">{{ $category->description }}</p>
+
+                <div class="d-flex flex-wrap gap-2 align-items-center mt-3">
+                    <span class="badge bg-light text-dark fw-semibold">{{ $services->total() }} خدمة</span>
+                    @if($category->subCategories && $category->subCategories->count() > 0)
+                        <span class="badge bg-warning text-dark fw-semibold">{{ $category->subCategories->count() }} قسم فرعي</span>
+                    @endif
 
                     @auth
                         @if(!auth()->user()->isProvider())
                             @if($category->subCategories && $category->subCategories->count() > 0)
-                                <div class="alert alert-info">
-                                    <i class="fas fa-info-circle"></i>
+                                <div class="alert alert-info mt-3 w-100 fade-in info-box">
+                                    <i class="fas fa-info-circle "></i>
                                     <strong>يرجى اختيار قسم فرعي لطلب الخدمة</strong>
                                     <br><small>هذا القسم يحتوي على أقسام فرعية، يرجى اختيار القسم الفرعي المناسب من القائمة أدناه</small>
                                 </div>
                             @else
-                                <a href="{{ route('services.request', $category->id) }}" class="btn btn-success">
+                                <a href="{{ route('services.request', $category->id) }}" class="btn btn-warning mt-3 fw-bold text-dark shine-btn">
                                     <i class="fas fa-concierge-bell"></i> طلب خدمة من هذا القسم
                                 </a>
                             @endif
                         @endif
                     @else
-                        <a href="{{ route('login') }}" class="btn btn-outline-success">
+                        <a href="{{ route('login') }}" class="btn btn-outline-light mt-3 fw-bold">
                             <i class="fas fa-sign-in-alt"></i> تسجيل دخول لطلب الخدمة
                         </a>
                     @endauth
                 </div>
             </div>
-            <div class="col-md-4 text-center">
+
+            <div class="col-md-4 text-center fade-in">
                 <div class="category-header-image">
-                    <img src="{{ $category->image_url }}" class="img-fluid rounded" alt="{{ $category->name }}" style="max-height: 200px; object-fit: cover; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                    <img src="{{ $category->image_url }}" class="img-fluid rounded shadow category-main-image" alt="{{ $category->name }}">
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Subcategories Section -->
 @if($category->subCategories && $category->subCategories->count() > 0)
-<section class="py-4">
+<section class="py-5 subcategories-section fade-in-up">
     <div class="container">
-        <h3 class="mb-4 text-center" style="color:#1976d2; font-weight:bold;">
-            <i class="fas fa-layer-group"></i> الأقسام الفرعية
+        <h3 class="mb-5 text-center section-title">
+            <i class="fas fa-layer-group me-2 text-warning"></i> الأقسام الفرعية
         </h3>
         <div class="row">
             @foreach($category->subCategories as $subCategory)
                 @if($subCategory->status)
-                <div class="col-md-3 col-sm-6 mb-3">
-                    <div class="card text-center h-100 sub-category-card" style="border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: all 0.3s ease;">
-                        <div class="subcategory-image-container">
-                            @if($subCategory->image)
-                                <img src="{{ asset('storage/' . $subCategory->image) }}" class="subcategory-image" alt="{{ $subCategory->name_ar ?? $subCategory->name_en }}">
-                            @else
-                                <div class="subcategory-image-placeholder">
-                                    <i class="fas fa-folder" style="font-size: 3rem; color: #6c757d;"></i>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <a href="{{ route('services.request', $category->id) }}?sub_category_id={{ $subCategory->id }}" class="text-decoration-none text-dark">
+                        <div class="card sub-category-card h-100 text-center clickable-card">
+                            <div class="subcategory-image-container">
+                                @if($subCategory->image)
+                                    <img src="{{ asset('storage/' . $subCategory->image) }}" class="subcategory-image" alt="{{ $subCategory->name_ar ?? $subCategory->name_en }}">
+                                @else
+                                    <div class="subcategory-image-placeholder">
+                                        <i class="fas fa-folder" style="font-size: 3rem; color: #6c757d;"></i>
+                                    </div>
+                                @endif
+                                <div class="subcategory-overlay">
+                                    <h6 class="subcategory-title">{{ app()->getLocale() == 'ar' ? $subCategory->name_ar : $subCategory->name_en }}</h6>
                                 </div>
-                            @endif
-                            <div class="subcategory-overlay">
-                                <h6 class="subcategory-title">{{ app()->getLocale() == 'ar' ? $subCategory->name_ar : $subCategory->name_en }}</h6>
                             </div>
-                        </div>
-                        <div class="card-body">
-                            @if($subCategory->description_ar || $subCategory->description_en)
-                                <p class="card-text text-muted" style="font-size: 0.9rem; margin-bottom: 1rem;">
-                                    {{ app()->getLocale() == 'ar' ? $subCategory->description_ar : $subCategory->description_en }}
-                                </p>
-                            @endif
+                            <div class="card-body">
+                                @if($subCategory->description_ar || $subCategory->description_en)
+                                    <p class="card-text text-muted small mb-3">
+                                        {{ app()->getLocale() == 'ar' ? $subCategory->description_ar : $subCategory->description_en }}
+                                    </p>
+                                @endif
 
-                            <!-- Services Count -->
-                            @php
-                                $servicesCount = \App\Models\Service::where('category_id', $category->id)
-                                                                   ->where('sub_category_id', $subCategory->id)
-                                                                   ->where('is_active', true)
-                                                                   ->count();
-                            @endphp
-                            <div class="text-center mb-2">
-                                <small class="text-muted">
+                                @php
+                                    $servicesCount = \App\Models\Service::where('category_id', $category->id)
+                                                                       ->where('sub_category_id', $subCategory->id)
+                                                                       ->where('is_active', true)
+                                                                       ->count();
+                                @endphp
+                                <small class="text-muted d-block mb-2">
                                     <i class="fas fa-tasks"></i> {{ $servicesCount }} خدمة
                                 </small>
-                            </div>
 
-                            <div class="d-flex gap-1 justify-content-center">
-                                <a href="{{ route('categories.show', $category->slug) }}?sub_category_id={{ $subCategory->id }}" class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-eye"></i> استكشف
-                                </a>
                                 @auth
                                     @if(!auth()->user()->isProvider())
-                                        <a href="{{ route('services.request', $category->id) }}?sub_category_id={{ $subCategory->id }}" class="btn btn-sm btn-success">
+                                        <span class="btn btn-sm btn-success disabled" style="pointer-events: none;">
                                             <i class="fas fa-concierge-bell"></i> طلب خدمة
-                                        </a>
+                                        </span>
                                     @endif
                                 @endauth
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 @endif
             @endforeach
         </div>
     </div>
 </section>
+
+<style>
+.clickable-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.clickable-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+.subcategory-image-container {
+    position: relative;
+    overflow: hidden;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+.subcategory-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+.clickable-card:hover .subcategory-image {
+    transform: scale(1.08);
+}
+.subcategory-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(47, 92, 105, 0.8);
+    color: #f3a446;
+    padding: 10px;
+}
+.subcategory-title {
+    margin: 0;
+    font-weight: 600;
+}
+.btn-success.disabled {
+    opacity: 0.7;
+}
+</style>
+
 @endif
 
-<!-- Services Section -->
-<section class="py-5">
+<section class="py-5 services-section fade-in-up">
     <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
             <div>
-                <h3>
+                <h3 class="fw-bold text-success">
                     الخدمات في {{ $category->name }}
                     @if($selectedSubCategory)
                         <small class="text-muted">- {{ app()->getLocale() == 'ar' ? $selectedSubCategory->name_ar : $selectedSubCategory->name_en }}</small>
                     @endif
-                    <span class="badge bg-primary ms-2">{{ $services->total() }} خدمة</span>
+                    <span class="badge bg-warning text-dark ms-2">{{ $services->total() }} خدمة</span>
                 </h3>
                 @if($selectedSubCategory)
-                    <div class="alert alert-info mt-2 mb-0">
-                        <i class="fas fa-filter"></i>
+                    <div class="alert alert-info mt-3 fade-in info-box">
+                        <i class="fas fa-filter text-primary"></i>
                         <strong>القسم الفرعي المحدد:</strong>
                         {{ app()->getLocale() == 'ar' ? $selectedSubCategory->name_ar : $selectedSubCategory->name_en }}
                         <a href="{{ route('categories.show', $category->slug) }}" class="btn btn-sm btn-outline-secondary ms-2">
@@ -187,28 +227,34 @@
                     </div>
                 @endif
             </div>
-            <div class="d-flex gap-2">
-                <form class="d-flex" method="GET">
-                    @if(request('sub_category_id'))
-                        <input type="hidden" name="sub_category_id" value="{{ request('sub_category_id') }}">
-                    @endif
-                    <input type="text" name="search" class="form-control me-2" placeholder="البحث في الخدمات..." value="{{ request('search') }}">
-                    <button type="submit" class="btn btn-outline-primary">بحث</button>
-                </form>
-            </div>
+
+            <form class="d-flex mt-3 mt-md-0" method="GET">
+                @if(request('sub_category_id'))
+                    <input type="hidden" name="sub_category_id" value="{{ request('sub_category_id') }}">
+                @endif
+                <input type="text" name="search" class="form-control me-2" placeholder="البحث في الخدمات..." value="{{ request('search') }}">
+                <button type="submit" class="btn btn-outline-primary">بحث</button>
+            </form>
         </div>
 
         @if($services->count() > 0)
         <div class="row">
             @foreach($services as $service)
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card h-100">
-                    <img src="{{ $service->image_url }}" class="card-img-top" alt="{{ $service->title }}" style="height: 200px; object-fit: cover;">
+            <div class="col-md-6 col-lg-4 mb-4 fade-in-up">
+                <div class="card service-card h-100 shadow-sm">
+                    <div class="service-img-container">
+                        <img src="{{ $service->category->image_url }}" class="card-img-top service-img" alt="{{ $service->title }}">
+                        <div class="service-overlay">
+                            <span class="overlay-badge">
+                                <i class="fas fa-star text-warning"></i>
+                                {{ number_format($service->average_rating, 1) }}
+                            </span>
+                        </div>
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title">{{ $service->title }}</h5>
-                        <p class="card-text text-muted">{{ Str::limit($service->description, 100) }}</p>
+                        <h5 class="card-title text-primary mb-2">{{ $service->title }}</h5>
+                        <p class="card-text text-muted small mb-3">{{ Str::limit($service->description, 90) }}</p>
 
-                        <!-- Category and Subcategory Info -->
                         <div class="mb-2">
                             <span class="badge bg-primary">{{ $service->category->name }}</span>
                             @if($service->subCategory)
@@ -216,33 +262,20 @@
                             @endif
                         </div>
 
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="text-primary fw-bold">{{ $service->formatted_price }}</span>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-success fw-bold">{{ $service->formatted_price }}</span>
                             <small class="text-muted">{{ $service->user->name }}</small>
                         </div>
 
                         @if($service->location)
-                        <div class="mb-3">
-                            <small class="text-muted">
-                                <i class="fas fa-map-marker-alt me-1"></i>{{ $service->location }}
-                            </small>
-                        </div>
-                        @endif
-
-                        @if($service->average_rating > 0)
-                        <div class="mb-3">
-                            <div class="d-flex align-items-center">
-                                @for($i = 1; $i <= 5; $i++)
-                                <i class="fas fa-star {{ $i <= $service->average_rating ? 'text-warning' : 'text-muted' }}"></i>
-                                @endfor
-                                <small class="text-muted ms-2">({{ $service->ratings_count }})</small>
-                            </div>
-                        </div>
+                        <small class="text-muted d-block mb-2">
+                            <i class="fas fa-map-marker-alt me-1 text-warning"></i>{{ $service->location }}
+                        </small>
                         @endif
                     </div>
-                    <div class="card-footer bg-transparent">
-                        <a href="{{ route('services.show', $service->slug) }}" class="btn btn-primary w-100">
-                            عرض التفاصيل
+                    <div class="card-footer bg-transparent border-0">
+                        <a href="{{ route('services.show', $service->slug) }}" class="btn btn-warning w-100 ">
+                            <i class="fas fa-eye me-1"></i> عرض التفاصيل
                         </a>
                     </div>
                 </div>
@@ -250,274 +283,244 @@
             @endforeach
         </div>
 
-        <!-- Pagination -->
-        <div class="d-flex justify-content-center mt-4">
-            {{ $services->links() }}
-        </div>
+        <div class="d-flex justify-content-center mt-4">{{ $services->links() }}</div>
+
         @else
-        <div class="text-center py-5">
+        <div class="text-center py-5 fade-in">
             <i class="fas fa-search text-muted" style="font-size: 4rem;"></i>
             <h4 class="mt-3 text-muted">
-                @if($selectedSubCategory)
-                    لا توجد خدمات في القسم الفرعي "{{ app()->getLocale() == 'ar' ? $selectedSubCategory->name_ar : $selectedSubCategory->name_en }}"
-                @else
-                    لا توجد خدمات في هذا القسم
-                @endif
+                لا توجد خدمات في هذا القسم
             </h4>
-            <p class="text-muted">
-                @if($selectedSubCategory)
-                    يمكنك طلب خدمة من هذا القسم الفرعي أو استكشاف الأقسام الفرعية الأخرى
-                @else
-                    سيتم إضافة خدمات قريباً
-                @endif
-            </p>
-            @if($selectedSubCategory)
-                <div class="mt-3">
-                    <a href="{{ route('services.request', $category->id) }}?sub_category_id={{ $selectedSubCategory->id }}" class="btn btn-primary me-2">
-                        <i class="fas fa-concierge-bell"></i> طلب خدمة من هذا القسم الفرعي
-                    </a>
-                    <a href="{{ route('categories.show', $category->slug) }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-eye"></i> عرض جميع الخدمات
-                    </a>
-                </div>
-            @endif
+            <p class="text-muted">سيتم إضافة خدمات قريباً</p>
         </div>
         @endif
     </div>
 </section>
-@endsection
 
-@section('styles')
 <style>
-    /* تنسيق رسائل Flash للهاتف المحمول */
-    .alert {
-        border-radius: 12px;
-        border: none;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        margin-bottom: 1rem;
-        padding: 1rem 1.25rem;
-        font-size: 0.95rem;
-        line-height: 1.5;
-    }
+.services-section {
+    background-color: #f8fafb;
+}
 
-    .alert-success {
-        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-        color: #155724;
-        border-left: 4px solid #28a745;
-    }
+/* ======= الكروت ======= */
+.service-card {
+    border: none;
+    border-radius: 14px;
+    transition: all 0.3s ease;
+    background: #fff;
+}
+.service-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 20px rgba(47,92,105,0.15);
+}
 
-    .alert-danger {
-        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
-        color: #721c24;
-        border-left: 4px solid #dc3545;
-    }
+/* ======= صورة الخدمة ======= */
+.service-img-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 14px 14px 0 0;
+}
+.service-img {
+    height: 180px;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+.service-card:hover .service-img {
+    transform: scale(1.07);
+}
 
-    .alert-warning {
-        background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-        color: #856404;
-        border-left: 4px solid #ffc107;
-    }
+/* ======= الأوفرلاي فوق الصورة ======= */
+.service-overlay {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+.overlay-badge {
+    background: rgba(47,92,105,0.9);
+    color: #fff;
+    padding: 4px 10px;
+    font-size: 0.85rem;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+}
 
-    .alert-info {
-        background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
-        color: #0c5460;
-        border-left: 4px solid #17a2b8;
-    }
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+.card-text {
+    line-height: 1.5;
+}
 
-    .btn-close {
-        background: none;
-        border: none;
-        font-size: 1.2rem;
-        opacity: 0.7;
-        padding: 0.5rem;
-    }
+.btn-primary {
+    background-color: #2f5c69;
+    border: none;
+    transition: all 0.3s ease;
+}
+.btn-primary:hover {
+    background-color: #f3a446;
+    color: #2f5c69;
+}
+.btn-outline-primary {
+    border-color: #2f5c69;
+    color: #2f5c69;
+}
+.btn-outline-primary:hover {
+    background-color: #2f5c69;
+    color: #fff;
+}
+.shine-btn {
+    position: relative;
+    overflow: hidden;
+}
+.shine-btn::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(120deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 80%);
+    transform: skewX(-25deg);
+    transition: all 0.75s;
+}
+.shine-btn:hover::after {
+    left: 125%;
+}
 
-    .btn-close:hover {
-        opacity: 1;
-    }
+/* ======= الألوان والباجز ======= */
+.badge.bg-primary {
+    background-color: #2f5c69 !important;
+}
+.badge.bg-secondary {
+    background-color: #f3a446 !important;
+    color: #2f5c69 !important;
+}
+.text-primary {
+    color: #2f5c69 !important;
+}
+.text-success {
+    color: #f3a446 !important;
+}
 
-    /* تحسين للهاتف المحمول */
-    @media (max-width: 768px) {
-        .alert {
-            margin: 0.5rem;
-            padding: 0.875rem 1rem;
-            font-size: 0.9rem;
-            border-radius: 8px;
-        }
-
-        .alert i {
-            font-size: 1rem;
-        }
-
-        .btn-close {
-            font-size: 1rem;
-            padding: 0.25rem;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .alert {
-            margin: 0.25rem;
-            padding: 0.75rem 0.875rem;
-            font-size: 0.85rem;
-        }
-
-        .alert i {
-            font-size: 0.9rem;
-        }
-    }
-
-    /* تنسيق الأقسام الفرعية */
-    .sub-category-card {
-        transition: all 0.3s ease;
-        border: 1px solid #e3e3e3;
-    }
-
-    .sub-category-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        border-color: #1976d2;
-    }
-
-    .subcategory-image-container {
-        position: relative;
-        overflow: hidden;
-        border-radius: 8px 8px 0 0;
+/* ======= ريسبونسيف ======= */
+@media (max-width: 768px) {
+    .service-img {
         height: 150px;
-        background: #f8f9fa;
     }
-
-    .subcategory-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.3s ease;
-    }
-
-    .subcategory-image-placeholder {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #f8f9fa;
-    }
-
-    .subcategory-overlay {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: linear-gradient(transparent, rgba(0,0,0,0.7));
-        color: white;
-        padding: 20px 15px 15px;
-        transform: translateY(100%);
-        transition: transform 0.3s ease;
-    }
-
-    .sub-category-card:hover .subcategory-overlay {
-        transform: translateY(0);
-    }
-
-    .sub-category-card:hover .subcategory-image {
-        transform: scale(1.1);
-    }
-
-    .subcategory-title {
-        margin: 0;
-        font-weight: bold;
+    .card-title {
         font-size: 1rem;
     }
-
-    /* تحسين الأزرار */
-    .btn-outline-primary {
-        border-color: #1976d2;
-        color: #1976d2;
-    }
-
-    .btn-outline-primary:hover {
-        background-color: #1976d2;
-        border-color: #1976d2;
-        color: white;
-    }
-
-    .btn-success {
-        background-color: #28a745;
-        border-color: #28a745;
-    }
-
-    .btn-success:hover {
-        background-color: #218838;
-        border-color: #1e7e34;
-    }
-
-    /* تحسين العنوان */
-    .section h3 {
-        position: relative;
-        padding-bottom: 10px;
-    }
-
-    .section h3::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 60px;
-        height: 3px;
-        background: linear-gradient(90deg, #1976d2, #43e97b);
-        border-radius: 2px;
-    }
+}
 </style>
-@endsection
+
+
+<style>
+.category-header-section {
+    background: linear-gradient(120deg, #2f5c69, #3b7d8a);
+    color: #fff;
+    border-radius: 0 0 25px 25px;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+.category-header-section h1 {
+    font-size: 2rem;
+}
+.category-main-image {
+    max-height: 200px;
+    object-fit: cover;
+    border: 2px solid #f3a446;
+    border-radius: 15px;
+    transition: transform 0.4s ease;
+}
+.category-main-image:hover {
+    transform: scale(1.05);
+}
+.section-title {
+    color: #2f5c69;
+    font-weight: 700;
+}
+.sub-category-card,
+.service-card {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    transition: all 0.4s ease;
+}
+.sub-category-card:hover,
+.service-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+}
+.subcategory-image {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+.subcategory-overlay {
+    position: absolute;
+    bottom: 0;
+    background: rgba(47,92,105,0.75);
+    width: 100%;
+    color: #fff;
+    padding: 8px;
+}
+.shine-btn {
+    position: relative;
+    overflow: hidden;
+}
+.shine-btn::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(120deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 80%);
+    transform: skewX(-25deg);
+    transition: all 0.75s;
+}
+.shine-btn:hover::after {
+    left: 125%;
+}
+.info-box {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid #f3a446;
+    color: #fff;
+}
+.fade-in, .fade-in-up {
+    opacity: 0;
+    animation: fadeInUp 0.8s forwards;
+}
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 768px) {
+    .category-header-section {
+        border-radius: 0;
+        text-align: center;
+        padding: 2rem 1rem;
+    }
+    .category-main-image {
+        max-height: 150px;
+    }
+}
+</style>
 
 @section('scripts')
 <script>
-    // تحسين رسائل Flash للهاتف المحمول
-    document.addEventListener('DOMContentLoaded', function() {
-        // إخفاء الرسائل تلقائياً بعد 5 ثوان
-        const alerts = document.querySelectorAll('.alert');
-        alerts.forEach(function(alert) {
-            setTimeout(function() {
-                if (alert && alert.parentNode) {
-                    alert.style.transition = 'opacity 0.5s ease';
-                    alert.style.opacity = '0';
-                    setTimeout(function() {
-                        if (alert.parentNode) {
-                            alert.parentNode.removeChild(alert);
-                        }
-                    }, 500);
-                }
-            }, 5000);
-        });
-
-        // تحسين إغلاق الرسائل على الهاتف المحمول
-        const closeButtons = document.querySelectorAll('.btn-close');
-        closeButtons.forEach(function(button) {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                const alert = this.closest('.alert');
-                if (alert) {
-                    alert.style.transition = 'opacity 0.3s ease';
-                    alert.style.opacity = '0';
-                    setTimeout(function() {
-                        if (alert.parentNode) {
-                            alert.parentNode.removeChild(alert);
-                        }
-                    }, 300);
-                }
-            });
-        });
-
-        // إضافة تأثير النقر على الرسائل
-        alerts.forEach(function(alert) {
-            alert.addEventListener('click', function() {
-                this.style.transform = 'scale(0.98)';
-                setTimeout(() => {
-                    this.style.transform = 'scale(1)';
-                }, 150);
-            });
-        });
+document.addEventListener('DOMContentLoaded', function() {
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => {
+        setTimeout(() => {
+            alert.style.transition = 'opacity 0.5s';
+            alert.style.opacity = '0';
+            setTimeout(() => alert.remove(), 500);
+        }, 5000);
     });
+});
 </script>
 @endsection

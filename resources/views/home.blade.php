@@ -9,8 +9,9 @@
     <div class="hero-bg-small bg-info"></div>
 
     <div class="container py-5 d-flex align-items-center">
-        <div class="row align-items-center w-100">
-            <div class="col-lg-6 text-center text-lg-start mb-lg-0">
+        <div class="row align-items-center w-100 flex-column-reverse flex-lg-row">
+            <!-- النص -->
+            <div class="col-lg-6 text-center text-lg-start mb-4 mb-lg-0">
                 <div class="d-flex justify-content-center justify-content-lg-start align-items-center mb-3">
                     <i class="fas fa-star text-warning fs-4 mx-1"></i>
                     <i class="fas fa-star text-warning fs-4 mx-1"></i>
@@ -29,14 +30,14 @@
                     اكتشف الخدمات التي تحتاجها، أو ابدأ رحلتك كمستقل وقدم عروضك على المشاريع المناسبة لك.
                 </p>
 
-                <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3">
+                <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3 mb-5">
                     <a href="{{ route('categories.index') }}" class="btn btn-lg px-4 rounded-pill shadow" style="background-color:#f3a446;color:#fff;border:none;">تصفح الأقسام</a>
                     <a href="{{ route('services.index') }}" class="btn btn-outline-light btn-lg px-4 rounded-pill">استكشف الخدمات</a>
                 </div>
             </div>
 
-            <div class="col-lg-6 text-center position-relative">
-                <img src="../public/home11.png" alt="Freelancer" class="img-fluid hero-img">
+            <div class="col-lg-6 text-center position-relative mb-4 mb-lg-0">
+                <img src="../public/home.png" alt="Freelancer" class="img-fluid hero-img">
             </div>
         </div>
     </div>
@@ -71,15 +72,18 @@
     <style>
         .hero-area {
             background: linear-gradient(135deg, #2f5c69, #3c6f7d, #2f5c69);
-            min-height: 100vh;
+            min-height: auto;
             position: relative;
             display: flex;
             align-items: center;
             overflow: hidden;
+            padding: 0;
+            margin-top:40px
         }
 
+
         .hero-img {
-            max-width: 90%;
+            max-width: 80%;
             z-index: 2;
             position: relative;
             animation: floatMove 4s ease-in-out infinite;
@@ -98,48 +102,38 @@
             bottom: 0;
         }
 
-        .scroll-down-circle {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #f3a446;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: bounce 2s infinite;
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
-            z-index: 4;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translate(-50%, 0); }
-            50% { transform: translate(-50%, -8px); }
-        }
-
         @media (max-width: 768px) {
             .hero-area {
-                flex-direction: column;
+                padding: 0 !important;
                 text-align: center;
-                padding: 2rem 1rem;
-                min-height: 70vh; 
+                margin-top:0px
             }
+
             .hero-img {
-                max-width: 80%;
-                margin-top: 1.5rem;
+                width: 80%;
+                margin: 0 auto;
             }
+
+            .col-lg-6 {
+                padding: 0 !important;
+            }
+
+            .hero-area .container {
+                padding: 0 !important;
+            }
+
             .hero-area h1 {
-                font-size: 1.8rem;
+                font-size: 1.6rem;
             }
+
             .hero-area p {
                 font-size: 1rem;
+                margin-bottom: 1rem;
             }
         }
     </style>
 </section>
+
 
 
 

@@ -933,7 +933,7 @@
 <nav class="navbar navbar-expand-lg fixed-top custom-navbar d-none d-lg-block">
     <div class="container">
         <a class="navbar-brand fw-bold d-flex align-items-center" href="{{ route('home') }}">
-    <img src="{{ asset('home.png') }}" alt="Endak Logo" class="me-2" style="height: 60px; width: auto;">
+    <img src="{{ asset('home.png') }}" alt="Endak Logo" class="me-2" style="height: 40px; width: auto;">
 </a>
 
 

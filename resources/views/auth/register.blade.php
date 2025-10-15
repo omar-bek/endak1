@@ -17,7 +17,8 @@
         <div class="form-section fadeInLeft">
             <div class="logo mb-4 text-center">
                 <a href="{{ route('home') }}" class="text-decoration-none text-dark fs-3 fw-bold">
-    <img src="{{ asset('home.png') }}" alt="Endak Logo" class="me-2" style="height: 50px; width: auto;">Endak</a>
+                    <img src="{{ asset('home.png') }}" alt="Endak Logo" class="me-2" style="height: 50px; width: auto;">Endak
+                </a>
             </div>
 
             <form method="POST" action="{{ route('register') }}">
@@ -78,7 +79,7 @@ body {
 }
 .auth-card {
     display: flex;
-    flex-direction: row-reverse; /* ✅ عشان الشريط يجي يمين */
+    flex-direction: row-reverse;
     width: 900px;
     max-width: 95%;
     background: #fff;
@@ -112,16 +113,30 @@ body {
     width: 55%;
     padding: 3rem;
 }
-.form-control {
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    padding: 0.75rem 1rem 0.75rem 3rem;
+.position-relative {
+    position: relative;
 }
 .input-icon {
     position: absolute;
-    right: 20px;
+    right: 15px;
     top: 50%;
     transform: translateY(-50%);
+    font-size: 1rem;
+    color: #999;
+}
+.form-control {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 0.75rem 2.8rem 0.75rem 1rem;
+    font-size: 1rem;
+}
+.form-control::placeholder {
+    color: #aaa;
+}
+.form-control:focus {
+    border-color: #2f5c69;
+    box-shadow: 0 0 5px rgba(47, 92, 105, 0.3);
+    outline: none;
 }
 .btn-login {
     background: linear-gradient(90deg, #2f5c69, #3c7d8b);
@@ -140,7 +155,6 @@ body {
     from {opacity: 0; transform: translateX(100px);}
     to {opacity: 1; transform: translateX(0);}
 }
-/* ===== الموبايل ===== */
 @media (max-width: 768px) {
     .auth-card {
         flex-direction: column;

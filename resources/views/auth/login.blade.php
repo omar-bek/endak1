@@ -5,6 +5,7 @@
 @section('content')
 <div class="auth-container login-mode" id="authContainer">
     <div class="auth-card login-card">
+        <!-- الجانب الأيسر -->
         <div class="side-panel left-panel">
             <div class="content text-center">
                 <i class="fas fa-door-open fa-3x text-warning mb-3"></i>
@@ -14,10 +15,11 @@
             </div>
         </div>
 
+        <!-- قسم النموذج -->
         <div class="form-section fadeInRight">
             <div class="logo mb-4 text-center">
                 <a href="{{ route('home') }}" class="text-decoration-none text-dark fs-3 fw-bold">
-    <img src="{{ asset('home.png') }}" alt="Endak Logo" class="me-2" style="height: 50px; width: auto;"> Endak
+                    <img src="{{ asset('home.png') }}" alt="Endak Logo" class="me-2" style="height: 50px; width: auto;"> Endak
                 </a>
             </div>
 
@@ -53,17 +55,22 @@ document.getElementById("switchToRegister").addEventListener("click", function()
 </script>
 
 <style>
+/* ========== عام ========== */
 body {
     font-family: 'Cairo', sans-serif;
     background: #f5f6fa;
     overflow-x: hidden;
 }
+
+/* ========== الحاوية الرئيسية ========== */
 .auth-container {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
 }
+
+/* ========== البطاقة ========== */
 .auth-card {
     display: flex;
     width: 900px;
@@ -74,6 +81,8 @@ body {
     overflow: hidden;
     animation: slideInLeft 0.8s ease;
 }
+
+/* ========== الجانب الأيسر ========== */
 .side-panel {
     width: 45%;
     background: linear-gradient(135deg, #2f5c69, #3c7d8b);
@@ -95,21 +104,46 @@ body {
     background: #f3a446;
     border-color: #f3a446;
 }
+
+/* ========== قسم النموذج ========== */
 .form-section {
     width: 55%;
     padding: 3rem;
 }
+
+/* ========== الـ Inputs ========== */
 .form-control {
     border: 1px solid #ccc;
     border-radius: 10px;
-    padding: 0.75rem 1rem 0.75rem 3rem;
+    padding: 0.75rem 2.8rem 0.75rem 1rem; /* مساحة كافية للأيقونة */
+    color: #333;
+    font-size: 15px;
 }
+
+.form-control::placeholder {
+    color: #999;
+    font-style: italic;
+    opacity: 0.9;
+}
+
+/* الأيقونة داخل الـ input */
 .input-icon {
     position: absolute;
-    right: 20px;
+    right: 15px;
     top: 50%;
     transform: translateY(-50%);
+    color: #777;
+    pointer-events: none;
 }
+
+/* عند التركيز */
+.form-control:focus {
+    border-color: #3c7d8b;
+    box-shadow: 0 0 6px rgba(47, 92, 105, 0.3);
+    outline: none;
+}
+
+/* ========== زر تسجيل الدخول ========== */
 .btn-login {
     background: linear-gradient(90deg, #2f5c69, #3c7d8b);
     border: none;
@@ -123,11 +157,14 @@ body {
     transform: translateY(-3px);
     background: #f3a446;
 }
+
+/* ========== الأنيميشن ========== */
 @keyframes slideInLeft {
     from {opacity: 0; transform: translateX(-100px);}
     to {opacity: 1; transform: translateX(0);}
 }
-/* ===== الموبايل ===== */
+
+/* ========== الموبايل ========== */
 @media (max-width: 768px) {
     .auth-card {
         flex-direction: column;
@@ -137,9 +174,11 @@ body {
     .side-panel {
         width: 100%;
         border-radius: 20px 20px 0 0;
+        padding: 1.5rem;
     }
     .form-section {
         width: 100%;
+        padding: 2rem;
     }
     @keyframes slideDown {
         from {opacity: 0; transform: translateY(-80px);}

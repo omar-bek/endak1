@@ -10,6 +10,25 @@ use Illuminate\Support\Facades\Storage;
 class SystemSettingController extends Controller
 {
     /**
+     * التحقق من صحة الملف
+     */
+    private function validateFile($file)
+    {
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg'];
+        $extension = strtolower($file->getClientOriginalExtension());
+        
+        if (!in_array($extension, $allowedExtensions)) {
+            return false;
+        }
+        
+        if ($file->getSize() > 2 * 1024 * 1024) { // 2MB
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
      * عرض إعدادات النظام
      */
     public function index()
@@ -43,19 +62,29 @@ class SystemSettingController extends Controller
         // معالجة رفع لوجو الموقع
         if ($request->hasFile('logo_upload')) {
             $file = $request->file('logo_upload');
-
+            
+            // التحقق من صحة الملف
+            if (!$this->validateFile($file)) {
+                return redirect()->back()->with('error', 'نوع الملف غير مدعوم أو حجمه أكبر من 2MB');
+            }
+            
             // حذف اللوجو القديم إذا كان موجود
             $currentLogo = SystemSetting::get('site_logo', 'home.png');
             if ($currentLogo && $currentLogo !== 'home.png' && file_exists(public_path($currentLogo))) {
                 unlink(public_path($currentLogo));
             }
-
+            
             // حفظ اللوجو الجديد في مجلد public مباشرة
             $filename = 'logo-' . time() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path(), $filename);
-
-            // تحديث إعداد اللوجو
-            SystemSetting::where('key', 'site_logo')->update(['value' => $filename]);
+            
+            // التأكد من أن الملف تم حفظه بنجاح
+            if (file_exists(public_path($filename))) {
+                // تحديث إعداد اللوجو
+                SystemSetting::where('key', 'site_logo')->update(['value' => $filename]);
+            } else {
+                return redirect()->back()->with('error', 'فشل في رفع الصورة');
+            }
         }
 
         foreach ($request->settings as $setting) {
@@ -66,8 +95,15 @@ class SystemSettingController extends Controller
             }
         }
 
+        $message = 'تم تحديث إعدادات النظام بنجاح';
+        
+        // إضافة رسالة خاصة إذا تم رفع لوجو
+        if ($request->hasFile('logo_upload')) {
+            $message .= ' وتم رفع اللوجو الجديد بنجاح';
+        }
+        
         return redirect()->route('admin.system-settings.index')
-            ->with('success', 'تم تحديث إعدادات النظام بنجاح');
+            ->with('success', $message);
     }
 
     /**

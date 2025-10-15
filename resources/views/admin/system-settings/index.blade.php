@@ -6,6 +6,108 @@
 @section('content')
     <div class="row">
         <div class="col-md-8">
+            <!-- إعدادات الموقع -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-globe"></i> إعدادات الموقع واللوجو
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ route('admin.system-settings.update') }}" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="site_logo" class="form-label">
+                                        <i class="fas fa-image text-primary me-1"></i>لوجو الموقع
+                                    </label>
+
+                                    <!-- عرض الصورة الحالية -->
+                                    @if (\App\Models\SystemSetting::get('site_logo', 'home.png'))
+                                        <div class="mb-2 position-relative">
+                                            <img id="current-logo"
+                                                src="{{ asset(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}"
+                                                alt="اللوجو الحالي" class="img-thumbnail"
+                                                style="max-height: 60px; max-width: 200px;">
+                                            @if (\App\Models\SystemSetting::get('site_logo', 'home.png') !== 'home.png')
+                                                <button type="button"
+                                                    class="btn btn-sm btn-danger position-absolute top-0 end-0"
+                                                    onclick="removeCurrentLogo()" title="حذف اللوجو الحالي">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            @endif
+                                        </div>
+                                    @endif
+
+                                    <!-- رفع صورة جديدة -->
+                                    <input type="file" class="form-control @error('logo_upload') is-invalid @enderror"
+                                        id="logo_upload" name="logo_upload" accept="image/*" onchange="previewLogo(this)">
+                                    <input type="hidden" name="settings[site_logo][key]" value="site_logo">
+                                    <input type="hidden" name="settings[site_logo][value]" id="site_logo"
+                                        value="{{ \App\Models\SystemSetting::get('site_logo', 'home.png') }}">
+                                    <small class="form-text text-muted">ارفع صورة جديدة أو اتركها فارغة للاحتفاظ بالصورة
+                                        الحالية</small>
+                                    @error('logo_upload')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="site_name" class="form-label">اسم الموقع (إنجليزي)</label>
+                                    <input type="text" class="form-control @error('site_name') is-invalid @enderror"
+                                        id="site_name" name="settings[site_name][value]"
+                                        value="{{ \App\Models\SystemSetting::get('site_name', 'Endak') }}"
+                                        placeholder="اسم الموقع بالإنجليزية">
+                                    <input type="hidden" name="settings[site_name][key]" value="site_name">
+                                    @error('site_name')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="site_name_ar" class="form-label">اسم الموقع (عربي)</label>
+                                    <input type="text" class="form-control @error('site_name_ar') is-invalid @enderror"
+                                        id="site_name_ar" name="settings[site_name_ar][value]"
+                                        value="{{ \App\Models\SystemSetting::get('site_name_ar', 'إنداك') }}"
+                                        placeholder="اسم الموقع بالعربية">
+                                    <input type="hidden" name="settings[site_name_ar][key]" value="site_name_ar">
+                                    @error('site_name_ar')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">معاينة اللوجو</label>
+                                    <div class="text-center">
+                                        <img id="logo-preview"
+                                            src="{{ asset(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}"
+                                            alt="معاينة اللوجو" class="img-fluid"
+                                            style="max-height: 60px; max-width: 200px;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> حفظ إعدادات الموقع
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
             <!-- إعدادات التواصل -->
             <div class="card mb-4">
                 <div class="card-header">
@@ -45,7 +147,8 @@
                                         id="whatsapp_message" name="settings[whatsapp_message][value]"
                                         value="{{ \App\Models\SystemSetting::get('whatsapp_message', 'مرحباً، أريد الاستفسار عن خدمة') }}"
                                         placeholder="الرسالة التي تظهر عند فتح الواتساب">
-                                    <input type="hidden" name="settings[whatsapp_message][key]" value="whatsapp_message">
+                                    <input type="hidden" name="settings[whatsapp_message][key]"
+                                        value="whatsapp_message">
                                     <small class="form-text text-muted">الرسالة التي تظهر تلقائياً في الواتساب</small>
                                     @error('whatsapp_message')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -115,7 +218,8 @@
                                     <label for="provider_max_categories" class="form-label">الحد الأقصى للأقسام</label>
                                     <input type="number" name="provider_max_categories" id="provider_max_categories"
                                         class="form-control" min="1" max="10"
-                                        value="{{ \App\Models\SystemSetting::get('provider_max_categories', 3) }}" required>
+                                        value="{{ \App\Models\SystemSetting::get('provider_max_categories', 3) }}"
+                                        required>
                                     <small class="text-muted">عدد الأقسام التي يمكن لمزود الخدمة العمل فيها</small>
                                 </div>
                             </div>
@@ -410,10 +514,61 @@
             }
         }
 
+        // معاينة اللوجو
+        function updateLogoPreview() {
+            const logoInput = document.getElementById('site_logo');
+            const logoPreview = document.getElementById('logo-preview');
+
+            if (logoInput && logoPreview) {
+                const logoValue = logoInput.value || 'home.png';
+                logoPreview.src = `{{ asset('') }}${logoValue}`;
+            }
+        }
+
+        // معاينة الصورة المرفوعة
+        function previewLogo(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    // تحديث معاينة الصورة الحالية
+                    const currentLogo = document.getElementById('current-logo');
+                    if (currentLogo) {
+                        currentLogo.src = e.target.result;
+                    }
+
+                    // تحديث معاينة الصورة في الجانب الآخر
+                    const logoPreview = document.getElementById('logo-preview');
+                    if (logoPreview) {
+                        logoPreview.src = e.target.result;
+                    }
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // حذف اللوجو الحالي
+        function removeCurrentLogo() {
+            if (confirm('هل أنت متأكد من حذف اللوجو الحالي؟')) {
+                // إضافة حقل مخفي لحذف اللوجو
+                const form = document.querySelector('form[action*="system-settings"]');
+                const removeInput = document.createElement('input');
+                removeInput.type = 'hidden';
+                removeInput.name = 'remove_logo';
+                removeInput.value = '1';
+                form.appendChild(removeInput);
+
+                // إرسال النموذج
+                form.submit();
+            }
+        }
+
         // تحديث المعاينة عند تغيير القيم
         document.addEventListener('DOMContentLoaded', function() {
             const whatsappNumber = document.getElementById('whatsapp_number');
             const whatsappMessage = document.getElementById('whatsapp_message');
+            const siteLogo = document.getElementById('site_logo');
 
             if (whatsappNumber && whatsappMessage) {
                 // تحديث المعاينة عند التحميل
@@ -422,6 +577,14 @@
                 // تحديث المعاينة عند تغيير القيم
                 whatsappNumber.addEventListener('input', updateWhatsAppPreview);
                 whatsappMessage.addEventListener('input', updateWhatsAppPreview);
+            }
+
+            if (siteLogo) {
+                // تحديث معاينة اللوجو عند التحميل
+                updateLogoPreview();
+
+                // تحديث معاينة اللوجو عند تغيير القيمة
+                siteLogo.addEventListener('input', updateLogoPreview);
             }
         });
     </script>

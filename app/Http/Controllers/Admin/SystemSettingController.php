@@ -27,20 +27,47 @@ class SystemSettingController extends Controller
             'settings' => 'required|array',
             'settings.*.key' => 'required|string',
             'settings.*.value' => 'required',
+            'logo_upload' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'remove_logo' => 'boolean',
         ]);
 
-        foreach ($request->settings as $setting) {
-            $systemSetting = SystemSetting::where('key', $setting['key'])->first();
+        // معالجة حذف اللوجو
+        if ($request->has('remove_logo') && $request->remove_logo) {
+            $currentLogo = SystemSetting::get('site_logo', 'home.png');
+            if ($currentLogo && $currentLogo !== 'home.png' && file_exists(public_path($currentLogo))) {
+                unlink(public_path($currentLogo));
+            }
+            SystemSetting::where('key', 'site_logo')->update(['value' => 'home.png']);
+        }
+        
+        // معالجة رفع لوجو الموقع
+        if ($request->hasFile('logo_upload')) {
+            $file = $request->file('logo_upload');
+            
+            // حذف اللوجو القديم إذا كان موجود
+            $currentLogo = SystemSetting::get('site_logo', 'home.png');
+            if ($currentLogo && $currentLogo !== 'home.png' && file_exists(public_path($currentLogo))) {
+                unlink(public_path($currentLogo));
+            }
+            
+            // حفظ اللوجو الجديد في مجلد public مباشرة
+            $filename = 'logo-' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path(), $filename);
+            
+            // تحديث إعداد اللوجو
+            SystemSetting::where('key', 'site_logo')->update(['value' => $filename]);
+        }
 
-            if ($systemSetting) {
-                $systemSetting->update([
+        foreach ($request->settings as $setting) {
+            if ($setting['key'] !== 'site_logo') { // تجنب تحديث اللوجو هنا لأنه تم التعامل معه أعلاه
+                SystemSetting::where('key', $setting['key'])->update([
                     'value' => is_array($setting['value']) ? json_encode($setting['value']) : (string) $setting['value']
                 ]);
             }
         }
 
         return redirect()->route('admin.system-settings.index')
-                         ->with('success', 'تم تحديث إعدادات النظام بنجاح');
+            ->with('success', 'تم تحديث إعدادات النظام بنجاح');
     }
 
     /**
@@ -61,7 +88,7 @@ class SystemSettingController extends Controller
         SystemSetting::set('provider_auto_approve', $request->provider_auto_approve, 'boolean', 'provider');
 
         return redirect()->route('admin.system-settings.index')
-                         ->with('success', 'تم تحديث إعدادات مزود الخدمة بنجاح');
+            ->with('success', 'تم تحديث إعدادات مزود الخدمة بنجاح');
     }
 
     /**
@@ -103,6 +130,6 @@ class SystemSettingController extends Controller
         SystemSetting::setDefaultServiceImageEnabled($request->has('default_service_image_enabled'));
 
         return redirect()->route('admin.system-settings.index')
-                         ->with('success', 'تم تحديث الصورة الافتراضية للخدمات بنجاح');
+            ->with('success', 'تم تحديث الصورة الافتراضية للخدمات بنجاح');
     }
 }

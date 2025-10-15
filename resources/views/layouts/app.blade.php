@@ -135,7 +135,7 @@
             color: white !important;
         } */
 
-          
+
 
         /* Flash Messages */
         .alert {
@@ -192,7 +192,7 @@
         }
 
         /* Cards */
-      
+
 
         /* Footer */
         /* .footer {
@@ -231,7 +231,7 @@
         }
 
         /* Category Cards with Images */
-       
+
         /* Language Switcher */
         .language-btn {
             background: rgba(255, 255, 255, 0.1);
@@ -670,47 +670,47 @@
         }
 
         /* Animations */
-  
+
         /* Responsive */
- 
-            .navbar-brand {
-                font-size: 1.3rem;
-            }
 
-            .nav-link {
-                font-size: 0.8rem;
-                padding: 0.4rem 0.8rem !important;
-            }
+        .navbar-brand {
+            font-size: 1.3rem;
+        }
 
-            .card {
-                margin-bottom: 1rem;
-            }
+        .nav-link {
+            font-size: 0.8rem;
+            padding: 0.4rem 0.8rem !important;
+        }
 
-            .card-body {
-                padding: 1rem;
-            }
+        .card {
+            margin-bottom: 1rem;
+        }
 
-            .btn {
-                padding: 8px 20px;
-                font-size: 0.85rem;
-            }
+        .card-body {
+            padding: 1rem;
+        }
 
-            .category-card {
-                padding: 1.5rem 0.8rem;
-            }
+        .btn {
+            padding: 8px 20px;
+            font-size: 0.85rem;
+        }
 
-            .category-icon {
-                font-size: 3rem;
-            }
+        .category-card {
+            padding: 1.5rem 0.8rem;
+        }
 
-            .dropdown-menu {
-                min-width: 180px;
-            }
+        .category-icon {
+            font-size: 3rem;
+        }
 
-            .dropdown-item {
-                font-size: 0.8rem;
-                padding: 0.4rem 0.6rem;
-            }
+        .dropdown-menu {
+            min-width: 180px;
+        }
+
+        .dropdown-item {
+            font-size: 0.8rem;
+            padding: 0.4rem 0.6rem;
+        }
         }
 
         /* Loading Animation */
@@ -731,7 +731,7 @@
         }
 
         /* Custom Scrollbar */
-       
+
         /* Utility Classes */
         .text-gradient {
             background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
@@ -754,149 +754,153 @@
         }
 
         /* Modern Footer Navigation */
-      .footer-nav {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: rgba(255, 255, 255, 0.97);
-        backdrop-filter: blur(18px);
-        border-top: 1px solid rgba(47, 92, 105, 0.1);
-        box-shadow: 0 -6px 25px rgba(47, 92, 105, 0.15);
-        z-index: 1000;
-        padding: 10px 0;
-    }
-
-    .footer-nav-container {
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-        max-width: 100%;
-        margin: 0 auto;
-        padding: 0 12px;
-    }
-
-    .footer-nav-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-decoration: none;
-        color: #3c6f7d;
-        transition: all 0.3s ease;
-        padding: 8px 12px;
-        border-radius: 12px;
-        position: relative;
-        min-width: 60px;
-    }
-
-    .footer-nav-item:hover {
-        color: #f3a446;
-        transform: translateY(-2px);
-    }
-
-    .footer-nav-item.active {
-        color: #f3a446;
-        font-weight: 600;
-    }
-
-    .footer-nav-icon {
-        position: relative;
-        width: 24px;
-        height: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 4px;
-    }
-
-    .footer-nav-icon i {
-        font-size: 20px;
-        transition: 0.3s ease;
-    }
-
-    .footer-nav-item:hover .footer-nav-icon i {
-        transform: scale(1.1);
-    }
-
-    .footer-nav-text {
-        font-size: 11px;
-        font-weight: 500;
-    }
-
-    .footer-nav-center .footer-nav-icon-center {
-        width: 52px;
-        height: 52px;
-        background: linear-gradient(135deg, #2f5c69, #3c6f7d);
-        border-radius: 50%;
-        margin-bottom: 4px;
-        box-shadow: 0 4px 14px rgba(60, 111, 125, 0.3);
-        transition: 0.3s ease;
-    }
-
-    .footer-nav-center .footer-nav-icon-center i {
-        color: #fff;
-        font-size: 20px;
-    }
-
-    .footer-nav-center:hover .footer-nav-icon-center {
-        transform: scale(1.1);
-        box-shadow: 0 6px 20px rgba(60, 111, 125, 0.4);
-    }
-
-    .footer-nav-center .footer-nav-text {
-        color: #2f5c69;
-        font-weight: 600;
-    }
-
-    .footer-nav-badge {
-        position: absolute;
-        top: -2px;
-        right: -4px;
-        color: white;
-        font-size: 10px;
-        font-weight: bold;
-        padding: 2px 6px;
-        border-radius: 10px;
-        min-width: 18px;
-        height: 18px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
-        animation: pulse 2s infinite;
-    }
-
-    .footer-nav-badge-messages {
-        background: #ef4444;
-    }
-
-    .footer-nav-badge-notifications {
-        background: #f3a446;
-    }
-
-    @keyframes pulse {
-        0%, 100% {
-            transform: scale(1);
-        }
-        50% {
-            transform: scale(1.15);
-        }
-    }
-
-    @media (max-width: 480px) {
-        .footer-nav-icon-center {
-            width: 44px !important;
-            height: 44px !important;
+        .footer-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(18px);
+            border-top: 1px solid rgba(47, 92, 105, 0.1);
+            box-shadow: 0 -6px 25px rgba(47, 92, 105, 0.15);
+            z-index: 1000;
+            padding: 10px 0;
         }
 
-        .footer-nav-icon-center i {
-            font-size: 18px;
+        .footer-nav-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0 12px;
+        }
+
+        .footer-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #3c6f7d;
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+            border-radius: 12px;
+            position: relative;
+            min-width: 60px;
+        }
+
+        .footer-nav-item:hover {
+            color: #f3a446;
+            transform: translateY(-2px);
+        }
+
+        .footer-nav-item.active {
+            color: #f3a446;
+            font-weight: 600;
+        }
+
+        .footer-nav-icon {
+            position: relative;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 4px;
+        }
+
+        .footer-nav-icon i {
+            font-size: 20px;
+            transition: 0.3s ease;
+        }
+
+        .footer-nav-item:hover .footer-nav-icon i {
+            transform: scale(1.1);
         }
 
         .footer-nav-text {
-            font-size: 10px;
+            font-size: 11px;
+            font-weight: 500;
         }
-    }
+
+        .footer-nav-center .footer-nav-icon-center {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, #2f5c69, #3c6f7d);
+            border-radius: 50%;
+            margin-bottom: 4px;
+            box-shadow: 0 4px 14px rgba(60, 111, 125, 0.3);
+            transition: 0.3s ease;
+        }
+
+        .footer-nav-center .footer-nav-icon-center i {
+            color: #fff;
+            font-size: 20px;
+        }
+
+        .footer-nav-center:hover .footer-nav-icon-center {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(60, 111, 125, 0.4);
+        }
+
+        .footer-nav-center .footer-nav-text {
+            color: #2f5c69;
+            font-weight: 600;
+        }
+
+        .footer-nav-badge {
+            position: absolute;
+            top: -2px;
+            right: -4px;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+            animation: pulse 2s infinite;
+        }
+
+        .footer-nav-badge-messages {
+            background: #ef4444;
+        }
+
+        .footer-nav-badge-notifications {
+            background: #f3a446;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.15);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .footer-nav-icon-center {
+                width: 44px !important;
+                height: 44px !important;
+            }
+
+            .footer-nav-icon-center i {
+                font-size: 18px;
+            }
+
+            .footer-nav-text {
+                font-size: 10px;
+            }
+        }
+
         /* Add padding to body to prevent content from being hidden behind footer */
         body {
             padding-bottom: 80px;
@@ -927,225 +931,232 @@
 
 <body>
     @php
-    $lang = app()->getLocale();
-@endphp
+        $lang = app()->getLocale();
+    @endphp
     <!-- Navigation -->
-<nav class="navbar navbar-expand-lg fixed-top custom-navbar d-none d-lg-block">
-    <div class="container">
-        <a class="navbar-brand fw-bold d-flex align-items-center" href="{{ route('home') }}">
-    <img src="{{ asset('home.png') }}" alt="Endak Logo" class="me-2" style="height: 40px; width: auto;">
-</a>
+    <nav class="navbar navbar-expand-lg fixed-top custom-navbar d-none d-lg-block">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="{{ route('home') }}">
+                <img src="{{ asset(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}" alt="{{ \App\Models\SystemSetting::get('site_name_ar', 'إنداك') }}" class="me-2" style="height: 40px; width: auto;">
+            </a>
 
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">{{ __('messages.home') }}</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('categories.index') ? 'active' : '' }}" href="{{ route('categories.index') }}">{{ __('messages.categories') }}</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('services.index') ? 'active' : '' }}" href="{{ route('services.index') }}">{{ __('messages.services') }}</a>
-                </li>
-                <!-- @auth
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('services.my-services') ? 'active' : '' }}" href="{{ route('services.my-services') }}">{{ __('messages.my_services') }}</a>
+                        <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}"
+                            href="{{ route('home') }}">{{ __('messages.home') }}</a>
                     </li>
-                    @if (Auth::user()->isProvider())
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('service-offers.my-offers') ? 'active' : '' }}" href="{{ route('service-offers.my-offers') }}">{{ __('messages.my_offers') }}</a>
-                        </li>
-                    @endif
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('categories.index') ? 'active' : '' }}"
+                            href="{{ route('categories.index') }}">{{ __('messages.categories') }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('services.index') ? 'active' : '' }}"
+                            href="{{ route('services.index') }}">{{ __('messages.services') }}</a>
+                    </li>
+                    <!-- @auth
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('services.my-services') ? 'active' : '' }}" href="{{ route('services.my-services') }}">{{ __('messages.my_services') }}</a>
+                            </li>
+                            @if (Auth::user()->isProvider())
+    <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('service-offers.my-offers') ? 'active' : '' }}" href="{{ route('service-offers.my-offers') }}">{{ __('messages.my_offers') }}</a>
+                                </li>
+    @endif
                 @endauth -->
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('contact') ? 'active' : '' }}" href="{{ route('contact') }}">{{ __('messages.contact_us') }}</a>
-                </li>
-            </ul>
-
-            <ul class="navbar-nav">
-                <!-- Language Switcher -->
-                <li class="nav-item dropdown me-2">
-                    <a class="nav-link dropdown-toggle language-btn" href="#" role="button">
-                        <i class="fas fa-globe me-1"></i>{{ app()->getLocale() === 'ar' ? 'العربية' : 'English' }}
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{ route('language.switch', 'ar') }}">
-                            <i class="fas fa-flag me-2"></i>العربية
-                        </a></li>
-                        <li><a class="dropdown-item" href="{{ route('language.switch', 'en') }}">
-                            <i class="fas fa-flag me-2"></i>English
-                        </a></li>
-                    </ul>
-                </li>
-
-                <!-- Messages -->
-                @auth
-                    <li class="nav-item me-3 position-relative">
-                        <a class="nav-link" href="{{ route('messages.index') }}">
-                            <i class="fas fa-comments"></i>
-                        </a>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('contact') ? 'active' : '' }}"
+                            href="{{ route('contact') }}">{{ __('messages.contact_us') }}</a>
                     </li>
-                @endauth
+                </ul>
 
-                <!-- Notifications -->
-                @auth
-                    <li class="nav-item me-3 position-relative">
-                        <a class="nav-link" href="{{ route('notifications.index') }}">
-                            <i class="fas fa-bell"></i>
-                            @if (Auth::user()->unread_notifications_count > 0)
-                                <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">
-                                    {{ Auth::user()->unread_notifications_count > 99 ? '99+' : Auth::user()->unread_notifications_count }}
-                                </span>
-                            @endif
-                        </a>
-                    </li>
-                @endauth
-
-                @auth
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button">
-                            @if (Auth::user()->image && file_exists(public_path('storage/' . Auth::user()->image)))
-                                <img src="{{ asset('storage/' . Auth::user()->image) }}" alt="{{ Auth::user()->name }}"
-                                    class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
-                            @else
-                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center bg-primary text-white"
-                                    style="width: 30px; height: 30px; font-size: 14px; font-weight: bold;">
-                                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                                </div>
-                            @endif
-                            <span>{{ Auth::user()->name }}</span>
+                <ul class="navbar-nav">
+                    <!-- Language Switcher -->
+                    <li class="nav-item dropdown me-2">
+                        <a class="nav-link dropdown-toggle language-btn" href="#" role="button">
+                            <i class="fas fa-globe me-1"></i>{{ app()->getLocale() === 'ar' ? 'العربية' : 'English' }}
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('messages.new-design') }}">
-                                    <i class="fas fa-comments"></i> الرسائل الجديدة
-                                    <span id="messages-badge-menu" class="badge bg-danger ms-2"
-                                        style="font-size: 0.7rem; padding: 0.2rem 0.4rem; display: none;">
-                                        0
-                                    </span>
+                            <li><a class="dropdown-item" href="{{ route('language.switch', 'ar') }}">
+                                    <i class="fas fa-flag me-2"></i>العربية
                                 </a></li>
-                            <li><a class="dropdown-item" href="{{ route('messages.index') }}">
-                                    <i class="fas fa-comments"></i> الرسائل القديمة
+                            <li><a class="dropdown-item" href="{{ route('language.switch', 'en') }}">
+                                    <i class="fas fa-flag me-2"></i>English
                                 </a></li>
-                            <li><a class="dropdown-item" href="{{ route('notifications.index') }}">
-                                    <i class="fas fa-bell"></i> الإشعارات
-                                    @if (Auth::user()->unread_notifications_count > 0)
-                                        <span class="badge bg-danger ms-2"
-                                            style="font-size: 0.7rem; padding: 0.2rem 0.4rem;">{{ Auth::user()->unread_notifications_count }}</span>
-                                    @endif
-                                </a></li>
-                            <li><a class="dropdown-item" href="{{ route('services.my-services') }}">
-                                    <i class="fas fa-list"></i> {{ __('messages.my_services') }}
-                                </a></li>
-                            @if (Auth::user()->isProvider())
-                                <li><a class="dropdown-item" href="{{ route('service-offers.my-offers') }}">
-                                        <i class="fas fa-handshake"></i> {{ __('messages.my_offers') }}
-                                    </a></li>
-                            @endif
-                            <li><a class="dropdown-item"
-                                    href="{{ Auth::user()->isProvider() ? route('provider.profile') : route('profile') }}">
-                                    <i class="fas fa-user-edit"></i> {{ __('messages.profile') }}
-                                </a></li>
-                            @if (Auth::user()->isProvider() && !Auth::user()->hasCompleteProviderProfile())
-                                <li><a class="dropdown-item text-warning"
-                                        href="{{ route('provider.complete-profile') }}">
-                                        <i class="fas fa-exclamation-triangle"></i> إكمال الملف الشخصي
-                                    </a></li>
-                            @endif
-                            @if (Auth::user()->isProvider() && Auth::user()->hasCompleteProviderProfile())
-                                <li><a class="dropdown-item text-primary"
-                                        href="{{ route('provider.profile.edit') }}">
-                                        <i class="fas fa-edit"></i> تعديل الملف الشخصي
-                                    </a></li>
-                            @endif
-                            @if (Auth::user()->is_admin)
-                                <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}">
-                                        <i class="fas fa-cog"></i> {{ __('messages.admin_panel') }}
-                                    </a></li>
-                            @endif
-                            <li>
-                                <hr class="dropdown-divider" style="margin: 0.3rem 0;">
-                            </li>
-                            <li>
-                                <form method="POST" action="{{ route('logout') }}" class="d-inline">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item">
-                                        <i class="fas fa-sign-out-alt"></i> {{ __('messages.logout') }}
-                                    </button>
-                                </form>
-                            </li>
                         </ul>
                     </li>
-                @else
-                    <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">{{ __('messages.login') }}</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('register') }}">{{ __('messages.register') }}</a></li>
-                @endauth
-            </ul>
+
+                    <!-- Messages -->
+                    @auth
+                        <li class="nav-item me-3 position-relative">
+                            <a class="nav-link" href="{{ route('messages.index') }}">
+                                <i class="fas fa-comments"></i>
+                            </a>
+                        </li>
+                    @endauth
+
+                    <!-- Notifications -->
+                    @auth
+                        <li class="nav-item me-3 position-relative">
+                            <a class="nav-link" href="{{ route('notifications.index') }}">
+                                <i class="fas fa-bell"></i>
+                                @if (Auth::user()->unread_notifications_count > 0)
+                                    <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">
+                                        {{ Auth::user()->unread_notifications_count > 99 ? '99+' : Auth::user()->unread_notifications_count }}
+                                    </span>
+                                @endif
+                            </a>
+                        </li>
+                    @endauth
+
+                    @auth
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button">
+                                @if (Auth::user()->image && file_exists(public_path('storage/' . Auth::user()->image)))
+                                    <img src="{{ asset('storage/' . Auth::user()->image) }}"
+                                        alt="{{ Auth::user()->name }}" class="rounded-circle me-2"
+                                        style="width: 30px; height: 30px; object-fit: cover;">
+                                @else
+                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center bg-primary text-white"
+                                        style="width: 30px; height: 30px; font-size: 14px; font-weight: bold;">
+                                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                    </div>
+                                @endif
+                                <span>{{ Auth::user()->name }}</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{{ route('messages.new-design') }}">
+                                        <i class="fas fa-comments"></i> الرسائل الجديدة
+                                        <span id="messages-badge-menu" class="badge bg-danger ms-2"
+                                            style="font-size: 0.7rem; padding: 0.2rem 0.4rem; display: none;">
+                                            0
+                                        </span>
+                                    </a></li>
+                                <li><a class="dropdown-item" href="{{ route('messages.index') }}">
+                                        <i class="fas fa-comments"></i> الرسائل القديمة
+                                    </a></li>
+                                <li><a class="dropdown-item" href="{{ route('notifications.index') }}">
+                                        <i class="fas fa-bell"></i> الإشعارات
+                                        @if (Auth::user()->unread_notifications_count > 0)
+                                            <span class="badge bg-danger ms-2"
+                                                style="font-size: 0.7rem; padding: 0.2rem 0.4rem;">{{ Auth::user()->unread_notifications_count }}</span>
+                                        @endif
+                                    </a></li>
+                                <li><a class="dropdown-item" href="{{ route('services.my-services') }}">
+                                        <i class="fas fa-list"></i> {{ __('messages.my_services') }}
+                                    </a></li>
+                                @if (Auth::user()->isProvider())
+                                    <li><a class="dropdown-item" href="{{ route('service-offers.my-offers') }}">
+                                            <i class="fas fa-handshake"></i> {{ __('messages.my_offers') }}
+                                        </a></li>
+                                @endif
+                                <li><a class="dropdown-item"
+                                        href="{{ Auth::user()->isProvider() ? route('provider.profile') : route('profile') }}">
+                                        <i class="fas fa-user-edit"></i> {{ __('messages.profile') }}
+                                    </a></li>
+                                @if (Auth::user()->isProvider() && !Auth::user()->hasCompleteProviderProfile())
+                                    <li><a class="dropdown-item text-warning"
+                                            href="{{ route('provider.complete-profile') }}">
+                                            <i class="fas fa-exclamation-triangle"></i> إكمال الملف الشخصي
+                                        </a></li>
+                                @endif
+                                @if (Auth::user()->isProvider() && Auth::user()->hasCompleteProviderProfile())
+                                    <li><a class="dropdown-item text-primary"
+                                            href="{{ route('provider.profile.edit') }}">
+                                            <i class="fas fa-edit"></i> تعديل الملف الشخصي
+                                        </a></li>
+                                @endif
+                                @if (Auth::user()->is_admin)
+                                    <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}">
+                                            <i class="fas fa-cog"></i> {{ __('messages.admin_panel') }}
+                                        </a></li>
+                                @endif
+                                <li>
+                                    <hr class="dropdown-divider" style="margin: 0.3rem 0;">
+                                </li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}" class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="fas fa-sign-out-alt"></i> {{ __('messages.logout') }}
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    @else
+                        <li class="nav-item"><a class="nav-link"
+                                href="{{ route('login') }}">{{ __('messages.login') }}</a></li>
+                        <li class="nav-item"><a class="nav-link"
+                                href="{{ route('register') }}">{{ __('messages.register') }}</a></li>
+                    @endauth
+                </ul>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
-<style>
-.custom-navbar {
-    background: rgba(47, 92, 105, 0.9);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-    transition: all 0.4s ease;
-}
+    <style>
+        .custom-navbar {
+            background: rgba(47, 92, 105, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.4s ease;
+        }
 
-.custom-navbar .navbar-brand {
-    color: #fff !important;
-    font-size: 1.3rem;
-    letter-spacing: 0.5px;
-}
+        .custom-navbar .navbar-brand {
+            color: #fff !important;
+            font-size: 1.3rem;
+            letter-spacing: 0.5px;
+        }
 
-.custom-navbar .nav-link {
-    color: #fff !important;
-    font-weight: 500;
-    transition: color 0.3s ease, transform 0.2s;
-}
+        .custom-navbar .nav-link {
+            color: #fff !important;
+            font-weight: 500;
+            transition: color 0.3s ease, transform 0.2s;
+        }
 
-.custom-navbar .nav-link:hover {
-    color: #f3a446 !important;
-    transform: scale(1.05);
-}
+        .custom-navbar .nav-link:hover {
+            color: #f3a446 !important;
+            transform: scale(1.05);
+        }
 
-.custom-navbar .nav-link.active {
-    color: #f3a446 !important;
-    font-weight: 600;
-    border-bottom: 2px solid #f3a446;
-}
+        .custom-navbar .nav-link.active {
+            color: #f3a446 !important;
+            font-weight: 600;
+            border-bottom: 2px solid #f3a446;
+        }
 
-.dropdown-menu {
-    border-radius: 10px;
-    border: none;
-    background-color: #fff;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
+        .dropdown-menu {
+            border-radius: 10px;
+            border: none;
+            background-color: #fff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
 
-.dropdown-item:hover {
-    background-color: rgba(243,164,70,0.1);
-    color: #f3a446;
-}
+        .dropdown-item:hover {
+            background-color: rgba(243, 164, 70, 0.1);
+            color: #f3a446;
+        }
 
-.navbar-toggler {
-    border: none;
-}
+        .navbar-toggler {
+            border: none;
+        }
 
-.navbar-toggler:focus {
-    box-shadow: none;
-}
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
 
-.badge {
-    font-size: 0.7rem;
-    padding: 0.25em 0.4em;
-    border-radius: 50%;
-}
-</style>
+        .badge {
+            font-size: 0.7rem;
+            padding: 0.25em 0.4em;
+            border-radius: 50%;
+        }
+    </style>
 
 
     <!-- Main Content -->
@@ -1195,190 +1206,203 @@
     </main>
 
     <!-- Footer -->
-<footer class="custom-footer mt-1">
-    <div class="container">
-        <div class="row text-center text-md-start">
-            <!-- Logo & Description -->
-            <div class="col-md-4 mb-4">
-                <h5 class="footer-title">
-                    <i class="fas fa-tools me-2 text-warning"></i> Endak
-                </h5>
-                <p class="footer-text">{{ __('messages.welcome_subtitle') }}</p>
-            </div>
+    <footer class="custom-footer mt-1">
+        <div class="container">
+            <div class="row text-center text-md-start">
+                <!-- Logo & Description -->
+                <div class="col-md-4 mb-4">
+                    <h5 class="footer-title">
+                        <i class="fas fa-tools me-2 text-warning"></i> Endak
+                    </h5>
+                    <p class="footer-text">{{ __('messages.welcome_subtitle') }}</p>
+                </div>
 
-            <!-- Quick Links -->
-            <div class="col-md-4 mb-4">
-                <h5 class="footer-title">{{ __('messages.quick_links') }}</h5>
-                <ul class="list-unstyled mt-3">
-                    <li><a href="{{ route('home') }}" class="footer-link">{{ __('messages.home') }}</a></li>
-                    <li><a href="{{ route('categories.index') }}" class="footer-link">{{ __('messages.categories') }}</a></li>
-                    <li><a href="{{ route('services.index') }}" class="footer-link">{{ __('messages.services') }}</a></li>
-                    <li><a href="{{ route('contact') }}" class="footer-link">{{ __('messages.contact_us') }}</a></li>
-                </ul>
-            </div>
+                <!-- Quick Links -->
+                <div class="col-md-4 mb-4">
+                    <h5 class="footer-title">{{ __('messages.quick_links') }}</h5>
+                    <ul class="list-unstyled mt-3">
+                        <li><a href="{{ route('home') }}" class="footer-link">{{ __('messages.home') }}</a></li>
+                        <li><a href="{{ route('categories.index') }}"
+                                class="footer-link">{{ __('messages.categories') }}</a></li>
+                        <li><a href="{{ route('services.index') }}"
+                                class="footer-link">{{ __('messages.services') }}</a></li>
+                        <li><a href="{{ route('contact') }}" class="footer-link">{{ __('messages.contact_us') }}</a>
+                        </li>
+                    </ul>
+                </div>
 
-            <!-- Social Media -->
-            <div class="col-md-4 mb-4">
-                <h5 class="footer-title">{{ __('messages.contact_info') }}</h5>
-                <div class="social-links mt-3">
-                    <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                <!-- Social Media -->
+                <div class="col-md-4 mb-4">
+                    <h5 class="footer-title">{{ __('messages.contact_info') }}</h5>
+                    <div class="social-links mt-3">
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
                 </div>
             </div>
+
+            <hr class="footer-divider">
+
+            <div class="text-center mt-3">
+                <p class="footer-copy">&copy; {{ date('Y') }} <strong>Endak</strong>.
+                    {{ __('messages.all_rights_reserved') }}</p>
+            </div>
         </div>
+    </footer>
 
-        <hr class="footer-divider">
+    <style>
+        /* === Footer Styling (Matches Navbar) === */
+        .custom-footer {
+            background: rgba(47, 92, 105, 0.95);
+            color: #f9f9f9;
+            padding: 50px 0 10px;
+            border-top: 2px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
 
-        <div class="text-center mt-3">
-            <p class="footer-copy">&copy; {{ date('Y') }} <strong>Endak</strong>. {{ __('messages.all_rights_reserved') }}</p>
-        </div>
-    </div>
-</footer>
+        /* Gradient glow at the top edge */
+        .custom-footer::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            height: 3px;
+            background: linear-gradient(to right, transparent, #f3a446, transparent);
+            opacity: 0.8;
+        }
 
-<style>
-/* === Footer Styling (Matches Navbar) === */
-.custom-footer {
-    background: rgba(47, 92, 105, 0.95);
-    color: #f9f9f9;
-    padding: 50px 0 10px;
-    border-top: 2px solid rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    position: relative;
-}
+        /* Titles */
+        .footer-title {
+            font-weight: 600;
+            color: #fff;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
 
-/* Gradient glow at the top edge */
-.custom-footer::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    height: 3px;
-    background: linear-gradient(to right, transparent, #f3a446, transparent);
-    opacity: 0.8;
-}
+        /* Text */
+        .footer-text {
+            color: #dce8eb;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
 
-/* Titles */
-.footer-title {
-    font-weight: 600;
-    color: #fff;
-    font-size: 1.2rem;
-    margin-bottom: 15px;
-}
+        /* Links */
+        .footer-link {
+            display: block;
+            color: #e9f2f4;
+            text-decoration: none;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
 
-/* Text */
-.footer-text {
-    color: #dce8eb;
-    font-size: 0.95rem;
-    line-height: 1.7;
-}
+        .footer-link:hover {
+            color: #f3a446;
+            transform: translateX(5px);
+        }
 
-/* Links */
-.footer-link {
-    display: block;
-    color: #e9f2f4;
-    text-decoration: none;
-    margin-bottom: 8px;
-    transition: all 0.3s ease;
-}
-.footer-link:hover {
-    color: #f3a446;
-    transform: translateX(5px);
-}
+        /* Divider line */
+        .footer-divider {
+            border-color: rgba(255, 255, 255, 0.1);
+            margin: 30px 0;
+        }
 
-/* Divider line */
-.footer-divider {
-    border-color: rgba(255, 255, 255, 0.1);
-    margin: 30px 0;
-}
+        /* Social icons */
+        .social-icon {
+            display: inline-block;
+            margin-right: 15px;
+            font-size: 20px;
+            color: #e9f2f4;
+            background: rgba(255, 255, 255, 0.08);
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            line-height: 42px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
 
-/* Social icons */
-.social-icon {
-    display: inline-block;
-    margin-right: 15px;
-    font-size: 20px;
-    color: #e9f2f4;
-    background: rgba(255, 255, 255, 0.08);
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    line-height: 42px;
-    text-align: center;
-    transition: all 0.3s ease;
-}
-
-.social-icon:hover {
-    color: #f3a446;
-    background: rgba(255, 255, 255, 0.15);
-    transform: translateY(-3px);
-}
+        .social-icon:hover {
+            color: #f3a446;
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+        }
 
 
-/* Copy text */
-.footer-copy {
-    color: #d3dede;
-    font-size: 0.9rem;
-}
+        /* Copy text */
+        .footer-copy {
+            color: #d3dede;
+            font-size: 0.9rem;
+        }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .custom-footer {
-        text-align: center;
-        padding: 40px 20px;
-    }
-}
-</style>
+        /* Responsive */
+        @media (max-width: 768px) {
+            .custom-footer {
+                text-align: center;
+                padding: 40px 20px;
+            }
+        }
+    </style>
 
 
     <!-- Modern Footer Navigation -->
-<nav class="footer-nav">
-    <div class="footer-nav-container">
-        <a href="{{ route('home') }}" class="footer-nav-item {{ request()->routeIs('home') ? 'active' : '' }}">
-            <div class="footer-nav-icon">
-                <i class="fas fa-home"></i>
-            </div>
-            <span class="footer-nav-text">الرئيسية</span>
-        </a>
+    <nav class="footer-nav">
+        <div class="footer-nav-container">
+            <a href="{{ route('home') }}" class="footer-nav-item {{ request()->routeIs('home') ? 'active' : '' }}">
+                <div class="footer-nav-icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <span class="footer-nav-text">الرئيسية</span>
+            </a>
 
-        @auth
-            @if (Auth::user()->isProvider())
-                <a href="{{ route('services.index') }}"
-                    class="footer-nav-item {{ request()->routeIs('services.my-services') ? 'active' : '' }}">
-                    <div class="footer-nav-icon">
-                        <i class="fas fa-concierge-bell"></i>
-                    </div>
-                    <span class="footer-nav-text">الخدمات</span>
-                </a>
+            @auth
+                @if (Auth::user()->isProvider())
+                    <a href="{{ route('services.index') }}"
+                        class="footer-nav-item {{ request()->routeIs('services.my-services') ? 'active' : '' }}">
+                        <div class="footer-nav-icon">
+                            <i class="fas fa-concierge-bell"></i>
+                        </div>
+                        <span class="footer-nav-text">الخدمات</span>
+                    </a>
+                @else
+                    <a href="{{ route('services.index') }}"
+                        class="footer-nav-item {{ request()->routeIs('services.my-services') ? 'active' : '' }}">
+                        <div class="footer-nav-icon">
+                            <i class="fas fa-th-large"></i>
+                        </div>
+                        <span class="footer-nav-text">إعلاناتي</span>
+                    </a>
+                @endif
             @else
-                <a href="{{ route('services.index') }}"
-                    class="footer-nav-item {{ request()->routeIs('services.my-services') ? 'active' : '' }}">
+                <a href="{{ route('login') }}" class="footer-nav-item">
                     <div class="footer-nav-icon">
                         <i class="fas fa-th-large"></i>
                     </div>
                     <span class="footer-nav-text">إعلاناتي</span>
                 </a>
-            @endif
-        @else
-            <a href="{{ route('login') }}" class="footer-nav-item">
-                <div class="footer-nav-icon">
-                    <i class="fas fa-th-large"></i>
-                </div>
-                <span class="footer-nav-text">إعلاناتي</span>
-            </a>
-        @endauth
+            @endauth
 
-        @auth
-            @if (Auth::user()->isProvider())
-                <a href="{{ route('service-offers.my-offers') }}"
-                    class="footer-nav-item footer-nav-center {{ request()->routeIs('service-offers.my-offers') ? 'active' : '' }}">
-                    <div class="footer-nav-icon footer-nav-icon-center">
-                        <i class="fas fa-handshake"></i>
-                    </div>
-                    <span class="footer-nav-text">عروضي</span>
-                </a>
+            @auth
+                @if (Auth::user()->isProvider())
+                    <a href="{{ route('service-offers.my-offers') }}"
+                        class="footer-nav-item footer-nav-center {{ request()->routeIs('service-offers.my-offers') ? 'active' : '' }}">
+                        <div class="footer-nav-icon footer-nav-icon-center">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <span class="footer-nav-text">عروضي</span>
+                    </a>
+                @else
+                    <a href="{{ route('categories.index') }}" class="footer-nav-item footer-nav-center">
+                        <div class="footer-nav-icon footer-nav-icon-center">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <span class="footer-nav-text">نشر إعلان</span>
+                    </a>
+                @endif
             @else
                 <a href="{{ route('categories.index') }}" class="footer-nav-item footer-nav-center">
                     <div class="footer-nav-icon footer-nav-icon-center">
@@ -1386,66 +1410,58 @@
                     </div>
                     <span class="footer-nav-text">نشر إعلان</span>
                 </a>
-            @endif
-        @else
-            <a href="{{ route('categories.index') }}" class="footer-nav-item footer-nav-center">
-                <div class="footer-nav-icon footer-nav-icon-center">
-                    <i class="fas fa-plus"></i>
-                </div>
-                <span class="footer-nav-text">نشر إعلان</span>
-            </a>
-        @endauth
+            @endauth
 
-        @auth
-            <a href="{{ route('messages.index') }}"
-                class="footer-nav-item {{ request()->routeIs('messages.*') ? 'active' : '' }}">
-                <div class="footer-nav-icon">
-                    <i class="fas fa-comments"></i>
-                    @if (Auth::user()->unread_messages_count > 0)
-                        <span
-                            class="footer-nav-badge footer-nav-badge-messages">{{ Auth::user()->unread_messages_count > 99 ? '99+' : Auth::user()->unread_messages_count }}</span>
-                    @endif
-                </div>
-                <span class="footer-nav-text">الرسائل</span>
-            </a>
-        @else
-            <a href="{{ route('login') }}" class="footer-nav-item">
-                <div class="footer-nav-icon">
-                    <i class="fas fa-comments"></i>
-                </div>
-                <span class="footer-nav-text">الرسائل</span>
-            </a>
-        @endauth
+            @auth
+                <a href="{{ route('messages.index') }}"
+                    class="footer-nav-item {{ request()->routeIs('messages.*') ? 'active' : '' }}">
+                    <div class="footer-nav-icon">
+                        <i class="fas fa-comments"></i>
+                        @if (Auth::user()->unread_messages_count > 0)
+                            <span
+                                class="footer-nav-badge footer-nav-badge-messages">{{ Auth::user()->unread_messages_count > 99 ? '99+' : Auth::user()->unread_messages_count }}</span>
+                        @endif
+                    </div>
+                    <span class="footer-nav-text">الرسائل</span>
+                </a>
+            @else
+                <a href="{{ route('login') }}" class="footer-nav-item">
+                    <div class="footer-nav-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <span class="footer-nav-text">الرسائل</span>
+                </a>
+            @endauth
 
-        @auth
-            <a href="{{ route('notifications.index') }}"
-                class="footer-nav-item {{ request()->routeIs('notifications.*') ? 'active' : '' }}">
-                <div class="footer-nav-icon">
-                    <i class="fas fa-bell"></i>
-                    @if (Auth::user()->unread_notifications_count > 0)
-                        <span
-                            class="footer-nav-badge footer-nav-badge-notifications">{{ Auth::user()->unread_notifications_count > 99 ? '99+' : Auth::user()->unread_notifications_count }}</span>
-                    @endif
-                </div>
-                <span class="footer-nav-text">الإشعارات</span>
-            </a>
-        @else
-            <a href="{{ route('login') }}" class="footer-nav-item">
-                <div class="footer-nav-icon">
-                    <i class="fas fa-bell"></i>
-                </div>
-                <span class="footer-nav-text">الإشعارات</span>
-            </a>
-        @endauth
+            @auth
+                <a href="{{ route('notifications.index') }}"
+                    class="footer-nav-item {{ request()->routeIs('notifications.*') ? 'active' : '' }}">
+                    <div class="footer-nav-icon">
+                        <i class="fas fa-bell"></i>
+                        @if (Auth::user()->unread_notifications_count > 0)
+                            <span
+                                class="footer-nav-badge footer-nav-badge-notifications">{{ Auth::user()->unread_notifications_count > 99 ? '99+' : Auth::user()->unread_notifications_count }}</span>
+                        @endif
+                    </div>
+                    <span class="footer-nav-text">الإشعارات</span>
+                </a>
+            @else
+                <a href="{{ route('login') }}" class="footer-nav-item">
+                    <div class="footer-nav-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <span class="footer-nav-text">الإشعارات</span>
+                </a>
+            @endauth
 
-        <a href="#" class="footer-nav-item" onclick="toggleMenu()">
-            <div class="footer-nav-icon">
-                <i class="fas fa-bars"></i>
-            </div>
-            <span class="footer-nav-text">القائمة</span>
-        </a>
-    </div>
-</nav>
+            <a href="#" class="footer-nav-item" onclick="toggleMenu()">
+                <div class="footer-nav-icon">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <span class="footer-nav-text">القائمة</span>
+            </a>
+        </div>
+    </nav>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -1453,7 +1469,7 @@
     <!-- Enhanced JavaScript -->
     <script>
         // Navbar scroll effect
-    
+
 
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -1721,7 +1737,7 @@
         }, 30000);
         @endauth
 
-  
+
 
         // Search functionality enhancement
         const searchInput = document.querySelector('input[type="search"]');
@@ -1861,11 +1877,11 @@
                     </div>
                     <div class="footer-menu-items">
                         ${menuItems.map(item => `
-                                    <a href="${item.href}" class="footer-menu-item">
-                                        <i class="${item.icon}"></i>
-                                        <span>${item.text}</span>
-                                    </a>
-                                `).join('')}
+                                            <a href="${item.href}" class="footer-menu-item">
+                                                <i class="${item.icon}"></i>
+                                                <span>${item.text}</span>
+                                            </a>
+                                        `).join('')}
                         @auth
                             <hr class="footer-menu-divider">
                             <a href="{{ route('logout') }}" class="footer-menu-item" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
@@ -2013,57 +2029,58 @@
 
         // Update footer navigation badges
         @auth
- function updateFooterNavBadges() {
-        fetch('{{ route('messages.unread-count') }}')
-            .then(response => response.json())
-            .then(data => {
-                const badge = document.querySelector('.footer-nav-badge-messages');
-                const icon = document.querySelector('.footer-nav-item[href*="messages"] .footer-nav-icon');
-                if (data.success && data.count > 0) {
-                    const count = data.count > 99 ? '99+' : data.count;
-                    if (badge) {
-                        badge.textContent = count;
-                        badge.style.display = 'flex';
-                    } else {
-                        const newBadge = document.createElement('span');
-                        newBadge.className = 'footer-nav-badge footer-nav-badge-messages';
-                        newBadge.textContent = count;
-                        icon.appendChild(newBadge);
-                    }
-                } else if (badge) {
-                    badge.style.display = 'none';
-                }
-            });
 
-        fetch('/notifications/unread')
-            .then(response => response.json())
-            .then(data => {
-                const badge = document.querySelector('.footer-nav-badge-notifications');
-                const icon = document.querySelector('.footer-nav-item[href*="notifications"] .footer-nav-icon');
-                if (data.count > 0) {
-                    const count = data.count > 99 ? '99+' : data.count;
-                    if (badge) {
-                        badge.textContent = count;
-                        badge.style.display = 'flex';
-                    } else {
-                        const newBadge = document.createElement('span');
-                        newBadge.className = 'footer-nav-badge footer-nav-badge-notifications';
-                        newBadge.textContent = count;
-                        icon.appendChild(newBadge);
+        function updateFooterNavBadges() {
+            fetch('{{ route('messages.unread-count') }}')
+                .then(response => response.json())
+                .then(data => {
+                    const badge = document.querySelector('.footer-nav-badge-messages');
+                    const icon = document.querySelector('.footer-nav-item[href*="messages"] .footer-nav-icon');
+                    if (data.success && data.count > 0) {
+                        const count = data.count > 99 ? '99+' : data.count;
+                        if (badge) {
+                            badge.textContent = count;
+                            badge.style.display = 'flex';
+                        } else {
+                            const newBadge = document.createElement('span');
+                            newBadge.className = 'footer-nav-badge footer-nav-badge-messages';
+                            newBadge.textContent = count;
+                            icon.appendChild(newBadge);
+                        }
+                    } else if (badge) {
+                        badge.style.display = 'none';
                     }
-                } else if (badge) {
-                    badge.style.display = 'none';
-                }
-            });
-    }
+                });
 
-    function closeMenu() {
-    const menuModal = document.querySelector('.footer-menu-modal');
-    if (menuModal) {
-        menuModal.remove();
-        document.body.style.overflow = ''; // يرجّع سكرول الصفحة
-    }
-}
+            fetch('/notifications/unread')
+                .then(response => response.json())
+                .then(data => {
+                    const badge = document.querySelector('.footer-nav-badge-notifications');
+                    const icon = document.querySelector('.footer-nav-item[href*="notifications"] .footer-nav-icon');
+                    if (data.count > 0) {
+                        const count = data.count > 99 ? '99+' : data.count;
+                        if (badge) {
+                            badge.textContent = count;
+                            badge.style.display = 'flex';
+                        } else {
+                            const newBadge = document.createElement('span');
+                            newBadge.className = 'footer-nav-badge footer-nav-badge-notifications';
+                            newBadge.textContent = count;
+                            icon.appendChild(newBadge);
+                        }
+                    } else if (badge) {
+                        badge.style.display = 'none';
+                    }
+                });
+        }
+
+        function closeMenu() {
+            const menuModal = document.querySelector('.footer-menu-modal');
+            if (menuModal) {
+                menuModal.remove();
+                document.body.style.overflow = ''; // يرجّع سكرول الصفحة
+            }
+        }
         // Update badges every 30 seconds
         setInterval(updateFooterNavBadges, 30000);
         updateFooterNavBadges();

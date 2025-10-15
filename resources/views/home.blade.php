@@ -39,7 +39,8 @@
                 </div>
 
                 <div class="col-lg-6 text-center position-relative mb-4 mb-lg-0">
-                    <img src="{{ asset(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}" alt="{{ \App\Models\SystemSetting::get('site_name_ar', 'إنداك') }}" class="img-fluid hero-img">
+                    <img src="{{ asset(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}"
+                        alt="{{ \App\Models\SystemSetting::get('site_name_ar', 'إنداك') }}" class="img-fluid hero-img">
                 </div>
             </div>
         </div>
@@ -424,185 +425,187 @@
             @endif
         @else
             <!-- <section class="latest-services py-5 position-relative">
-            <div class="container">
-                <div class="text-center mb-5">
-                    <h2 class="fw-bold text-dark">أحدث الخدمات</h2>
-                    <p class="text-muted">اكتشف أحدث الخدمات المضافة على منصة <span style="color:#f3a446;">Endak</span></p>
-                </div>
-
-                <div class="row g-4">
-                    @foreach ($latestServices as $index => $service)
-        <div class="col-md-6 col-lg-4">
-                            <div class="service-card" style="animation-delay: {{ $index * 0.2 }}s;">
-                                <div class="service-img">
-                                    <img src="{{ $service->image_url }}" alt="{{ $service->title }}">
-                                    <div class="overlay"></div>
-                                </div>
-
-                                <div class="service-content">
-                                    <h5>{{ $service->title }}</h5>
-                                    <p>{{ Str::limit($service->description, 80) }}</p>
-
-                                    <div class="service-meta">
-                                        <span class="price">{{ $service->formatted_price }}</span>
-                                        <small class="category">{{ $service->category->name }}</small>
-                                    </div>
-
-                                    @php
-                                        $userOffer = $service->offers->where('provider_id', auth()->id())->first();
-                                    @endphp
-                                    @if ($userOffer)
-        <div class="offer-status mt-3">
-                                            <i class="fas fa-check-circle text-success me-1"></i>
-                                            <span>تم تقديم العرض</span>
-                                        </div>
-        @endif
-                                </div>
-
-                                <div class="card-footer bg-transparent text-center">
-                                    <a href="{{ route('services.show', $service->slug) }}" class="btn-view">
-                                        عرض التفاصيل
-                                    </a>
-                                </div>
-                            </div>
+                    <div class="container">
+                        <div class="text-center mb-5">
+                            <h2 class="fw-bold text-dark">أحدث الخدمات</h2>
+                            <p class="text-muted">اكتشف أحدث الخدمات المضافة على منصة <span style="color:#f3a446;">Endak</span></p>
                         </div>
+
+                        <div class="row g-4">
+                            @foreach ($latestServices as $index => $service)
+        <div class="col-md-6 col-lg-4">
+                                    <div class="service-card" style="animation-delay: {{ $index * 0.2 }}s;">
+                                        <div class="service-img">
+                                            <img src="{{ $service->image_url }}" alt="{{ $service->title }}">
+                                            <div class="overlay"></div>
+                                        </div>
+
+                                        <div class="service-content">
+                                            <h5>{{ $service->title }}</h5>
+                                            <p>{{ Str::limit($service->description, 80) }}</p>
+
+                                            <div class="service-meta">
+                                                <span class="price">{{ $service->formatted_price }}</span>
+                                                <small class="category">{{ $service->category->name }}</small>
+                                            </div>
+
+                                            @php
+                                                $userOffer = $service->offers
+                                                    ->where('provider_id', auth()->id())
+                                                    ->first();
+                                            @endphp
+                                            @if ($userOffer)
+        <div class="offer-status mt-3">
+                                                    <i class="fas fa-check-circle text-success me-1"></i>
+                                                    <span>تم تقديم العرض</span>
+                                                </div>
+        @endif
+                                        </div>
+
+                                        <div class="card-footer bg-transparent text-center">
+                                            <a href="{{ route('services.show', $service->slug) }}" class="btn-view">
+                                                عرض التفاصيل
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
         @endforeach
-                </div>
+                        </div>
 
-                <div class="text-center mt-5">
-                    <a href="{{ route('services.index') }}" class="btn btn-lg px-5 py-2 rounded-pill" style="background:#f3a446; color:#fff; border:none;">
-                        عرض جميع الخدمات
-                    </a>
-                </div>
-            </div>
+                        <div class="text-center mt-5">
+                            <a href="{{ route('services.index') }}" class="btn btn-lg px-5 py-2 rounded-pill" style="background:#f3a446; color:#fff; border:none;">
+                                عرض جميع الخدمات
+                            </a>
+                        </div>
+                    </div>
 
-            <style>
-                .latest-services {
-                    background: linear-gradient(135deg, #f1f7ff, #e6eefc, #f1f7ff);
-                }
+                    <style>
+                        .latest-services {
+                            background: linear-gradient(135deg, #f1f7ff, #e6eefc, #f1f7ff);
+                        }
 
-                .service-card {
-                    background: #fff;
-                    border-radius: 20px;
-                    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-                    overflow: hidden;
-                    transform: translateY(40px);
-                    opacity: 0;
-                    animation: slideFadeIn 0.8s ease forwards;
-                }
+                        .service-card {
+                            background: #fff;
+                            border-radius: 20px;
+                            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+                            overflow: hidden;
+                            transform: translateY(40px);
+                            opacity: 0;
+                            animation: slideFadeIn 0.8s ease forwards;
+                        }
 
-                @keyframes slideFadeIn {
-                    0% { transform: translateY(40px); opacity: 0; }
-                    100% { transform: translateY(0); opacity: 1; }
-                }
+                        @keyframes slideFadeIn {
+                            0% { transform: translateY(40px); opacity: 0; }
+                            100% { transform: translateY(0); opacity: 1; }
+                        }
 
-                /* حركة كل كارد: يمين-شمال بالتبادل */
-                .col-md-6:nth-child(odd) .service-card {
-                    animation-name: slideFromRight;
-                }
-                .col-md-6:nth-child(even) .service-card {
-                    animation-name: slideFromLeft;
-                }
+                        /* حركة كل كارد: يمين-شمال بالتبادل */
+                        .col-md-6:nth-child(odd) .service-card {
+                            animation-name: slideFromRight;
+                        }
+                        .col-md-6:nth-child(even) .service-card {
+                            animation-name: slideFromLeft;
+                        }
 
-                @keyframes slideFromRight {
-                    0% { transform: translateX(80px); opacity: 0; }
-                    100% { transform: translateX(0); opacity: 1; }
-                }
+                        @keyframes slideFromRight {
+                            0% { transform: translateX(80px); opacity: 0; }
+                            100% { transform: translateX(0); opacity: 1; }
+                        }
 
-                @keyframes slideFromLeft {
-                    0% { transform: translateX(-80px); opacity: 0; }
-                    100% { transform: translateX(0); opacity: 1; }
-                }
+                        @keyframes slideFromLeft {
+                            0% { transform: translateX(-80px); opacity: 0; }
+                            100% { transform: translateX(0); opacity: 1; }
+                        }
 
-                .service-img {
-                    position: relative;
-                    height: 200px;
-                    overflow: hidden;
-                }
+                        .service-img {
+                            position: relative;
+                            height: 200px;
+                            overflow: hidden;
+                        }
 
-                .service-img img {
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                    transition: transform 0.6s ease;
-                }
+                        .service-img img {
+                            width: 100%;
+                            height: 100%;
+                            object-fit: cover;
+                            transition: transform 0.6s ease;
+                        }
 
-                .service-card:hover .service-img img {
-                    transform: scale(1.1);
-                }
+                        .service-card:hover .service-img img {
+                            transform: scale(1.1);
+                        }
 
-                .overlay {
-                    position: absolute;
-                    top: 0; left: 0; right: 0; bottom: 0;
-                    background: rgba(47, 92, 105, 0.25);
-                    opacity: 0;
-                    transition: opacity 0.3s ease;
-                }
+                        .overlay {
+                            position: absolute;
+                            top: 0; left: 0; right: 0; bottom: 0;
+                            background: rgba(47, 92, 105, 0.25);
+                            opacity: 0;
+                            transition: opacity 0.3s ease;
+                        }
 
-                .service-card:hover .overlay {
-                    opacity: 1;
-                }
+                        .service-card:hover .overlay {
+                            opacity: 1;
+                        }
 
-                .service-content {
-                    padding: 20px;
-                    text-align: start;
-                }
+                        .service-content {
+                            padding: 20px;
+                            text-align: start;
+                        }
 
-                .service-content h5 {
-                    font-weight: 700;
-                    color: #2f5c69;
-                    margin-bottom: 10px;
-                }
+                        .service-content h5 {
+                            font-weight: 700;
+                            color: #2f5c69;
+                            margin-bottom: 10px;
+                        }
 
-                .service-content p {
-                    color: #666;
-                    font-size: 0.95rem;
-                }
+                        .service-content p {
+                            color: #666;
+                            font-size: 0.95rem;
+                        }
 
-                .service-meta {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-top: 15px;
-                }
+                        .service-meta {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin-top: 15px;
+                        }
 
-                .price {
-                    color: #f3a446;
-                    font-weight: bold;
-                }
+                        .price {
+                            color: #f3a446;
+                            font-weight: bold;
+                        }
 
-                .category {
-                    color: #3c6f7d;
-                    font-size: 0.85rem;
-                }
+                        .category {
+                            color: #3c6f7d;
+                            font-size: 0.85rem;
+                        }
 
-                .offer-status {
-                    background: rgba(76, 175, 80, 0.1);
-                    border-radius: 10px;
-                    padding: 6px 10px;
-                    font-size: 0.9rem;
-                    color: #28a745;
-                    display: inline-flex;
-                    align-items: center;
-                }
+                        .offer-status {
+                            background: rgba(76, 175, 80, 0.1);
+                            border-radius: 10px;
+                            padding: 6px 10px;
+                            font-size: 0.9rem;
+                            color: #28a745;
+                            display: inline-flex;
+                            align-items: center;
+                        }
 
-                .btn-view {
-                    display: inline-block;
-                    background: linear-gradient(135deg, #2f5c69, #3c6f7d);
-                    color: #fff;
-                    border: none;
-                    padding: 10px 25px;
-                    border-radius: 12px;
-                    font-weight: 500;
-                    transition: all 0.3s ease;
-                }
+                        .btn-view {
+                            display: inline-block;
+                            background: linear-gradient(135deg, #2f5c69, #3c6f7d);
+                            color: #fff;
+                            border: none;
+                            padding: 10px 25px;
+                            border-radius: 12px;
+                            font-weight: 500;
+                            transition: all 0.3s ease;
+                        }
 
-                .btn-view:hover {
-                    background: #f3a446;
-                    transform: scale(1.05);
-                }
-            </style>
-        </section> -->
+                        .btn-view:hover {
+                            background: #f3a446;
+                            transform: scale(1.05);
+                        }
+                    </style>
+                </section> -->
 
         @endauth
     @endif

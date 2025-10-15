@@ -39,21 +39,21 @@ class SystemSettingController extends Controller
             }
             SystemSetting::where('key', 'site_logo')->update(['value' => 'home.png']);
         }
-        
+
         // معالجة رفع لوجو الموقع
         if ($request->hasFile('logo_upload')) {
             $file = $request->file('logo_upload');
-            
+
             // حذف اللوجو القديم إذا كان موجود
             $currentLogo = SystemSetting::get('site_logo', 'home.png');
             if ($currentLogo && $currentLogo !== 'home.png' && file_exists(public_path($currentLogo))) {
                 unlink(public_path($currentLogo));
             }
-            
+
             // حفظ اللوجو الجديد في مجلد public مباشرة
             $filename = 'logo-' . time() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path(), $filename);
-            
+
             // تحديث إعداد اللوجو
             SystemSetting::where('key', 'site_logo')->update(['value' => $filename]);
         }

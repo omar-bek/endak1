@@ -6,7 +6,6 @@
 <div class="container mt-4">
     <div class="row">
         <div class="col-12">
-            <!-- العنوان -->
             <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
                 <h2 class="text-teal">
                     <i class="fas fa-list text-gold"></i>
@@ -65,7 +64,6 @@
                                         </p>
                                     @endif
 
-                                    <!-- صاحب الخدمة (لمزود الخدمة فقط) -->
                                     @if(auth()->user()->isProvider())
                                         <p class="text-muted mb-2">
                                             <i class="fas fa-user text-gold"></i>
@@ -73,7 +71,6 @@
                                         </p>
                                     @endif
 
-                                    <!-- تاريخ الإنشاء -->
                                     <p class="text-muted mb-3">
                                         <i class="fas fa-calendar text-teal"></i>
                                         {{ $service->created_at->format('Y-m-d') }}
@@ -88,7 +85,6 @@
                                         @endif
                                     </div>
 
-                                    <!-- عدد العروض -->
                                     <div class="mb-3">
                                         @php
                                             $pendingOffers = $service->offers->where('status', 'pending')->count();
@@ -207,7 +203,6 @@
     </div>
 </div>
 
-<!-- ألوان مخصصة -->
 <style>
     .text-teal { color: #008b8b !important; }
     .bg-teal { background-color: #008b8b !important; }

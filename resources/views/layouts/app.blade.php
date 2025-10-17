@@ -1212,7 +1212,7 @@
                 <!-- Logo & Description -->
                 <div class="col-md-4 mb-4">
                     <h5 class="footer-title">
-                        <i class="fas fa-tools me-2 text-warning"></i> Endak
+                    <img src="{{ asset(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}" alt="Endak Logo" class="me-2" style="height: 50px; width: auto;"> Endak
                     </h5>
                     <p class="footer-text">{{ __('messages.welcome_subtitle') }}</p>
                 </div>

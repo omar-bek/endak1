@@ -17,7 +17,7 @@
         <div class="form-section fadeInRight">
             <div class="logo mb-4 text-center">
                 <a href="{{ route('home') }}" class="text-decoration-none text-dark fs-3 fw-bold">
-                    <img src="{{ asset('home.png') }}" alt="Endak Logo" class="me-2" style="height: 50px; width: auto;"> Endak
+                    <img src="{{ asset(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}" alt="Endak Logo" class="me-2" style="height: 50px; width: auto;"> Endak
                 </a>
             </div>
 

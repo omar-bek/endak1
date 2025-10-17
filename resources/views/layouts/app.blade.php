@@ -1863,7 +1863,6 @@
             ];
         @endauth
 
-        // Create menu modal
         const menuModal = document.createElement('div');
         menuModal.className = 'footer-menu-modal';
         menuModal.innerHTML = `
@@ -1902,7 +1901,7 @@
                 </div>
             `;
 
-        // Add modal styles
+            
         const modalStyles = document.createElement('style');
         modalStyles.textContent = `
                 .footer-menu-modal {
@@ -2074,18 +2073,19 @@
                 });
         }
 
-        function closeMenu() {
-            const menuModal = document.querySelector('.footer-menu-modal');
-            if (menuModal) {
-                menuModal.remove();
-                document.body.style.overflow = ''; // يرجّع سكرول الصفحة
-            }
-        }
+      
         // Update badges every 30 seconds
         setInterval(updateFooterNavBadges, 30000);
         updateFooterNavBadges();
         @endauth
 
+          function closeMenu() {
+            const menuModal = document.querySelector('.footer-menu-modal');
+            if (menuModal) {
+                menuModal.remove();
+                document.body.style.overflow = '';
+            }
+        }
         // Handle login requirement for protected links
         function handleProtectedLink(event, href) {
             @guest
@@ -2181,6 +2181,7 @@
             transition: all 0.3s ease;
             text-decoration: none;
             animation: pulse-whatsapp 2s infinite;
+    
         }
 
         .whatsapp-float:hover {
@@ -2212,6 +2213,7 @@
                 font-size: 24px;
                 bottom: 70px;
                 left: 15px;
+                margin-bottom:100px
             }
         }
     </style>

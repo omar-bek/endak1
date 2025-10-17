@@ -5,7 +5,6 @@
 @section('content')
 <div class="auth-container login-mode" id="authContainer">
     <div class="auth-card login-card">
-        <!-- الجانب الأيسر -->
         <div class="side-panel left-panel">
             <div class="content text-center">
                 <i class="fas fa-door-open fa-3x text-warning mb-3"></i>
@@ -15,7 +14,6 @@
             </div>
         </div>
 
-        <!-- قسم النموذج -->
         <div class="form-section fadeInRight">
             <div class="logo mb-4 text-center">
                 <a href="{{ route('home') }}" class="text-decoration-none text-dark fs-3 fw-bold">
@@ -55,14 +53,12 @@ document.getElementById("switchToRegister").addEventListener("click", function()
 </script>
 
 <style>
-/* ========== عام ========== */
 body {
     font-family: 'Cairo', sans-serif;
     background: #f5f6fa;
     overflow-x: hidden;
 }
 
-/* ========== الحاوية الرئيسية ========== */
 .auth-container {
     min-height: 100vh;
     display: flex;
@@ -70,7 +66,6 @@ body {
     justify-content: center;
 }
 
-/* ========== البطاقة ========== */
 .auth-card {
     display: flex;
     width: 900px;
@@ -82,7 +77,6 @@ body {
     animation: slideInLeft 0.8s ease;
 }
 
-/* ========== الجانب الأيسر ========== */
 .side-panel {
     width: 45%;
     background: linear-gradient(135deg, #2f5c69, #3c7d8b);
@@ -105,17 +99,15 @@ body {
     border-color: #f3a446;
 }
 
-/* ========== قسم النموذج ========== */
 .form-section {
     width: 55%;
     padding: 3rem;
 }
 
-/* ========== الـ Inputs ========== */
 .form-control {
     border: 1px solid #ccc;
     border-radius: 10px;
-    padding: 0.75rem 2.8rem 0.75rem 1rem; /* مساحة كافية للأيقونة */
+    padding: 0.75rem 2.8rem 0.75rem 1rem;
     color: #333;
     font-size: 15px;
 }
@@ -126,7 +118,6 @@ body {
     opacity: 0.9;
 }
 
-/* الأيقونة داخل الـ input */
 .input-icon {
     position: absolute;
     right: 15px;
@@ -136,7 +127,6 @@ body {
     pointer-events: none;
 }
 
-/* عند التركيز */
 .form-control:focus {
     border-color: #3c7d8b;
     box-shadow: 0 0 6px rgba(47, 92, 105, 0.3);
@@ -158,13 +148,11 @@ body {
     background: #f3a446;
 }
 
-/* ========== الأنيميشن ========== */
 @keyframes slideInLeft {
     from {opacity: 0; transform: translateX(-100px);}
     to {opacity: 1; transform: translateX(0);}
 }
 
-/* ========== الموبايل ========== */
 @media (max-width: 768px) {
     .auth-card {
         flex-direction: column;

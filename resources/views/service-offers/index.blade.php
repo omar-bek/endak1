@@ -7,10 +7,10 @@
     <div class="row">
         <div class="col-lg-8">
             <!-- معلومات الخدمة -->
-            <div class="card mb-4">
-                <div class="card-body">
+            <div class="card mb-4 shadow-sm border-0 rounded-3">
+                <div class="card-body bg-light">
                     <div class="text-start mb-3">
-                        <a href="{{ route('services.show', $service->slug) }}" class="btn btn-outline-primary">
+                        <a href="{{ route('services.show', $service->slug) }}" class="btn btn-outline-teal">
                             <i class="fas fa-arrow-left"></i> العودة للخدمة
                         </a>
                     </div>
@@ -18,19 +18,19 @@
                     <div class="row">
                         <div class="col-md-4">
                             @if($service->image)
-                                <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->title }}" class="img-fluid rounded">
+                                <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->title }}" class="img-fluid rounded shadow-sm">
                             @endif
                         </div>
                         <div class="col-md-8">
-                            <h4>{{ $service->title }}</h4>
+                            <h4 class="text-teal fw-bold">{{ $service->title }}</h4>
                             <p class="text-muted">{{ $service->description }}</p>
-                            <div class="d-flex align-items-center">
-                                <i class="fas fa-user text-primary me-2"></i>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-user text-gold me-2"></i>
                                 <span>{{ $service->user->name }}</span>
                             </div>
                             @if($service->location)
                                 <div class="d-flex align-items-center mt-2">
-                                    <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                                    <i class="fas fa-map-marker-alt text-gold me-2"></i>
                                     <span>{{ $service->location }}</span>
                                 </div>
                             @endif
@@ -40,237 +40,234 @@
             </div>
 
             <!-- العروض -->
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">
-                        <i class="fas fa-handshake"></i> العروض المقدمة ({{ $offers->count() }})
-                    </h5>
-                </div>
-                <div class="card-body">
-                    @if($offers->count() > 0)
-                        @foreach($offers as $offer)
-                            <div class="card mb-3 border-{{ $offer->status_color }}">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-8">
-                                            <div class="d-flex align-items-center mb-2">
-                                                <img src="{{ $offer->provider->avatar_url }}" alt="{{ $offer->provider->name }}"
-                                                     class="rounded-circle me-3" width="50" height="50">
-                                                <div>
-                                                    <h6 class="mb-0">{{ $offer->provider->name }}</h6>
-                                                    <small class="text-muted">{{ $offer->created_at }}</small>
-                                                </div>
-                                            </div>
+            <div class="card shadow-sm border-0 rounded-3">
+    <div class="card-header bg-gradient text-center" style="background: linear-gradient(90deg, #007d7b, #009688);">
+        <h5 class="mb-0"><i class="fas fa-handshake me-2 text-black"></i> العروض المقدمة ({{ $offers->count() }})</h5>
+    </div>
 
-                                            @if($offer->notes)
-                                                <p class="text-muted mb-2">{{ $offer->notes }}</p>
-                                            @endif
-
-                                            <div class="d-flex align-items-center">
-                                                <span class="badge bg-{{ $offer->status_color }} me-2">{{ $offer->status_label }}</span>
-                                                @if($offer->expires_at)
-                                                    <small class="text-muted">
-                                                        <i class="fas fa-clock"></i> ينتهي في {{ $offer->expires_at->format('Y-m-d H:i') }}
-                                                    </small>
-                                                @endif
-                                            </div>
-
-                                            <!-- معلومات إضافية للعرض -->
-                                            @if($offer->accepted_at)
-                                                <div class="mt-2">
-                                                    <small class="text-success">
-                                                        <i class="fas fa-check-circle"></i> تم القبول في {{ $offer->accepted_at->format('Y-m-d H:i') }}
-                                                    </small>
-                                                </div>
-                                            @endif
-
-                                            @if($offer->delivered_at)
-                                                <div class="mt-2">
-                                                    <small class="text-info">
-                                                        <i class="fas fa-check-double"></i> تم التسليم في {{ $offer->delivered_at->format('Y-m-d H:i') }}
-                                                    </small>
-                                                </div>
-                                            @endif
-
-                                            @if($offer->rating)
-                                                <div class="mt-2">
-                                                    <div class="d-flex align-items-center">
-                                                        @for($i = 1; $i <= 5; $i++)
-                                                            <i class="fas fa-star {{ $i <= $offer->rating ? 'text-warning' : 'text-muted' }}" style="font-size: 0.8rem;"></i>
-                                                        @endfor
-                                                        <small class="text-muted ms-2">تم التقييم</small>
-                                                    </div>
-                                                </div>
-                                            @endif
-                                        </div>
-                                        <div class="col-md-4 text-md-end">
-                                            <div class="h4 text-success mb-2">{{ $offer->formatted_price }}</div>
-
-                                            @if($offer->status === 'pending' && auth()->id() === $service->user_id)
-                                                <div class="btn-group" role="group">
-                                                    <form method="POST" action="{{ route('service-offers.accept', $offer) }}" class="d-inline">
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-success btn-sm"
-                                                                onclick="return confirm('هل أنت متأكد من قبول هذا العرض؟')">
-                                                            <i class="fas fa-check"></i> قبول
-                                                        </button>
-                                                    </form>
-                                                    <form method="POST" action="{{ route('service-offers.reject', $offer) }}" class="d-inline">
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-danger btn-sm"
-                                                                onclick="return confirm('هل أنت متأكد من رفض هذا العرض؟')">
-                                                            <i class="fas fa-times"></i> رفض
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            @endif
-
-                                            <!-- أزرار العميل بعد قبول العرض -->
-                                            @if($offer->status === 'accepted' && auth()->id() === $service->user_id)
-                                                <div class="mb-2">
-                                                    @if(!$offer->delivered_at)
-                                                        <form method="POST" action="{{ route('service-offers.deliver', $offer) }}" class="d-inline">
-                                                            @csrf
-                                                            <button type="submit" class="btn btn-warning btn-sm"
-                                                                    onclick="return confirm('هل أنت متأكد من تسليم الخدمة؟')">
-                                                                <i class="fas fa-check-double"></i> تم تسليم الخدمة
-                                                            </button>
-                                                        </form>
-                                                    @else
-                                                        <span class="badge bg-success mb-2">
-                                                            <i class="fas fa-check-circle"></i> تم تسليم الخدمة
-                                                        </span>
-                                                    @endif
-                                                </div>
-                                            @endif
-
-                                            <!-- زر التقييم بعد تسليم الخدمة -->
-                                            @if($offer->status === 'delivered' && auth()->id() === $service->user_id && !$offer->rating)
-                                                <div class="mb-2">
-                                                    <button type="button" class="btn btn-info btn-sm"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#reviewModal{{ $offer->id }}">
-                                                        <i class="fas fa-star"></i> تقييم المزود
-                                                    </button>
-                                                </div>
-                                            @elseif($offer->rating && auth()->id() === $service->user_id)
-                                                <div class="mb-2">
-                                                    <div class="text-center">
-                                                        <div class="mb-1">
-                                                            @for($i = 1; $i <= 5; $i++)
-                                                                <i class="fas fa-star {{ $i <= $offer->rating ? 'text-warning' : 'text-muted' }}"></i>
-                                                            @endfor
-                                                        </div>
-                                                        <small class="text-muted">تم التقييم</small>
-                                                    </div>
-                                                </div>
-                                            @endif
-
-                                            <!-- زر الرسائل -->
-                                            <div class="mt-2">
-                                                <a href="{{ route('messages.offer-conversation', $offer->id) }}"
-                                                   class="btn btn-outline-primary btn-sm">
-                                                    <i class="fas fa-comments"></i> إرسال رسالة
-                                                </a>
-                                            </div>
-                                        </div>
+    <div class="card-body bg-light">
+        @if($offers->count() > 0)
+            @foreach($offers as $offer)
+                <div class="card mb-3 border-start border-3 rounded-3 border-{{ $offer->status_color }} shadow-sm">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="d-flex align-items-center mb-2">
+                                    <img src="{{ $offer->provider->avatar_url }}" alt="{{ $offer->provider->name }}" class="rounded-circle me-3 shadow-sm" width="50" height="50">
+                                    <div>
+                                        <h6 class="mb-0 fw-bold text-teal">{{ $offer->provider->name }}</h6>
+                                        <small class="text-muted"><i class="fas fa-clock me-1"></i>{{ $offer->created_at }}</small>
                                     </div>
                                 </div>
+
+                                @if($offer->notes)
+                                    <p class="text-muted mb-2 fst-italic">{{ $offer->notes }}</p>
+                                @endif
+
+                                <div class="d-flex align-items-center">
+                                    <span class="badge bg-{{ $offer->status_color }} me-2 px-3 py-2">{{ $offer->status_label }}</span>
+                                    @if($offer->expires_at)
+                                        <small class="text-muted">
+                                            <i class="fas fa-hourglass-half me-1 text-gold"></i> ينتهي في {{ $offer->expires_at->format('Y-m-d H:i') }}
+                                        </small>
+                                    @endif
+                                </div>
+
+                                @if($offer->accepted_at)
+                                    <div class="mt-2 text-success small">
+                                        <i class="fas fa-check-circle"></i> تم القبول في {{ $offer->accepted_at->format('Y-m-d H:i') }}
+                                    </div>
+                                @endif
+
+                                @if($offer->delivered_at)
+                                    <div class="mt-2 text-info small">
+                                        <i class="fas fa-check-double"></i> تم التسليم في {{ $offer->delivered_at->format('Y-m-d H:i') }}
+                                    </div>
+                                @endif
+
+                                @if($offer->rating)
+                                    <div class="mt-2">
+                                        <div class="d-flex align-items-center">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                <i class="fas fa-star {{ $i <= $offer->rating ? 'text-warning' : 'text-muted' }}" style="font-size: 0.9rem;"></i>
+                                            @endfor
+                                            <small class="text-muted ms-2">تم التقييم</small>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
-                        @endforeach
-                    @else
-                        <div class="text-center py-4">
-                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">لا توجد عروض بعد</h5>
-                            <p class="text-muted">لم يتم تقديم أي عروض لهذه الخدمة حتى الآن</p>
+
+                            <div class="col-md-4 text-md-end">
+                                <div class="h4 text-gold mb-3 fw-bold">{{ $offer->formatted_price }}</div>
+
+                                @if($offer->status === 'pending' && auth()->id() === $service->user_id)
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-success btn-sm rounded-pill"
+                                            data-bs-toggle="modal" data-bs-target="#acceptModal{{ $offer->id }}">
+                                            <i class="fas fa-check"></i> قبول
+                                        </button>
+
+                                        <button type="button" class="btn btn-danger btn-sm rounded-pill"
+                                            data-bs-toggle="modal" data-bs-target="#rejectModal{{ $offer->id }}">
+                                            <i class="fas fa-times"></i> رفض
+                                        </button>
+                                    </div>
+                                @endif
+
+                                @if($offer->status === 'accepted' && auth()->id() === $service->user_id)
+                                    <div class="mt-3">
+                                        @if(!$offer->delivered_at)
+                                            <form method="POST" action="{{ route('service-offers.deliver', $offer) }}" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-warning btn-sm rounded-pill text-white">
+                                                    <i class="fas fa-check-double"></i> تم تسليم الخدمة
+                                                </button>
+                                            </form>
+                                        @else
+                                            <span class="badge bg-success mb-2 rounded-pill px-3 py-2">
+                                                <i class="fas fa-check-circle"></i> تم التسليم
+                                            </span>
+                                        @endif
+                                    </div>
+                                @endif
+
+                                @if($offer->status === 'delivered' && auth()->id() === $service->user_id && !$offer->rating)
+                                    <div class="mt-3">
+                                        <button type="button" class="btn btn-teal btn-sm rounded-pill"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#reviewModal{{ $offer->id }}">
+                                            <i class="fas fa-star"></i> تقييم المزود
+                                        </button>
+                                    </div>
+                                @elseif($offer->rating && auth()->id() === $service->user_id)
+                                    <div class="mt-3 text-center">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            <i class="fas fa-star {{ $i <= $offer->rating ? 'text-warning' : 'text-muted' }}"></i>
+                                        @endfor
+                                        <div><small class="text-muted">تم التقييم</small></div>
+                                    </div>
+                                @endif
+
+                                <div class="mt-3">
+                                    <a href="{{ route('messages.offer-conversation', $offer->id) }}"
+                                       class="btn btn-outline-teal btn-sm rounded-pill">
+                                        <i class="fas fa-comments"></i> إرسال رسالة
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                    @endif
+                    </div>
                 </div>
+
+                <!-- Modal قبول العرض -->
+                <div class="modal fade" id="acceptModal{{ $offer->id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-0 rounded-3 shadow-lg">
+                            <div class="modal-header bg-teal text-white">
+                                <h5 class="modal-title"><i class="fas fa-check-circle me-2"></i> تأكيد قبول العرض</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body text-center">
+                                <p class="mb-3">هل أنت متأكد أنك تريد <span class="fw-bold text-success">قبول</span> هذا العرض؟</p>
+                            </div>
+                            <div class="modal-footer bg-light">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                                <form method="POST" action="{{ route('service-offers.accept', $offer) }}">
+                                    @csrf
+                                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> تأكيد</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal رفض العرض -->
+                <div class="modal fade" id="rejectModal{{ $offer->id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-0 rounded-3 shadow-lg">
+                            <div class="modal-header bg-danger text-white">
+                                <h5 class="modal-title"><i class="fas fa-times-circle me-2"></i> تأكيد رفض العرض</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body text-center">
+                                <p class="mb-3">هل أنت متأكد أنك تريد <span class="fw-bold text-danger">رفض</span> هذا العرض؟</p>
+                            </div>
+                            <div class="modal-footer bg-light">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                                <form method="POST" action="{{ route('service-offers.reject', $offer) }}">
+                                    @csrf
+                                    <button type="submit" class="btn btn-danger"><i class="fas fa-times"></i> تأكيد</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        @else
+            <div class="text-center py-5">
+                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">لا توجد عروض بعد</h5>
+                <p class="text-muted">لم يتم تقديم أي عروض لهذه الخدمة حتى الآن</p>
             </div>
+        @endif
+    </div>
+</div>
+
+@push('styles')
+<style>
+.text-teal { color: #009688 !important; }
+.bg-teal { background-color: #009688 !important; }
+.btn-outline-teal {
+    border-color: #009688;
+    color: #009688;
+}
+.btn-outline-teal:hover {
+    background-color: #009688;
+    color: #fff;
+}
+.text-gold { color: #f7d354 !important; }
+.bg-gradient {
+    background: linear-gradient(90deg, #007d7b, #009688);
+}
+
+</style>
+@endpush
+
         </div>
 
         <!-- الشريط الجانبي -->
         <div class="col-lg-4">
-            <!-- إحصائيات العروض -->
-            <div class="card mb-3">
-                <div class="card-header">
-                    <h6 class="mb-0">إحصائيات العروض</h6>
+            <div class="card shadow-sm border-0 mb-3 rounded-3">
+                <div class="card-header bg-teal text-white">
+                    <h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i> إحصائيات العروض</h6>
                 </div>
-                <div class="card-body">
-                    <div class="row text-center">
-                        <div class="col-3">
-                            <div class="h4 text-warning">{{ $offers->where('status', 'pending')->count() }}</div>
-                            <small class="text-muted">في الانتظار</small>
-                        </div>
-                        <div class="col-3">
-                            <div class="h4 text-success">{{ $offers->where('status', 'accepted')->count() }}</div>
-                            <small class="text-muted">مقبول</small>
-                        </div>
-                        <div class="col-3">
-                            <div class="h4 text-info">{{ $offers->where('status', 'delivered')->count() }}</div>
-                            <small class="text-muted">تم التسليم</small>
-                        </div>
-                        <div class="col-3">
-                            <div class="h4 text-danger">{{ $offers->where('status', 'rejected')->count() }}</div>
-                            <small class="text-muted">مرفوض</small>
-                        </div>
+                <div class="card-body bg-light text-center">
+                    <div class="row">
+                        <div class="col-3"><div class="h4 text-warning">{{ $offers->where('status', 'pending')->count() }}</div><small>انتظار</small></div>
+                        <div class="col-3"><div class="h4 text-success">{{ $offers->where('status', 'accepted')->count() }}</div><small>مقبول</small></div>
+                        <div class="col-3"><div class="h4 text-info">{{ $offers->where('status', 'delivered')->count() }}</div><small>تم</small></div>
+                        <div class="col-3"><div class="h4 text-danger">{{ $offers->where('status', 'rejected')->count() }}</div><small>مرفوض</small></div>
                     </div>
                 </div>
             </div>
 
-            <!-- معلومات إضافية -->
-            <div class="card">
-                <div class="card-header">
-                    <h6 class="mb-0">معلومات إضافية</h6>
-                </div>
-                <div class="card-body">
-                    <p class="small text-muted">
-                        <i class="fas fa-info-circle"></i> يمكنك قبول عرض واحد فقط. عند القبول، سيتم رفض باقي العروض تلقائياً.
-                    </p>
-                    <p class="small text-muted">
-                        <i class="fas fa-check-double"></i> بعد قبول العرض، يمكنك تأكيد تسليم الخدمة ثم تقييم المزود.
-                    </p>
-                    <p class="small text-muted">
-                        <i class="fas fa-clock"></i> العروض التي تنتهي صلاحيتها ستظهر كـ "منتهي الصلاحية".
-                    </p>
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-header bg-gold text-dark fw-bold"><i class="fas fa-info-circle me-2"></i> معلومات إضافية</div>
+                <div class="card-body bg-light small text-muted">
+                    <p><i class="fas fa-check-circle text-teal me-2"></i> يمكنك قبول عرض واحد فقط.</p>
+                    <p><i class="fas fa-handshake text-teal me-2"></i> بعد القبول، يمكنك تأكيد التسليم.</p>
+                    <p><i class="fas fa-clock text-teal me-2"></i> العروض المنتهية تظهر كـ "منتهية".</p>
                 </div>
             </div>
 
-            <!-- مراحل العمل -->
-            <div class="card mt-3">
-                <div class="card-header">
-                    <h6 class="mb-0">مراحل العمل</h6>
-                </div>
-                <div class="card-body">
+            <div class="card mt-3 shadow-sm border-0 rounded-3">
+                <div class="card-header bg-teal text-white"><i class="fas fa-tasks me-2"></i> مراحل العمل</div>
+                <div class="card-body bg-light">
                     <div class="timeline">
-                        <div class="timeline-item">
-                            <div class="timeline-marker bg-warning"></div>
-                            <div class="timeline-content">
-                                <h6 class="mb-1">تقديم العرض</h6>
-                                <small class="text-muted">مزود الخدمة يقدم عرضه</small>
-                            </div>
-                        </div>
-                        <div class="timeline-item">
-                            <div class="timeline-marker bg-success"></div>
-                            <div class="timeline-content">
-                                <h6 class="mb-1">قبول العرض</h6>
-                                <small class="text-muted">العميل يقبل العرض</small>
-                            </div>
-                        </div>
-                        <div class="timeline-item">
-                            <div class="timeline-marker bg-info"></div>
-                            <div class="timeline-content">
-                                <h6 class="mb-1">تسليم الخدمة</h6>
-                                <small class="text-muted">العميل يؤكد تسليم الخدمة</small>
-                            </div>
-                        </div>
-                        <div class="timeline-item">
-                            <div class="timeline-marker bg-warning"></div>
-                            <div class="timeline-content">
-                                <h6 class="mb-1">التقييم</h6>
-                                <small class="text-muted">العميل يقيم مزود الخدمة</small>
-                            </div>
-                        </div>
+                        <div class="timeline-item"><div class="timeline-marker bg-warning"></div><div class="timeline-content"><h6>تقديم العرض</h6><small>مزود الخدمة يقدم عرضه</small></div></div>
+                        <div class="timeline-item"><div class="timeline-marker bg-success"></div><div class="timeline-content"><h6>قبول العرض</h6><small>العميل يقبل العرض</small></div></div>
+                        <div class="timeline-item"><div class="timeline-marker bg-info"></div><div class="timeline-content"><h6>تسليم الخدمة</h6><small>تأكيد التسليم</small></div></div>
+                        <div class="timeline-item"><div class="timeline-marker bg-gold"></div><div class="timeline-content"><h6>التقييم</h6><small>العميل يقيم المزود</small></div></div>
                     </div>
                 </div>
             </div>
@@ -278,23 +275,21 @@
     </div>
 </div>
 
-<!-- Modals التقييم -->
+<!-- Modals -->
 @foreach($offers as $offer)
     @if($offer->status === 'delivered' && auth()->id() === $service->user_id && !$offer->rating)
-        <div class="modal fade" id="reviewModal{{ $offer->id }}" tabindex="-1" aria-labelledby="reviewModalLabel{{ $offer->id }}" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="reviewModalLabel{{ $offer->id }}">
-                            <i class="fas fa-star"></i> تقييم مزود الخدمة
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal fade" id="reviewModal{{ $offer->id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 rounded-3 shadow-lg">
+                    <div class="modal-header bg-teal text-white">
+                        <h5 class="modal-title"><i class="fas fa-star me-2"></i> تقييم مزود الخدمة</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
                     <form method="POST" action="{{ route('service-offers.review', $offer) }}">
                         @csrf
                         <div class="modal-body">
-                            <div class="mb-3">
-                                <label class="form-label">التقييم <span class="text-danger">*</span></label>
+                            <div class="mb-3 text-center">
+                                <label class="form-label fw-bold mb-2">التقييم</label>
                                 <div class="rating-input">
                                     @for($i = 5; $i >= 1; $i--)
                                         <input type="radio" name="rating" value="{{ $i }}" id="rating{{ $i }}_{{ $offer->id }}" class="rating-radio">
@@ -303,20 +298,16 @@
                                         </label>
                                     @endfor
                                 </div>
-                                <small class="text-muted">اضغط على النجوم لإعطاء التقييم</small>
                             </div>
-
                             <div class="mb-3">
-                                <label for="review{{ $offer->id }}" class="form-label">تعليق (اختياري)</label>
+                                <label for="review{{ $offer->id }}" class="form-label fw-bold">تعليق (اختياري)</label>
                                 <textarea class="form-control" id="review{{ $offer->id }}" name="review" rows="3"
-                                          placeholder="اكتب تعليقك عن الخدمة المقدمة..."></textarea>
+                                          placeholder="اكتب تعليقك عن الخدمة..."></textarea>
                             </div>
                         </div>
-                        <div class="modal-footer">
+                        <div class="modal-footer bg-light">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-paper-plane"></i> إرسال التقييم
-                            </button>
+                            <button type="submit" class="btn btn-teal"><i class="fas fa-paper-plane"></i> إرسال التقييم</button>
                         </div>
                     </form>
                 </div>
@@ -329,45 +320,47 @@
 
 @push('styles')
 <style>
+.text-teal { color: #009688 !important; }
+.bg-teal { background-color: #009688 !important; }
+.btn-teal { background-color: #009688; color: #fff; }
+.btn-teal:hover { background-color: #007d7b; color: #fff; }
+.text-gold { color: #d4af37 !important; }
+.bg-gold { background-color: #f7e08b !important; }
+
+.btn-outline-teal {
+    border-color: #009688;
+    color: #009688;
+}
+.btn-outline-teal:hover {
+    background-color: #009688;
+    color: #fff;
+}
+
 .rating-input {
     display: flex;
     flex-direction: row-reverse;
     justify-content: center;
-    gap: 5px;
+    gap: 6px;
 }
-
-.rating-radio {
-    display: none;
-}
-
+.rating-radio { display: none; }
 .rating-label {
     cursor: pointer;
     font-size: 2rem;
-    color: #ddd;
+    color: #ccc;
     transition: color 0.2s ease;
 }
-
 .rating-label:hover,
 .rating-label:hover ~ .rating-label,
-.rating-radio:checked ~ .rating-label {
-    color: #ffc107;
-}
+.rating-radio:checked ~ .rating-label { color: #ffc107; }
 
-.rating-radio:checked ~ .rating-label {
-    color: #ffc107;
-}
-
-/* Timeline Styles */
 .timeline {
     position: relative;
     padding-left: 20px;
 }
-
 .timeline-item {
     position: relative;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
-
 .timeline-marker {
     position: absolute;
     left: -25px;
@@ -378,7 +371,6 @@
     border: 2px solid #fff;
     box-shadow: 0 0 0 2px #dee2e6;
 }
-
 .timeline-item:not(:last-child)::after {
     content: '';
     position: absolute;
@@ -388,14 +380,22 @@
     height: 20px;
     background-color: #dee2e6;
 }
-
-.timeline-content h6 {
-    font-size: 0.9rem;
-    margin-bottom: 2px;
+.modal {
+    z-index: 20000 !important;
+}
+.modal-backdrop {
+    z-index: 19999 !important;
+}
+.modal-dialog {
+    pointer-events: auto !important;
+}
+.modal-backdrop {
+    pointer-events: none !important;
 }
 
-.timeline-content small {
-    font-size: 0.8rem;
+.modal-backdrop.show {
+    background-color: rgba(0, 0, 0, 0.1); /* شفافية خفيفة */
 }
+
 </style>
 @endpush

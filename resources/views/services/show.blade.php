@@ -585,7 +585,7 @@
                             </a>
                         @else
                             <button class="btn btn-outline-secondary" disabled title="لا يمكنك تقديم عرض لهذه الخدمة. تأكد من أن القسم والمدينة متطابقان مع اختياراتك في الملف الشخصي">
-                                <i class="fas fa-times"></i> لا يمكن تقديم عرض
+                                <i class="fas fa-times"></i> لا يمكن تقديم عرض 
                             </button>
                         @endif
                         <a href="{{ route('messages.service-conversation', $service->id) }}" class="btn btn-outline-primary" style="border-color: #007b8f; color: #007b8f;">

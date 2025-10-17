@@ -28,7 +28,7 @@
                         ->where('is_deleted', false)
                         ->count();
                 @endphp
-                <div class="conversation-item"
+                <div class="conversation-item "
                      onclick="window.location.href='{{ route('messages.show', $otherUser->id) }}'"
                      data-name="{{ strtolower($otherUser->name) }}">
                     <div class="conversation-avatar">

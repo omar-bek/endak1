@@ -25,34 +25,64 @@
                 @csrf
                 <div class="mb-3 position-relative">
                     <i class="fas fa-user input-icon text-secondary"></i>
-                    <input type="text" class="form-control" name="name" placeholder="الاسم الكامل" required>
+                    <input type="text" class="form-control @error('name') is-invalid @enderror" 
+                           name="name" placeholder="الاسم الكامل" value="{{ old('name') }}" required>
+                    @error('name')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3 position-relative">
                     <i class="fas fa-mobile-alt input-icon text-secondary"></i>
-                    <input type="tel" class="form-control" name="phone" placeholder="رقم الهاتف" required>
+                    <input type="tel" class="form-control @error('phone') is-invalid @enderror"
+                           name="phone" placeholder="رقم الهاتف" value="{{ old('phone') }}" required>
+                    @error('phone')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3 position-relative">
                     <i class="fas fa-lock input-icon text-secondary"></i>
-                    <input type="password" class="form-control" name="password" placeholder="كلمة المرور" required>
+                    <input type="password" class="form-control @error('password') is-invalid @enderror"
+                           name="password" placeholder="كلمة المرور" required minlength="4" maxlength="15">
+                    <small class="form-text text-muted ms-2">من 4 إلى 15 حرف أو رقم</small>
+                    @error('password')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3 position-relative">
                     <i class="fas fa-key input-icon text-secondary"></i>
-                    <input type="password" class="form-control" name="password_confirmation" placeholder="تأكيد كلمة المرور" required>
+                    <input type="password" class="form-control" 
+                           name="password_confirmation" placeholder="تأكيد كلمة المرور" required minlength="4" maxlength="15">
                 </div>
 
                 <div class="mb-3 position-relative">
                     <i class="fas fa-users input-icon text-secondary"></i>
-                    <select class="form-control" name="user_type" required>
+                    <select class="form-control @error('user_type') is-invalid @enderror" 
+                            name="user_type" required>
                         <option value="" disabled selected>اختر نوع الحساب</option>
-                        <option value="customer">مستخدم عادي</option>
-                        <option value="provider">مزود خدمة</option>
+                        <option value="customer" {{ old('user_type') == 'customer' ? 'selected' : '' }}>مستخدم عادي (لطلب الخدمات)</option>
+                        <option value="provider" {{ old('user_type') == 'provider' ? 'selected' : '' }}>مزود خدمة (لعرض الخدمات)</option>
                     </select>
+                    @error('user_type')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
-                <button type="submit" class="btn btn-login w-100">إنشاء الحساب</button>
+                <div class="form-check mb-3">
+                    <input class="form-check-input @error('terms') is-invalid @enderror" type="checkbox" id="terms" name="terms" value="1" required>
+                    <label class="form-check-label" for="terms">
+                        أوافق على <a href="#" class="text-primary">الشروط والأحكام</a>
+                    </label>
+                    @error('terms')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <button type="submit" class="btn btn-login w-100">
+                    <i class="fas fa-user-plus me-2"></i>إنشاء الحساب
+                </button>
             </form>
         </div>
     </div>

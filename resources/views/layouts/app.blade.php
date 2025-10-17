@@ -907,7 +907,7 @@
         }
 
         /* Hide footer nav on desktop if needed */
-        @media (min-width: 769px) {
+        @media (min-width: 1000px) {
             .footer-nav {
                 display: none;
             }

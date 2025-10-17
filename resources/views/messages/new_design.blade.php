@@ -134,7 +134,6 @@
         font-family: 'Cairo', sans-serif;
         background: var(--chat-bg);
         transition: padding-right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        margin-top:50px;
     }
 
     .chat-layout { /* This class is not used in the new design, kept for compatibility */
@@ -407,17 +406,16 @@
     /* === Mobile Responsiveness === */
     .mobile-sidebar-toggle { display: none; background: transparent; border: none; color: white; font-size: 20px; cursor: pointer;}
 
-    @media (max-width: 768px) {
-        .chat-container {
-            flex-direction: column;
-            margin-top:50px;
+@media (min-width: 769px) {
+    .chat-container {
+        margin-top: 50px;
+    }
 
-        }
- @media (max-width: 768px) {
-    .sidebar-header{
+    .sidebar-header {
         margin-top: 50px;
     }
 }
+
 
         .conversations-sidebar {
             position: fixed;
@@ -536,5 +534,17 @@ function toggleSidebar() {
         container.classList.toggle('mobile-sidebar-open');
     }
 }
+
+// Show sidebar automatically on small screens when messages page loads
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.innerWidth <= 768) {
+        const sidebar = document.getElementById('conversationsSidebar');
+        const container = document.getElementById('chatContainer');
+
+        sidebar.classList.add('sidebar-visible');
+        container.classList.add('mobile-sidebar-open');
+    }
+});
+
 </script>
 @endsection

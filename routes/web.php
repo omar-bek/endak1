@@ -16,6 +16,15 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProviderProfileController;
 use App\Http\Controllers\Admin\SystemSettingController;
 
+
+Route::get('/terms', function () {
+    return view('terms');
+})->name('terms');
+
+// صفحة من نحن
+Route::get('/about', function () {
+    return view('about');
+})->name('about');
 // مسار تغيير اللغة
 Route::get('/language/{locale}', [LanguageController::class, 'switch'])->name('language.switch');
 
@@ -161,6 +170,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
             Route::get('/logs', [App\Http\Controllers\Admin\LogController::class, 'index'])->name('logs.index');
             Route::get('/logs/{filename}', [App\Http\Controllers\Admin\LogController::class, 'show'])->name('logs.show');
             Route::delete('/logs/{filename}', [App\Http\Controllers\Admin\LogController::class, 'destroy'])->name('logs.destroy');
+
+
         });
 
 // Authentication Routes

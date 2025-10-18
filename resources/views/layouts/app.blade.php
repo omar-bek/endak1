@@ -1206,51 +1206,67 @@
     </main>
 
     <!-- Footer -->
-    <footer class="custom-footer mt-1">
-        <div class="container">
-            <div class="row text-center text-md-start">
-                <!-- Logo & Description -->
-                <div class="col-md-4 mb-4">
-                    <h5 class="footer-title">
-                    <img src="{{ asset(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}" alt="Endak Logo" class="me-2" style="height: 50px; width: auto;"> Endak
-                    </h5>
-                    <p class="footer-text">{{ __('messages.welcome_subtitle') }}</p>
-                </div>
-
-                <!-- Quick Links -->
-                <div class="col-md-4 mb-4">
-                    <h5 class="footer-title">{{ __('messages.quick_links') }}</h5>
-                    <ul class="list-unstyled mt-3">
-                        <li><a href="{{ route('home') }}" class="footer-link">{{ __('messages.home') }}</a></li>
-                        <li><a href="{{ route('categories.index') }}"
-                                class="footer-link">{{ __('messages.categories') }}</a></li>
-                        <li><a href="{{ route('services.index') }}"
-                                class="footer-link">{{ __('messages.services') }}</a></li>
-                        <li><a href="{{ route('contact') }}" class="footer-link">{{ __('messages.contact_us') }}</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Social Media -->
-                <div class="col-md-4 mb-4">
-                    <h5 class="footer-title">{{ __('messages.contact_info') }}</h5>
-                    <div class="social-links mt-3">
-                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
+<footer class="custom-footer mt-1">
+    <div class="container">
+        <div class="row text-center text-md-start">
+            <!-- Logo & Description -->
+            <div class="col-md-4 mb-4">
+                <h5 class="footer-title d-flex align-items-center">
+                    <img src="{{ asset(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}" 
+                         alt="Endak Logo" 
+                         class="me-2" 
+                         style="height: 50px; width: auto;">
+                    Endak
+                </h5>
+                <p class="footer-text">{{ __('messages.welcome_subtitle') }}</p>
             </div>
 
-            <hr class="footer-divider">
+            <!-- Quick Links -->
+            <div class="col-md-4 mb-4">
+                <h5 class="footer-title">{{ __('messages.quick_links') }}</h5>
+                <ul class="list-unstyled mt-3">
+                    <li><a href="{{ route('home') }}" class="footer-link">{{ __('messages.home') }}</a></li>
+                    <li><a href="{{ route('categories.index') }}" class="footer-link">{{ __('messages.categories') }}</a></li>
+                    <li><a href="{{ route('services.index') }}" class="footer-link">{{ __('messages.services') }}</a></li>
+                    <li><a href="{{ route('contact') }}" class="footer-link">{{ __('messages.contact_us') }}</a></li>
+                </ul>
+            </div>
 
-            <div class="text-center mt-3">
-                <p class="footer-copy">&copy; {{ date('Y') }} <strong>Endak</strong>.
-                    {{ __('messages.all_rights_reserved') }}</p>
+            <!-- Social Media -->
+            <div class="col-md-4 mb-4">
+                <h5 class="footer-title">{{ __('messages.contact_info') }}</h5>
+                <div class="social-links mt-3">
+                    <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                </div>
             </div>
         </div>
-    </footer>
+
+        <!-- About & Terms Links -->
+        <div class="row mt-3">
+            <div class="col-md-12 d-flex justify-content-start align-items-center">
+                <a href="{{ route('terms') }}" class="footer-link me-3">
+                    <i class="fas fa-file-contract text-warning"></i> الشروط والأحكام
+                </a>
+                <a href="{{ route('about') }}" class="footer-link">
+                    <i class="fas fa-info-circle text-success"></i> من نحن
+                </a>
+            </div>
+        </div>
+
+        <hr class="footer-divider">
+
+        <div class="text-center mt-3">
+            <p class="footer-copy mb-0 text-muted">
+                &copy; {{ date('Y') }} <strong>Endak</strong>. {{ __('messages.all_rights_reserved') }}
+            </p>
+        </div>
+    </div>
+</footer>
+
+
 
     <style>
         /* === Footer Styling (Matches Navbar) === */
@@ -1699,7 +1715,6 @@
                 .catch(error => console.log('Error updating messages count:', error));
         }
 
-        // تحديث عدد الرسائل كل 30 ثانية
         setInterval(updateMessagesCount, 30000);
         updateMessagesCount();
         @endauth

@@ -3,7 +3,7 @@
 @section('title', 'الرسائل')
 
 @section('content')
-<div class="chat-container " id="chatContainer">
+<div class="chat-container" id="chatContainer">
     <div class="conversations-sidebar" id="conversationsSidebar">
         <div class="sidebar-header">
             <h5 class="sidebar-title"><i class="fas fa-comments"></i> <span>المحادثات</span></h5>
@@ -28,7 +28,7 @@
                         ->where('is_deleted', false)
                         ->count();
                 @endphp
-                <div class="conversation-item "
+                <div class="conversation-item"
                      onclick="window.location.href='{{ route('messages.show', $otherUser->id) }}'"
                      data-name="{{ strtolower($otherUser->name) }}">
                     <div class="conversation-avatar">
@@ -107,6 +107,7 @@
     </div>
 </div>
 
+
 <style>
     /* === Font Import (Optional, but recommended for a modern look) === */
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap');
@@ -156,6 +157,10 @@
         z-index: 100;
         box-shadow: -5px 0 25px rgba(0, 0, 0, 0.2);
     }
+
+    .conversations-sidebar.hidden {
+    transform: translateX(100%);
+}
 
     .sidebar-header {
         display: flex;
@@ -525,7 +530,7 @@ function toggleSidebar() {
     const sidebar = document.getElementById('conversationsSidebar');
     const container = document.getElementById('chatContainer');
 
-    if (window.innerWidth > 768) {
+    if (window.innerWidth > 5000) {
         // Desktop: collapse/expand
         container.classList.toggle('sidebar-collapsed');
     } else {
@@ -535,16 +540,20 @@ function toggleSidebar() {
     }
 }
 
-// Show sidebar automatically on small screens when messages page loads
 document.addEventListener('DOMContentLoaded', function() {
-    if (window.innerWidth <= 768) {
-        const sidebar = document.getElementById('conversationsSidebar');
-        const container = document.getElementById('chatContainer');
+    const sidebar = document.getElementById('conversationsSidebar');
+    const container = document.getElementById('chatContainer');
+    const toggleButton = document.getElementById('toggleSidebar');
 
-        sidebar.classList.add('sidebar-visible');
-        container.classList.add('mobile-sidebar-open');
-    }
+    sidebar.classList.add('sidebar-visible');
+    container.classList.add('mobile-sidebar-open');
+
+    toggleButton.addEventListener('click', function() {
+        sidebar.classList.toggle('sidebar-visible');
+        container.classList.toggle('mobile-sidebar-open');
+    });
 });
+
 
 </script>
 @endsection

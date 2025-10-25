@@ -16,18 +16,18 @@ class SystemSettingController extends Controller
     {
         $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg'];
         $extension = strtolower($file->getClientOriginalExtension());
-        
+
         if (!in_array($extension, $allowedExtensions)) {
             return false;
         }
-        
+
         if ($file->getSize() > 2 * 1024 * 1024) { // 2MB
             return false;
         }
-        
+
         return true;
     }
-    
+
     /**
      * عرض إعدادات النظام
      */
@@ -60,32 +60,30 @@ class SystemSettingController extends Controller
         }
 
         // معالجة رفع لوجو الموقع
-        if ($request->hasFile('logo_upload')) {
-            $file = $request->file('logo_upload');
-            
-            // التحقق من صحة الملف
-            if (!$this->validateFile($file)) {
-                return redirect()->back()->with('error', 'نوع الملف غير مدعوم أو حجمه أكبر من 2MB');
-            }
-            
-            // حذف اللوجو القديم إذا كان موجود
-            $currentLogo = SystemSetting::get('site_logo', 'home.png');
-            if ($currentLogo && $currentLogo !== 'home.png' && file_exists(public_path($currentLogo))) {
-                unlink(public_path($currentLogo));
-            }
-            
-            // حفظ اللوجو الجديد في مجلد public مباشرة
-            $filename = 'logo-' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path(), $filename);
-            
-            // التأكد من أن الملف تم حفظه بنجاح
-            if (file_exists(public_path($filename))) {
-                // تحديث إعداد اللوجو
-                SystemSetting::where('key', 'site_logo')->update(['value' => $filename]);
-            } else {
-                return redirect()->back()->with('error', 'فشل في رفع الصورة');
-            }
-        }
+      // معالجة رفع لوجو الموقع
+if ($request->hasFile('logo_upload')) {
+    $file = $request->file('logo_upload');
+
+    // التحقق من صحة الملف
+    if (!$this->validateFile($file)) {
+        return redirect()->back()->with('error', 'نوع الملف غير مدعوم أو حجمه أكبر من 2MB');
+    }
+
+    // حذف اللوجو القديم إذا كان موجود
+    $currentLogo = SystemSetting::get('site_logo', 'home.png');
+    if ($currentLogo && $currentLogo !== 'home.png' && file_exists(public_path($currentLogo))) {
+        unlink(public_path($currentLogo));
+    }
+
+    // حفظ اللوجو الجديد داخل storage/app/public/logos/
+    $filename = 'logo-' . time() . '.' . $file->getClientOriginalExtension();
+    $path = $file->storeAs('logos', $filename, 'public');
+
+    // تحديث إعداد اللوجو بالمسار الصحيح القابل للعرض عبر /storage/
+    SystemSetting::where('key', 'site_logo')->update([
+        'value' => 'storage/' . $path
+    ]);
+}
 
         foreach ($request->settings as $setting) {
             if ($setting['key'] !== 'site_logo') { // تجنب تحديث اللوجو هنا لأنه تم التعامل معه أعلاه
@@ -96,12 +94,12 @@ class SystemSettingController extends Controller
         }
 
         $message = 'تم تحديث إعدادات النظام بنجاح';
-        
+
         // إضافة رسالة خاصة إذا تم رفع لوجو
         if ($request->hasFile('logo_upload')) {
             $message .= ' وتم رفع اللوجو الجديد بنجاح';
         }
-        
+
         return redirect()->route('admin.system-settings.index')
             ->with('success', $message);
     }

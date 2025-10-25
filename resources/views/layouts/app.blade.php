@@ -1897,6 +1897,11 @@
                                             </a>
                                         `).join('')}
                         @auth
+                         @if (Auth::user()->is_admin)
+                                    <li><a class="footer-menu-item" href="{{ route('admin.dashboard') }}">
+                                            <i class="fas fa-cog"></i> {{ __('messages.admin_panel') }}
+                                        </a></li>
+                                @endif
                             <hr class="footer-menu-divider">
                             <a href="{{ route('logout') }}" class="footer-menu-item" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                 <i class="fas fa-sign-out-alt"></i>
@@ -1912,6 +1917,7 @@
                                 <span>تسجيل الدخول</span>
                             </a>
                         @endauth
+                         
                     </div>
                 </div>
             `;

@@ -937,7 +937,9 @@
     <nav class="navbar navbar-expand-lg fixed-top custom-navbar d-none d-lg-block">
         <div class="container">
             <a class="navbar-brand fw-bold d-flex align-items-center" href="{{ route('home') }}">
-                <img src="{{ asset(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}" alt="{{ \App\Models\SystemSetting::get('site_name_ar', 'إنداك') }}" class="me-2" style="height: 40px; width: auto;">
+                <img src="{{ asset(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}"
+                    alt="{{ \App\Models\SystemSetting::get('site_name_ar', 'إنداك') }}" class="me-2"
+                    style="height: 40px; width: auto;">
             </a>
 
 
@@ -960,13 +962,13 @@
                             href="{{ route('services.index') }}">{{ __('messages.services') }}</a>
                     </li>
                     <!-- @auth
-                            <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('services.my-services') ? 'active' : '' }}" href="{{ route('services.my-services') }}">{{ __('messages.my_services') }}</a>
-                            </li>
-                            @if (Auth::user()->isProvider())
-    <li class="nav-item">
-                                    <a class="nav-link {{ request()->routeIs('service-offers.my-offers') ? 'active' : '' }}" href="{{ route('service-offers.my-offers') }}">{{ __('messages.my_offers') }}</a>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('services.my-services') ? 'active' : '' }}" href="{{ route('services.my-services') }}">{{ __('messages.my_services') }}</a>
                                 </li>
+                                @if (Auth::user()->isProvider())
+    <li class="nav-item">
+                                        <a class="nav-link {{ request()->routeIs('service-offers.my-offers') ? 'active' : '' }}" href="{{ route('service-offers.my-offers') }}">{{ __('messages.my_offers') }}</a>
+                                    </li>
     @endif
                 @endauth -->
                     <li class="nav-item">
@@ -1206,65 +1208,66 @@
     </main>
 
     <!-- Footer -->
-<footer class="custom-footer mt-1">
-    <div class="container">
-        <div class="row text-center text-md-start">
-            <!-- Logo & Description -->
-            <div class="col-md-4 mb-4">
-                <h5 class="footer-title d-flex align-items-center">
-                    <img src="{{ asset(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}" 
-                         alt="Endak Logo" 
-                         class="me-2" 
-                         style="height: 50px; width: auto;">
-                    Endak
-                </h5>
-                <p class="footer-text">{{ __('messages.welcome_subtitle') }}</p>
-            </div>
+    <footer class="custom-footer mt-1">
+        <div class="container">
+            <div class="row text-center text-md-start">
+                <!-- Logo & Description -->
+                <div class="col-md-4 mb-4">
+                    <h5 class="footer-title d-flex align-items-center">
+                        <img src="{{ asset(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}"
+                            alt="Endak Logo" class="me-2" style="height: 50px; width: auto;">
+                        Endak
+                    </h5>
+                    <p class="footer-text">{{ __('messages.welcome_subtitle') }}</p>
+                </div>
 
-            <!-- Quick Links -->
-            <div class="col-md-4 mb-4">
-                <h5 class="footer-title">{{ __('messages.quick_links') }}</h5>
-                <ul class="list-unstyled mt-3">
-                    <li><a href="{{ route('home') }}" class="footer-link">{{ __('messages.home') }}</a></li>
-                    <li><a href="{{ route('categories.index') }}" class="footer-link">{{ __('messages.categories') }}</a></li>
-                    <li><a href="{{ route('services.index') }}" class="footer-link">{{ __('messages.services') }}</a></li>
-                    <li><a href="{{ route('contact') }}" class="footer-link">{{ __('messages.contact_us') }}</a></li>
-                </ul>
-            </div>
+                <!-- Quick Links -->
+                <div class="col-md-4 mb-4">
+                    <h5 class="footer-title">{{ __('messages.quick_links') }}</h5>
+                    <ul class="list-unstyled mt-3">
+                        <li><a href="{{ route('home') }}" class="footer-link">{{ __('messages.home') }}</a></li>
+                        <li><a href="{{ route('categories.index') }}"
+                                class="footer-link">{{ __('messages.categories') }}</a></li>
+                        <li><a href="{{ route('services.index') }}"
+                                class="footer-link">{{ __('messages.services') }}</a></li>
+                        <li><a href="{{ route('contact') }}" class="footer-link">{{ __('messages.contact_us') }}</a>
+                        </li>
+                    </ul>
+                </div>
 
-            <!-- Social Media -->
-            <div class="col-md-4 mb-4">
-                <h5 class="footer-title">{{ __('messages.contact_info') }}</h5>
-                <div class="social-links mt-3">
-                    <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                <!-- Social Media -->
+                <div class="col-md-4 mb-4">
+                    <h5 class="footer-title">{{ __('messages.contact_info') }}</h5>
+                    <div class="social-links mt-3">
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- About & Terms Links -->
-        <div class="row mt-3">
-            <div class="col-md-12 d-flex justify-content-start align-items-center">
-                <a href="{{ route('terms') }}" class="footer-link me-3">
-                    <i class="fas fa-file-contract text-warning"></i> الشروط والأحكام
-                </a>
-                <a href="{{ route('about') }}" class="footer-link">
-                    <i class="fas fa-info-circle text-success"></i> من نحن
-                </a>
+            <!-- About & Terms Links -->
+            <div class="row mt-3">
+                <div class="col-md-12 d-flex justify-content-start align-items-center">
+                    <a href="{{ route('terms') }}" class="footer-link me-3">
+                        <i class="fas fa-file-contract text-warning"></i> الشروط والأحكام
+                    </a>
+                    <a href="{{ route('about') }}" class="footer-link">
+                        <i class="fas fa-info-circle text-success"></i> من نحن
+                    </a>
+                </div>
+            </div>
+
+            <hr class="footer-divider">
+
+            <div class="text-center mt-3">
+                <p class="footer-copy mb-0 text-muted">
+                    &copy; {{ date('Y') }} <strong>Endak</strong>. {{ __('messages.all_rights_reserved') }}
+                </p>
             </div>
         </div>
-
-        <hr class="footer-divider">
-
-        <div class="text-center mt-3">
-            <p class="footer-copy mb-0 text-muted">
-                &copy; {{ date('Y') }} <strong>Endak</strong>. {{ __('messages.all_rights_reserved') }}
-            </p>
-        </div>
-    </div>
-</footer>
+    </footer>
 
 
 
@@ -1878,6 +1881,21 @@
             ];
         @endauth
 
+        // Language switcher items
+        const languageItems = [{
+                icon: 'fas fa-flag',
+                text: 'العربية',
+                href: '{{ route('language.switch', 'ar') }}',
+                isActive: '{{ app()->getLocale() }}' === 'ar'
+            },
+            {
+                icon: 'fas fa-flag',
+                text: 'English',
+                href: '{{ route('language.switch', 'en') }}',
+                isActive: '{{ app()->getLocale() }}' === 'en'
+            }
+        ];
+
         const menuModal = document.createElement('div');
         menuModal.className = 'footer-menu-modal';
         menuModal.innerHTML = `
@@ -1890,18 +1908,38 @@
                         </button>
                     </div>
                     <div class="footer-menu-items">
+                        <!-- Language Switcher Section -->
+                        <div class="footer-menu-section">
+                            <div class="footer-menu-section-title">
+                                <i class="fas fa-globe"></i>
+                                <span>اللغة / Language</span>
+                            </div>
+                            ${languageItems.map(item => `
+                                    <a href="${item.href}" class="footer-menu-item ${item.isActive ? 'active' : ''}">
+                                        <i class="${item.icon}"></i>
+                                        <span>${item.text}</span>
+                                        ${item.isActive ? '<i class="fas fa-check text-success"></i>' : ''}
+                                    </a>
+                                `).join('')}
+                        </div>
+
+                        <hr class="footer-menu-divider">
+
+                        <!-- Main Menu Items -->
                         ${menuItems.map(item => `
-                                            <a href="${item.href}" class="footer-menu-item">
-                                                <i class="${item.icon}"></i>
-                                                <span>${item.text}</span>
-                                            </a>
-                                        `).join('')}
+                                <a href="${item.href}" class="footer-menu-item">
+                                    <i class="${item.icon}"></i>
+                                    <span>${item.text}</span>
+                                </a>
+                            `).join('')}
+
                         @auth
                          @if (Auth::user()->is_admin)
-                                    <li><a class="footer-menu-item" href="{{ route('admin.dashboard') }}">
-                                            <i class="fas fa-cog"></i> {{ __('messages.admin_panel') }}
-                                        </a></li>
-                                @endif
+                            <a href="{{ route('admin.dashboard') }}" class="footer-menu-item">
+                                <i class="fas fa-cog"></i>
+                                <span>{{ __('messages.admin_panel') }}</span>
+                            </a>
+                        @endif
                             <hr class="footer-menu-divider">
                             <a href="{{ route('logout') }}" class="footer-menu-item" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                 <i class="fas fa-sign-out-alt"></i>
@@ -1917,12 +1955,12 @@
                                 <span>تسجيل الدخول</span>
                             </a>
                         @endauth
-                         
+
                     </div>
                 </div>
             `;
 
-            
+
         const modalStyles = document.createElement('style');
         modalStyles.textContent = `
                 .footer-menu-modal {
@@ -2017,6 +2055,36 @@
                     font-weight: 500;
                 }
 
+                .footer-menu-item.active {
+                    background: linear-gradient(135deg, #685C84, #6A5E86);
+                    color: white;
+                }
+
+                .footer-menu-item.active:hover {
+                    background: linear-gradient(135deg, #5a4f73, #5c5077);
+                    color: white;
+                }
+
+                .footer-menu-section {
+                    margin-bottom: 15px;
+                }
+
+                .footer-menu-section-title {
+                    display: flex;
+                    align-items: center;
+                    padding: 10px 20px 5px;
+                    font-weight: 600;
+                    color: #685C84;
+                    font-size: 14px;
+                    border-bottom: 1px solid #f0f0f0;
+                    margin-bottom: 5px;
+                }
+
+                .footer-menu-section-title i {
+                    margin-left: 8px;
+                    font-size: 16px;
+                }
+
                 .footer-menu-divider {
                     margin: 10px 0;
                     border: none;
@@ -2094,13 +2162,13 @@
                 });
         }
 
-      
+
         // Update badges every 30 seconds
         setInterval(updateFooterNavBadges, 30000);
         updateFooterNavBadges();
         @endauth
 
-          function closeMenu() {
+        function closeMenu() {
             const menuModal = document.querySelector('.footer-menu-modal');
             if (menuModal) {
                 menuModal.remove();
@@ -2202,7 +2270,7 @@
             transition: all 0.3s ease;
             text-decoration: none;
             animation: pulse-whatsapp 2s infinite;
-    
+
         }
 
         .whatsapp-float:hover {
@@ -2234,7 +2302,7 @@
                 font-size: 24px;
                 bottom: 70px;
                 left: 15px;
-                margin-bottom:100px
+                margin-bottom: 100px
             }
         }
     </style>

@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'provider' => \App\Http\Middleware\ProviderMiddleware::class,
+            'user.type.terms' => \App\Http\Middleware\EnsureUserTypeAndTermsAccepted::class,
         ]);
 
         $middleware->web([

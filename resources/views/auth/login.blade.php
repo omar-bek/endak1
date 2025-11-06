@@ -24,23 +24,50 @@
             <form method="POST" action="{{ route('login') }}">
                 @csrf
                 <div class="mb-3 position-relative">
-                    <i class="fas fa-mobile-alt input-icon text-secondary"></i>
-                    <input type="tel" class="form-control" name="phone" placeholder="رقم الهاتف" required>
+                    <i class="fas fa-envelope input-icon text-secondary"></i>
+                    <input type="email" class="form-control @error('email') is-invalid @enderror" name="email" 
+                           placeholder="البريد الإلكتروني" value="{{ old('email') }}" required autofocus>
+                    @error('email')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3 position-relative">
                     <i class="fas fa-lock input-icon text-secondary"></i>
-                    <input type="password" class="form-control" name="password" placeholder="كلمة المرور" required>
+                    <input type="password" class="form-control @error('password') is-invalid @enderror" 
+                           name="password" placeholder="كلمة المرور" required>
+                    @error('password')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="remember">
+                        <input class="form-check-input" type="checkbox" id="remember" name="remember">
                         <label class="form-check-label" for="remember">تذكرني</label>
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-login w-100">تسجيل الدخول</button>
+                <button type="submit" class="btn btn-login w-100 mb-3">
+                    <i class="fas fa-sign-in-alt me-2"></i>تسجيل الدخول
+                </button>
+
+                <!-- Social Login Buttons -->
+                <div class="social-login-section">
+                    <div class="divider mb-3">
+                        <span class="divider-text">أو</span>
+                    </div>
+                    
+                    <a href="{{ route('auth.facebook') }}" class="btn btn-social btn-facebook w-100 mb-2">
+                        <i class="fab fa-facebook-f me-2"></i>
+                        تسجيل الدخول عبر فيسبوك
+                    </a>
+                    
+                    <a href="{{ route('auth.google') }}" class="btn btn-social btn-google w-100">
+                        <i class="fab fa-google me-2"></i>
+                        تسجيل الدخول عبر جوجل
+                    </a>
+                </div>
             </form>
         </div>
     </div>
@@ -146,6 +173,84 @@ body {
 .btn-login:hover {
     transform: translateY(-3px);
     background: #f3a446;
+}
+
+/* Social Login Buttons */
+.social-login-section {
+    margin-top: 1.5rem;
+}
+
+.divider {
+    text-align: center;
+    position: relative;
+    margin: 1.5rem 0;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 45%;
+    height: 1px;
+    background: #ddd;
+}
+
+.divider::before {
+    right: 0;
+}
+
+.divider::after {
+    left: 0;
+}
+
+.divider-text {
+    background: #fff;
+    padding: 0 1rem;
+    color: #999;
+    font-size: 0.9rem;
+    position: relative;
+    z-index: 1;
+}
+
+.btn-social {
+    border-radius: 10px;
+    padding: 0.75rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.btn-facebook {
+    background: #1877f2;
+    color: #fff;
+    border-color: #1877f2;
+}
+
+.btn-facebook:hover {
+    background: #166fe5;
+    border-color: #166fe5;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(24, 119, 242, 0.3);
+    color: #fff;
+}
+
+.btn-google {
+    background: #fff;
+    color: #4285f4;
+    border-color: #ddd;
+}
+
+.btn-google:hover {
+    background: #f8f9fa;
+    border-color: #4285f4;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(66, 133, 244, 0.2);
+    color: #4285f4;
 }
 
 @keyframes slideInLeft {

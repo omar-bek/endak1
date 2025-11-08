@@ -10,14 +10,14 @@
                 <h2 class="text-teal">
                     <i class="fas fa-list text-gold"></i>
                     @if(auth()->user()->isProvider())
-                        جميع الخدمات المتاحة
+                           {{ __('messages.services_title_provider') }}
                     @else
-                        خدماتي المطلوبة
+                          {{ __('messages.services_title_client') }}
                     @endif
                 </h2>
                 @if(!auth()->user()->isProvider())
                     <a href="{{ route('categories.index') }}" class="btn btn-gold text-white fw-bold shadow-sm">
-                        <i class="fas fa-plus"></i> طلب خدمة جديدة
+                        <i class="fas fa-plus"></i>  {{ __('messages.request_service_new') }}
                     </a>
                 @endif
             </div>
@@ -30,13 +30,11 @@
                 <div class="alert alert-danger shadow-sm">{{ session('error') }}</div>
             @endif
 
-            <!-- قائمة الخدمات -->
             @if($services->count() > 0)
                 <div class="row">
                     @foreach($services as $service)
                         <div class="col-md-6 col-lg-4 mb-4">
                             <div class="card h-100 border-0 shadow-lg rounded-3 overflow-hidden">
-                                <!-- صورة الخدمة -->
                                 
                                     <img src="{{ $service->category->image_url}}"
                                          alt="{{ $service->title }}"
@@ -47,16 +45,13 @@
                                 
 
                                 <div class="card-body p-4">
-                                    <!-- عنوان الخدمة -->
                                     <h5 class="card-title fw-bold text-teal text-truncate mb-3">{{ $service->title }}</h5>
 
-                                    <!-- القسم -->
                                     <p class="text-muted mb-2">
                                         <i class="fas fa-folder text-gold"></i>
                                         {{ $service->category->name }}
                                     </p>
 
-                                    <!-- المدينة -->
                                     @if($service->from_city)
                                         <p class="text-muted mb-2">
                                             <i class="fas fa-map-marker-alt text-teal"></i>
@@ -76,64 +71,63 @@
                                         {{ $service->created_at->format('Y-m-d') }}
                                     </p>
 
-                                    <!-- حالة الخدمة -->
                                     <div class="mb-3">
                                         @if($service->is_active)
-                                            <span class="badge bg-teal text-white px-3 py-2">نشط</span>
+                                            <span class="badge bg-teal text-white px-3 py-2">{{ __('messages.active') }}</span>
                                         @else
-                                            <span class="badge bg-danger px-3 py-2">غير نشط</span>
+                                            <span class="badge bg-danger px-3 py-2">{{ __('messages.inactive') }} </span>
                                         @endif
                                     </div>
 
                                     <div class="mb-3">
-                                        @php
-                                            $pendingOffers = $service->offers->where('status', 'pending')->count();
-                                            $acceptedOffers = $service->offers->where('status', 'accepted')->count();
-                                            $myOffers = $service->offers->where('provider_id', auth()->id());
-                                            $myPendingOffers = $myOffers->where('status', 'pending')->count();
-                                            $myAcceptedOffers = $myOffers->where('status', 'accepted')->count();
-                                        @endphp
+    @php
+        $pendingOffers = $service->offers->where('status', 'pending')->count();
+        $acceptedOffers = $service->offers->where('status', 'accepted')->count();
+        $myOffers = $service->offers->where('provider_id', auth()->id());
+        $myPendingOffers = $myOffers->where('status', 'pending')->count();
+        $myAcceptedOffers = $myOffers->where('status', 'accepted')->count();
+    @endphp
 
-                                        @if(auth()->user()->isProvider())
-                                            @if($myPendingOffers > 0)
-                                                <span class="badge bg-warning text-dark px-3 py-2">
-                                                    <i class="fas fa-clock"></i> عرضي في الانتظار
-                                                </span>
-                                            @endif
+    @if(auth()->user()->isProvider())
+        @if($myPendingOffers > 0)
+            <span class="badge bg-warning text-dark px-3 py-2">
+                <i class="fas fa-clock"></i> {{ __('messages.my_offer_pending') }}
+            </span>
+        @endif
 
-                                            @if($myAcceptedOffers > 0)
-                                                <span class="badge bg-teal text-white px-3 py-2">
-                                                    <i class="fas fa-check"></i> عرضي مقبول
-                                                </span>
-                                            @endif
+        @if($myAcceptedOffers > 0)
+            <span class="badge bg-teal text-white px-3 py-2">
+                <i class="fas fa-check"></i> {{ __('messages.my_offer_accepted') }}
+            </span>
+        @endif
 
-                                            @if($myOffers->count() == 0)
-                                                <span class="badge bg-gold text-white px-3 py-2">
-                                                    <i class="fas fa-plus"></i> يمكنك تقديم عرض
-                                                </span>
-                                            @endif
-                                        @else
-                                            @if($pendingOffers > 0)
-                                                <span class="badge bg-warning text-dark px-3 py-2">
-                                                    <i class="fas fa-clock"></i> {{ $pendingOffers }} عرض في الانتظار
-                                                </span>
-                                            @endif
+        @if($myOffers->count() == 0)
+            <span class="badge bg-gold text-white px-3 py-2">
+                <i class="fas fa-plus"></i> {{ __('messages.you_can_submit_offer') }}
+            </span>
+        @endif
+    @else
+        @if($pendingOffers > 0)
+            <span class="badge bg-warning text-dark px-3 py-2">
+                <i class="fas fa-clock"></i> {{ $pendingOffers }} {{ __('messages.pending_offers_count') }}
+            </span>
+        @endif
 
-                                            @if($acceptedOffers > 0)
-                                                <span class="badge bg-teal text-white px-3 py-2">
-                                                    <i class="fas fa-check"></i> عرض مقبول
-                                                </span>
-                                            @endif
+        @if($acceptedOffers > 0)
+            <span class="badge bg-teal text-white px-3 py-2">
+                <i class="fas fa-check"></i> {{ __('messages.accepted_offer') }}
+            </span>
+        @endif
 
-                                            @if($service->offers->count() == 0)
-                                                <span class="badge bg-secondary px-3 py-2">
-                                                    <i class="fas fa-inbox"></i> لا توجد عروض
-                                                </span>
-                                            @endif
-                                        @endif
-                                    </div>
+        @if($service->offers->count() == 0)
+            <span class="badge bg-secondary px-3 py-2">
+                <i class="fas fa-inbox"></i> {{ __('messages.no_offers') }}
+            </span>
+        @endif
+    @endif
+</div>
 
-                                    <!-- الوصف -->
+
                                     @if($service->description)
                                         <p class="card-text text-muted small">
                                             {{ Str::limit($service->description, 100) }}
@@ -144,14 +138,14 @@
                                 <div class="card-footer bg-light d-flex justify-content-between align-items-center">
                                     <a href="{{ route('services.show', $service->slug) }}"
                                        class="btn btn-outline-teal btn-sm fw-bold">
-                                        <i class="fas fa-eye"></i> عرض
+                                        <i class="fas fa-eye"></i> {{ __('messages.offer') }}
                                     </a>
 
                                     @if(auth()->user()->isProvider())
                                         @if($myOffers->count() > 0)
                                             <a href="{{ route('service-offers.index', $service) }}"
                                                class="btn btn-outline-gold btn-sm fw-bold">
-                                                <i class="fas fa-handshake"></i> عروضي
+                                                <i class="fas fa-handshake"></i> {{ __('messages.my_offers') }}
                                                 @if($myPendingOffers > 0)
                                                     <span class="badge bg-warning text-dark ms-1">{{ $myPendingOffers }}</span>
                                                 @endif
@@ -159,14 +153,14 @@
                                         @else
                                             <a href="{{ route('service-offers.create', $service) }}"
                                                class="btn btn-outline-success btn-sm fw-bold">
-                                                <i class="fas fa-plus"></i> قدم عرض
+                                                <i class="fas fa-plus"></i> {{ __('messages.submit_offer') }} 
                                             </a>
                                         @endif
                                     @else
                                         @if($service->offers->count() > 0)
                                             <a href="{{ route('service-offers.index', $service) }}"
                                                class="btn btn-outline-gold btn-sm fw-bold">
-                                                <i class="fas fa-handshake"></i> العروض
+                                                <i class="fas fa-handshake"></i> {{ __('messages.offers') }} 
                                                 @if($pendingOffers > 0)
                                                     <span class="badge bg-warning text-dark ms-1">{{ $pendingOffers }}</span>
                                                 @endif
@@ -179,22 +173,20 @@
                     @endforeach
                 </div>
 
-                <!-- الترقيم -->
                 <div class="d-flex justify-content-center mt-4">
                     {{ $services->links() }}
                 </div>
             @else
-                <!-- لا توجد خدمات -->
                 <div class="text-center py-5">
                     <i class="fas fa-inbox fa-4x text-muted mb-4"></i>
                     @if(auth()->user()->isProvider())
-                        <h4 class="text-muted">لا توجد خدمات متاحة</h4>
-                        <p class="text-muted mb-4">لا توجد خدمات متاحة حالياً. تحقق لاحقاً!</p>
+                        <h4 class="text-muted">{{ __('messages.provider_title') }} </h4>
+                        <p class="text-muted mb-4">{{ __('messages.provider_text') }} </p>
                     @else
-                        <h4 class="text-muted">لا توجد خدمات مطلوبة</h4>
-                        <p class="text-muted mb-4">لم تطلب أي خدمات بعد. ابدأ بطلب خدمة جديدة!</p>
+                        <h4 class="text-muted">{{ __('messages.client_title') }} </h4>
+                        <p class="text-muted mb-4">{{ __('messages.client_text') }} </p>
                         <a href="{{ route('categories.index') }}" class="btn btn-gold text-white btn-lg fw-bold shadow-sm">
-                            <i class="fas fa-plus"></i> طلب خدمة جديدة
+                            <i class="fas fa-plus"></i> {{ __('messages.client_btn') }} 
                         </a>
                     @endif
                 </div>

@@ -9,8 +9,8 @@
 <section class="categories-section py-5 text-center mt-5">
   <div class="container">
     <div class="text-center mb-5">
-      <h2 class="fw-bold text-black">الأقسام الرئيسية</h2>
-      <p class="text-light-50">اختر من بين مجموعة واسعة من الأقسام</p>
+<h2 class="fw-bold text-black">{{ __('messages.categories_title') }}</h2>
+<p class="text-light-50">{{ __('messages.categories_subtitle') }}</p>
     </div>
 
     <div class="row justify-content-center">

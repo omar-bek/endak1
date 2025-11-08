@@ -8,9 +8,9 @@
         <div class="side-panel left-panel">
             <div class="content text-center">
                 <i class="fas fa-door-open fa-3x text-warning mb-3"></i>
-                <h2>أهلًا بعودتك!</h2>
-                <p>ليس لديك حساب بعد؟</p>
-                <button class="btn btn-outline-light mt-3 switch-btn" id="switchToRegister">إنشاء حساب جديد</button>
+<h2>{{ __('messages.login_welcome') }}</h2>
+<p>{{ __('messages.no_account') }}</p>
+                <button class="btn btn-outline-light mt-3 switch-btn" id="switchToRegister">  {{ __('messages.create_new_account') }}</button>
             </div>
         </div>
 
@@ -26,7 +26,7 @@
                 <div class="mb-3 position-relative">
                     <i class="fas fa-envelope input-icon text-secondary"></i>
                     <input type="email" class="form-control @error('email') is-invalid @enderror" name="email" 
-                           placeholder="البريد الإلكتروني" value="{{ old('email') }}" required autofocus>
+                           placeholder="{{ __('messages.email') }}" value="{{ old('email') }}" required autofocus>
                     @error('email')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -35,7 +35,7 @@
                 <div class="mb-3 position-relative">
                     <i class="fas fa-lock input-icon text-secondary"></i>
                     <input type="password" class="form-control @error('password') is-invalid @enderror" 
-                           name="password" placeholder="كلمة المرور" required>
+                           name="password" placeholder="{{ __('messages.password') }}" required>
                     @error('password')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -44,28 +44,28 @@
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="remember" name="remember">
-                        <label class="form-check-label" for="remember">تذكرني</label>
+<label class="form-check-label" for="remember">{{ __('messages.remember_me') }}</label>
                     </div>
                 </div>
 
                 <button type="submit" class="btn btn-login w-100 mb-3">
-                    <i class="fas fa-sign-in-alt me-2"></i>تسجيل الدخول
+<i class="fas fa-sign-in-alt me-2"></i>{{ __('messages.login') }}
                 </button>
 
                 <!-- Social Login Buttons -->
                 <div class="social-login-section">
                     <div class="divider mb-3">
-                        <span class="divider-text">أو</span>
+<span class="divider-text">{{ __('messages.or') }}</span>
                     </div>
                     
                     <a href="{{ route('auth.facebook') }}" class="btn btn-social btn-facebook w-100 mb-2">
                         <i class="fab fa-facebook-f me-2"></i>
-                        تسجيل الدخول عبر فيسبوك
+{{ __('messages.login_with_facebook') }}
                     </a>
                     
                     <a href="{{ route('auth.google') }}" class="btn btn-social btn-google w-100">
                         <i class="fab fa-google me-2"></i>
-                        تسجيل الدخول عبر جوجل
+{{ __('messages.login_with_google') }}
                     </a>
                 </div>
             </form>

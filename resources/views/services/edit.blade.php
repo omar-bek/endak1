@@ -319,7 +319,7 @@
                 <div class="card-body text-center">
                     <div class="text-start mb-3">
                         <a href="{{ route('categories.index') }}" class="btn btn-outline-primary">
-                            <i class="fas fa-arrow-left"></i> العودة للأقسام
+                            <i class="fas fa-arrow-left"></i> {{ __('messages.back_to_categories') }} 
                         </a>
                     </div>
 
@@ -346,7 +346,7 @@
                 <div class="card">
                 <div class="card-header bg-primary text-white text-center">
                     <h4 class="mb-0">
-                        <i class="fas fa-edit"></i> تعديل الخدمة
+                        <i class="fas fa-edit"></i> {{ __('messages.edit_service_title') }} 
                     </h4>
                     </div>
                     <div class="card-body">
@@ -364,11 +364,9 @@
                             </div>
                         @endif
 
-                        <!-- القسم والقسم الفرعي (مخفي) -->
                         <input type="hidden" name="category_id" value="{{ $service->category_id }}">
                         <input type="hidden" name="sub_category_id" value="{{ $service->sub_category_id }}">
 
-                        <!-- حقل اختيار المدينة -->
                             <div class="mb-3">
                             <label for="city_id" class="form-label">
                                 <i class="fas fa-map-marker-alt text-success"></i>

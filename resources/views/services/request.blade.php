@@ -348,14 +348,13 @@
 </style>
 <div class="container mt-5">
     <div class="row g-4 align-items-start justify-content-center">
-        <!-- كارد القسم (يمين على الشاشات الكبيرة) -->
         <div class="col-lg-4 col-md-5 order-2 order-md-2">
             <div class="card category-card text-center shadow-sm border-0">
                 <div class="card-body py-5 px-4">
 
                     <div class="text-start mb-4">
                         <a href="{{ route('categories.index') }}" class="btn back-btn px-4 py-2">
-                            <i class="fas fa-arrow-left me-2"></i> العودة للأقسام
+                            <i class="fas fa-arrow-left me-2"></i> {{ __('messages.back_to_categories') }} 
                         </a>
                     </div>
 
@@ -373,7 +372,7 @@
                     @if($selectedSubCategory)
                         <div class="selected-subcategory alert-custom mt-3 p-4 rounded-3 shadow-sm text-start">
                             <i class="fas fa-check-circle text-success fs-5 me-2"></i>
-                            <strong>القسم الفرعي المحدد:</strong>
+                            <strong> {{ __('messages.selected_subcategory_label') }}</strong>
                             <span class="text-dark ms-1">
                                 {{ app()->getLocale() == 'ar' ? $selectedSubCategory->name_ar : $selectedSubCategory->name_en }}
                             </span>
@@ -389,13 +388,12 @@
             </div>
         </div>
 
-        <!-- نموذج طلب الخدمة (شمال) -->
         <div class="col-lg-8 col-md-7 order-1 order-md-1">
             <div class="service-request-wrapper">
                 <div class="card service-request-card shadow-lg border-0 rounded-4">
                     <div class="card-header bg-gradient-primary text-white text-center py-4 rounded-top-4">
                         <h4 class="mb-0 fw-bold">
-                            <i class="fas fa-concierge-bell me-2"></i> طلب خدمة من هذا القسم
+                            <i class="fas fa-concierge-bell me-2"></i>  {{ __('messages.request_service_title') }}
                         </h4>
                     </div>
 
@@ -407,7 +405,7 @@
                                 <input type="hidden" name="sub_category_id" value="{{ $selectedSubCategoryId }}">
                                 <div class="alert alert-success">
                                     <i class="fas fa-check-circle"></i>
-                                    <strong>القسم الفرعي المحدد:</strong> 
+                                    <strong> {{ __('messages.selected_subcategory_label') }}</strong> 
                                     {{ app()->getLocale() == 'ar' ? $selectedSubCategory->name_ar : $selectedSubCategory->name_en }}
                                     @if($selectedSubCategory->description_ar || $selectedSubCategory->description_en)
                                         <br><small class="text-muted">
@@ -418,10 +416,10 @@
                             @elseif($hasSubCategories)
                                 <div class="alert alert-warning">
                                     <i class="fas fa-exclamation-triangle"></i>
-                                    <strong>تحذير:</strong> يجب اختيار قسم فرعي لطلب الخدمة
-                                    <br><small>يرجى العودة إلى صفحة القسم واختيار القسم الفرعي المناسب</small>
+                                    <strong>تحذير:</strong>  {{ __('messages.warning_choose_subcategory') }}
+                                    <br><small>{{ __('messages.choose_subcategory_note') }}</small>
                                     <br><a href="{{ route('categories.show', $category->slug) }}" class="btn btn-sm btn-outline-primary mt-2">
-                                        <i class="fas fa-arrow-left"></i> العودة إلى الأقسام الفرعية
+                                        <i class="fas fa-arrow-left"></i>  {{ __('messages.back_to_categories') }}  
                                     </a>
                                 </div>
                             @endif
@@ -437,18 +435,17 @@
                                 </div>
                             @endif
 
-                            <!-- اختيار المدينة -->
                           <div class="mb-3">
                                 <label for="city_id" class="form-label">
                                     <i class="fas fa-map-marker-alt text-success"></i>
-                                    اختر المدينة *
+                                    {{ __('messages.choose_city') }}
                                     @if($cities->count() > 0)
                                         <small class="text-muted">({{ $cities->count() }} مدينة متاحة)</small>
                                     @endif
                                 </label>
                                 @if($cities->count() > 0)
                                     <select name="city_id" id="city_id" class="form-control" required>
-                                        <option value="">اختر المدينة</option>
+                                        <option value=""> {{ __('messages.choose_city') }} </option>
                                         @foreach($cities as $city)
                                             <option value="{{ $city->id }}" {{ old('city_id') == $city->id ? 'selected' : '' }}>
                                                 {{ $city->name_ar ?? $city->name_en ?? 'اسم غير محدد' }}
@@ -458,13 +455,12 @@
                                 @else
                                     <div class="alert alert-warning">
                                         <i class="fas fa-exclamation-triangle"></i>
-                                        لا توجد مدن متاحة لهذا القسم حالياً. يرجى التواصل مع الإدارة لإضافة المدن المتاحة.
+                                        {{ __('messages.no_cities_available') }}
                                     </div>
                                     <input type="hidden" name="city_id" value="">
                                 @endif
                             </div>
 
-                            <!-- الحقول المخصصة -->
                             @php
                                 $groupedFields = $category->fields->groupBy('input_group');
                             @endphp
@@ -517,7 +513,7 @@
 
                                         @if($field->type === 'select' && is_array($field->options))
                                             <select name="custom_fields[{{ $field->name }}][0]" id="custom_fields_{{ $field->name }}_0" class="form-control" {{ $field->is_required ? 'required' : '' }}>
-                                                <option value="" disabled selected>اختر</option>
+                                                <option value="" disabled selected>{{ __('messages.custom_fields_select_placeholder') }}</option>
                                                 @foreach($field->options as $option)
                                                     <option value="{{ $option }}" {{ old('custom_fields.' . $field->name . '.0') == $option ? 'selected' : '' }}>{{ $option }}</option>
                                                 @endforeach
@@ -532,18 +528,18 @@
                                                 <div class="upload-area border border-dashed border-primary rounded p-3 text-center mb-3" style="min-height: 120px;">
                                                     <div class="upload-content">
                                                         <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-2"></i>
-                                                        <p class="text-muted mb-2">اسحب الصور هنا أو اضغط للاختيار</p>
-                                                        <p class="small text-muted">يمكنك رفع عدة صور مرة واحدة</p>
+                                                        <p class="text-muted mb-2">{{ __('messages.image_upload_drag_drop') }}</p>
+                                                        <p class="small text-muted">{{ __('messages.image_upload_multiple_note') }}</p>
                                                         <input type="file" name="custom_fields[{{ $field->name }}][0][]" id="custom_fields_{{ $field->name }}_0" class="form-control d-none" accept="image/*" multiple {{ $field->is_required ? 'required' : '' }}>
                                                         <button type="button" class="btn btn-outline-primary btn-sm" onclick="document.getElementById('custom_fields_{{ $field->name }}_0').click()">
-                                                            <i class="fas fa-plus"></i> اختيار الصور
+                                                            <i class="fas fa-plus"></i>  {{ __('messages.choose_images') }}
                                                         </button>
                                                     </div>
                                                 </div>
                                                 <div class="image-preview-container row" id="preview_{{ $field->name }}_0"></div>
                                                 <div class="add-more-images mt-2" id="add_more_{{ $field->name }}_0" style="display: none;">
                                                     <button type="button" class="btn btn-outline-success btn-sm" onclick="showUploadArea('{{ $field->name }}')">
-                                                        <i class="fas fa-plus"></i> إضافة المزيد من الصور
+                                                        <i class="fas fa-plus"></i>  {{ __('messages.add_more_images') }}   
                                                     </button>
                                                 </div>
                                             </div>
@@ -574,13 +570,13 @@
 
                             <div class="mb-3">
                                 <label for="notes" class="form-label">
-                                    <i class="fas fa-sticky-note"></i> ملاحظات إضافية
+                                    <i class="fas fa-sticky-note"></i>   {{ __('messages.additional_notes') }}   
                                 </label>
-                                <textarea name="notes" id="notes" class="form-control" rows="4" placeholder="أضف أي ملاحظات إضافية هنا...">{{ old('notes') }}</textarea>
+                                <textarea name="notes" id="notes" class="form-control" rows="4" placeholder="{{ __('messages.additional_notes_placeholder') }}   ">{{ old('notes') }}</textarea>
                             </div>
 
                             <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm">
-                                <i class="fas fa-paper-plane me-1"></i> إرسال الطلب
+                                <i class="fas fa-paper-plane me-1"></i>  {{ __('messages.submit_request') }} 
                             </button>
                         </form>
                     </div>
@@ -597,10 +593,10 @@
             <h5 class="mb-0 group-title"></h5>
             <div class="group-controls">
                 <button type="button" class="btn btn-sm btn-success add-group-instance">
-                    <i class="fas fa-plus"></i> إضافة مجموعة
+                    <i class="fas fa-plus"></i>    {{ __('messages.add_group') }} 
                 </button>
                 <button type="button" class="btn btn-sm btn-danger remove-group-instance">
-                    <i class="fas fa-trash"></i> حذف المجموعة
+                    <i class="fas fa-trash"></i>  {{ __('messages.del_group') }} 
                 </button>
             </div>
         </div>

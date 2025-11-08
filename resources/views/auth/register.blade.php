@@ -8,9 +8,9 @@
             <div class="side-panel right-panel">
                 <div class="content text-center">
                     <i class="fas fa-user-plus fa-3x text-warning mb-3"></i>
-                    <h2>مرحبًا بك في Endak!</h2>
-                    <p>هل لديك حساب بالفعل؟</p>
-                    <button class="btn btn-outline-light mt-3 switch-btn" id="switchToLogin">تسجيل الدخول</button>
+<h2>{{ __('messages.register_welcome') }}</h2>
+<p>{{ __('messages.already_have_account') }}</p>
+<button class="btn btn-outline-light mt-3 switch-btn" id="switchToLogin">{{ __('messages.login') }}</button>
                 </div>
             </div>
 
@@ -27,7 +27,7 @@
                     <div class="mb-3 position-relative">
                         <i class="fas fa-user input-icon text-secondary"></i>
                         <input type="text" class="form-control @error('name') is-invalid @enderror" name="name"
-                            placeholder="الاسم الكامل" value="{{ old('name') }}" required>
+                            placeholder="{{ __('messages.full_name') }}"  value="{{ old('name') }}" required>
                         @error('name')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -36,7 +36,7 @@
                     <div class="mb-3 position-relative">
                         <i class="fas fa-envelope input-icon text-secondary"></i>
                         <input type="email" class="form-control @error('email') is-invalid @enderror" name="email"
-                            placeholder="البريد الإلكتروني" value="{{ old('email') }}" required>
+                            placeholder="{{ __('messages.email') }}" value="{{ old('email') }}" required>
                         @error('email')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -45,11 +45,11 @@
                     <div class="mb-3 position-relative">
                         <i class="fas fa-mobile-alt input-icon text-secondary"></i>
                         <input type="tel" class="form-control @error('phone') is-invalid @enderror" name="phone"
-                            placeholder="رقم الهاتف (مصر: 01012345678 أو السعودية: 0501234567)" value="{{ old('phone') }}"
+                            placeholder="{{ __('messages.phone') }}" value="{{ old('phone') }}"
                             required>
                         <small class="form-text text-muted ms-2">
                             <i class="fas fa-info-circle me-1"></i>
-                            يدعم الأرقام المصرية والسعودية
+                            {{ __('messages.phone_note') }}
                         </small>
                         @error('phone')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -59,8 +59,8 @@
                     <div class="mb-3 position-relative">
                         <i class="fas fa-lock input-icon text-secondary"></i>
                         <input type="password" class="form-control @error('password') is-invalid @enderror" name="password"
-                            placeholder="كلمة المرور" required minlength="8">
-                        <small class="form-text text-muted ms-2">8 أحرف على الأقل</small>
+                            placeholder="{{ __('messages.password') }}" required minlength="8">
+                        <small class="form-text text-muted ms-2">{{ __('messages.password_note') }}</small>
                         @error('password')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -69,17 +69,17 @@
                     <div class="mb-3 position-relative">
                         <i class="fas fa-key input-icon text-secondary"></i>
                         <input type="password" class="form-control" name="password_confirmation"
-                            placeholder="تأكيد كلمة المرور" required minlength="8">
+                            placeholder="{{ __('messages.password_confirmation') }}" required minlength="8">
                     </div>
 
                     <div class="mb-3 position-relative">
                         <i class="fas fa-users input-icon text-secondary"></i>
                         <select class="form-control @error('user_type') is-invalid @enderror" name="user_type" required>
-                            <option value="" disabled selected>اختر نوع الحساب</option>
-                            <option value="customer" {{ old('user_type') == 'customer' ? 'selected' : '' }}>مستخدم عادي
-                                (لطلب الخدمات)</option>
-                            <option value="provider" {{ old('user_type') == 'provider' ? 'selected' : '' }}>مزود خدمة (لعرض
-                                الخدمات)</option>
+                            <option value="" disabled selected> {{ __('messages.select_account_type') }} </option>
+                            <option value="customer" {{ old('user_type') == 'customer' ? 'selected' : '' }}>{{ __('messages.user_regular') }} 
+                                </option>
+                            <option value="provider" {{ old('user_type') == 'provider' ? 'selected' : '' }}> {{ __('messages.user_provider') }}
+                                </option>
                         </select>
                         @error('user_type')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -90,8 +90,8 @@
                         <input class="form-check-input @error('terms') is-invalid @enderror" type="checkbox" id="terms"
                             name="terms" value="1" required>
                         <label class="form-check-label" for="terms">
-                            أوافق على <a href="#" class=" text-primary" data-bs-toggle="modal"
-                                data-bs-target="#termsModal">الشروط والأحكام</a>
+                              <a href="#" class=" text-primary" data-bs-toggle="modal"
+                                data-bs-target="#termsModal">   {{ __('messages.terms_accept') }}</a>
                         </label>
                         @error('terms')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -104,67 +104,56 @@
                             <div class="modal-content border-0 shadow-lg">
                                 <div class="modal-header"
                                     style="background: linear-gradient(135deg, #2f5c69, #3c7d8b); color: #fff;">
-                                    <h5 class="modal-title" id="termsModalLabel">الشروط والأحكام - موقع Endak</h5>
+                                    <h5 class="modal-title" id="termsModalLabel">  {{ __('messages.terms_title') }} </h5>
                                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                                         aria-label="Close"></button>
                                 </div>
-                                <div class="modal-body p-4"
-                                    style="max-height: 70vh; overflow-y: auto; background-color: #f9fbfc;">
-                                    <h6 class="fw-bold mb-2 text-primary">مرحباً بك في Endak!</h6>
-                                    <p class="text-muted mb-4">باستخدامك لموقع Endak فإنك توافق على الشروط والأحكام التالية.
-                                        نرجو قراءتها بعناية قبل البدء في استخدام خدماتنا.</p>
+                               <div class="modal-body p-4" style="max-height: 70vh; overflow-y: auto; background-color: #f9fbfc;">
+    <h6 class="fw-bold mb-2 text-primary">{{ __('messages.terms_welcome') }}</h6>
+    <p class="text-muted mb-4">{{ __('messages.terms_intro') }}</p>
 
-                                    <h6 class="fw-bold">1. قبول الشروط</h6>
-                                    <p class="text-muted">يعتبر دخولك أو استخدامك لموقع Endak بمثابة موافقة كاملة منك على
-                                        الالتزام بجميع الشروط والسياسات الخاصة بالموقع.</p>
+    <h6 class="fw-bold">{{ __('messages.terms_1_title') }}</h6>
+    <p class="text-muted">{{ __('messages.terms_1_text') }}</p>
 
-                                    <h6 class="fw-bold mt-4">2. استخدام الموقع</h6>
-                                    <p class="text-muted">يُسمح باستخدام الموقع فقط للأغراض القانونية والمشروعة، ويُمنع
-                                        استخدامه في أي أنشطة مخالفة للقانون أو تسبب ضررًا للآخرين.</p>
+    <h6 class="fw-bold mt-4">{{ __('messages.terms_2_title') }}</h6>
+    <p class="text-muted">{{ __('messages.terms_2_text') }}</p>
 
-                                    <h6 class="fw-bold mt-4">3. الحسابات والمسؤولية</h6>
-                                    <p class="text-muted">أنت مسؤول عن سرية بيانات تسجيل الدخول الخاصة بك، وعن جميع الأنشطة
-                                        التي تتم عبر حسابك. يحتفظ الموقع بحق إيقاف أي حساب يخالف القواعد.</p>
+    <h6 class="fw-bold mt-4">{{ __('messages.terms_3_title') }}</h6>
+    <p class="text-muted">{{ __('messages.terms_3_text') }}</p>
 
-                                    <h6 class="fw-bold mt-4">4. الخدمات والضمانات</h6>
-                                    <p class="text-muted">يُقدم موقع Endak خدماته بأعلى جودة ممكنة، ولكننا لا نضمن أن تكون
-                                        الخدمة خالية من الأخطاء أو الانقطاعات التقنية.</p>
+    <h6 class="fw-bold mt-4">{{ __('messages.terms_4_title') }}</h6>
+    <p class="text-muted">{{ __('messages.terms_4_text') }}</p>
 
-                                    <h6 class="fw-bold mt-4">5. سياسة الخصوصية</h6>
-                                    <p class="text-muted">نحترم خصوصيتك ونحافظ على بياناتك الشخصية. يتم استخدام المعلومات
-                                        فقط لتحسين تجربتك وتقديم خدمات أفضل.</p>
+    <h6 class="fw-bold mt-4">{{ __('messages.terms_5_title') }}</h6>
+    <p class="text-muted">{{ __('messages.terms_5_text') }}</p>
 
-                                    <h6 class="fw-bold mt-4">6. حقوق الملكية الفكرية</h6>
-                                    <p class="text-muted">جميع الحقوق محفوظة لموقع Endak. لا يجوز نسخ أو إعادة استخدام أي
-                                        محتوى دون إذن خطي مسبق من إدارة الموقع.</p>
+    <h6 class="fw-bold mt-4">{{ __('messages.terms_6_title') }}</h6>
+    <p class="text-muted">{{ __('messages.terms_6_text') }}</p>
 
-                                    <h6 class="fw-bold mt-4">7. التعديلات على الشروط</h6>
-                                    <p class="text-muted">يحتفظ الموقع بحق تعديل هذه الشروط في أي وقت. سيتم إخطار
-                                        المستخدمين بالتحديثات عبر الموقع أو البريد الإلكتروني.</p>
+    <h6 class="fw-bold mt-4">{{ __('messages.terms_7_title') }}</h6>
+    <p class="text-muted">{{ __('messages.terms_7_text') }}</p>
 
-                                    <h6 class="fw-bold mt-4">8. إخلاء المسؤولية</h6>
-                                    <p class="text-muted">Endak غير مسؤول عن أي خسائر أو أضرار مباشرة أو غير مباشرة ناتجة
-                                        عن استخدام خدمات الموقع.</p>
+    <h6 class="fw-bold mt-4">{{ __('messages.terms_8_title') }}</h6>
+    <p class="text-muted">{{ __('messages.terms_8_text') }}</p>
 
-                                    <h6 class="fw-bold mt-4">9. التواصل معنا</h6>
-                                    <p class="text-muted">لأي استفسارات أو شكاوى يمكنك التواصل معنا عبر البريد الإلكتروني
-                                        الرسمي للموقع.</p>
+    <h6 class="fw-bold mt-4">{{ __('messages.terms_9_title') }}</h6>
+    <p class="text-muted">{{ __('messages.terms_9_text') }}</p>
 
-                                    <p class="fw-semibold mt-4 text-center text-primary">باستخدامك للموقع، فإنك تقر بأنك
-                                        قرأت وفهمت ووافقت على هذه الشروط والأحكام.</p>
-                                </div>
+    <p class="fw-semibold mt-4 text-center text-primary">{{ __('messages.terms_agree') }}</p>
+</div>
+
                                 <div class="modal-footer border-0 d-flex justify-content-center"
                                     style="background: #f9fbfc;">
                                     <button type="button" class="btn text-white px-4"
                                         style="background: linear-gradient(135deg, #2f5c69, #3c7d8b);"
-                                        data-bs-dismiss="modal">موافق</button>
+                                        data-bs-dismiss="modal">{{ __('messages.terms_modal_close') }}</button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <button type="submit" class="btn btn-login w-100">
-                        <i class="fas fa-user-plus me-2"></i>إنشاء الحساب
+                        <i class="fas fa-user-plus me-2"></i>{{ __('messages.create_account') }} 
                     </button>
                 </form>
             </div>

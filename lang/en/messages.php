@@ -14,6 +14,26 @@ return [
     'register' => 'Register',
     'contact_us' => 'Contact Us',
     'language' => 'Language',
+    'Ads'=> 'My Ads',
+    'ad_pup' => 'Publish an Ad',
+    'Message' => 'Messages',
+    'menu' => 'Menu',
+        'help' => 'Help',
+            'about' => 'About App ',
+
+                'request_service_new' => ' طلب خدمة جديدة',
+
+
+                'my_offer_pending' => 'My offer is pending',
+    'my_offer_accepted' => 'My offer is accepted',
+    'you_can_submit_offer' => 'You can submit an offer',
+
+    'pending_offers_count' => 'Pending offer(s)',
+    'accepted_offer' => 'Accepted offer',
+    'no_offers' => 'No offers available',
+    'offer'=>'offer',
+    'offer'=>'offers',
+
 
     // Home Page
     'welcome_title' => 'The Leading Services Platform',
@@ -169,4 +189,133 @@ return [
     'offer_accepted_message' => '{customer} accepted your offer for service: {service}',
     'offer_rejected_title' => 'Your Offer Was Rejected',
     'offer_rejected_message' => '{customer} rejected your offer for service: {service}',
+
+
+    'hero_rating' => 'Rated 5.0 by over 10K users',
+'hero_title_1' => 'Platform',
+'hero_title_2' => '— where',
+'hero_title_3' => 'Demand',
+'hero_title_4' => 'meets Supply.',
+'hero_description' => 'Discover the services you need, or start your freelancing journey and submit offers to suitable projects.',
+'hero_explore_categories' => 'Browse Categories',
+'hero_explore_services' => 'Explore Services',
+
+'categories_title' => 'Main Categories',
+'categories_subtitle' => 'Choose from a wide range of categories',
+
+'services_title_guest' => 'Services',
+'services_desc_guest' => 'Explore a wide variety of services that suit your needs.',
+
+'services_title_provider' => 'All Available Services',
+'services_desc_provider' => 'Discover services and start submitting your unique offers to suitable projects.',
+
+'services_title_client' => 'My Requested Services',
+'services_desc_client' => 'Track your requested services and their details easily and professionally.',
+
+
+'filter_user_client_title' => 'Welcome!',
+'filter_user_client_text' => 'You are currently browsing <span style="color: #00a6a6;">your requested services only</span>.',
+'filter_user_client_btn_categories' => 'Browse Categories',
+'filter_user_client_btn_services' => 'My Services',
+
+'filter_user_provider_title' => 'Welcome, Service Provider!',
+'filter_user_provider_text' => 'You can browse all available services and submit your offers.',
+
+'filter_search_placeholder' => 'Search services...',
+'filter_category_all' => 'All Categories',
+'filter_subcategory_all' => 'All Subcategories',
+'filter_city_all' => 'All Cities',
+'filter_btn_search' => 'Search',
+
+'services_title' => 'Our Services',
+'no_services_title' => 'No Services Available',
+'no_services_desc' => 'New services will be added soon.',
+'voice_available' => 'Voice Recording Available',
+'view_details' => 'View Details',
+
+
+'login_welcome' => 'Welcome Back!',
+'no_account' => 'Don\'t have an account yet?',
+'create_new_account' => 'Create New Account',
+'email' => 'Email Address',
+'password' => 'Password',
+'remember_me' => 'Remember Me',
+'login' => 'Login',
+'or' => 'OR',
+'login_with_facebook' => 'Login with Facebook',
+'login_with_google' => 'Login with Google',
+
+
+
+'register_welcome' => 'Welcome to Endak!',
+    'already_have_account' => 'Already have an account?',
+    'login' => 'Login',
+    'full_name' => 'Full Name',
+    'email' => 'Email',
+    'phone' => 'Phone Number (EG: 01012345678 or SA: 0501234567)',
+    'phone_note' => 'Supports Egyptian and Saudi numbers',
+    'password' => 'Password',
+    'password_confirmation' => 'Confirm Password',
+    'password_note' => 'At least 8 characters',
+    'select_account_type' => 'Select Account Type',
+    'user_regular' => 'Regular User (to request services)',
+    'user_provider' => 'Service Provider (to offer services)',
+    'terms_accept' => 'I agree to the Terms & Conditions',
+    'create_account' => 'Create Account',
+    'terms_title' => 'Terms & Conditions - Endak Website',
+    'terms_modal_welcome' => 'Welcome to Endak!',
+    'terms_modal_agree' => 'By using this website, you acknowledge that you have read, understood, and agreed to these terms.',
+    'terms_modal_close' => 'Agree',
+
+
+      'terms_welcome' => 'Welcome to Endak!',
+    'terms_intro' => 'By using the Endak website, you agree to the following terms and conditions. Please read them carefully before using our services.',
+    'terms_1_title' => '1. Acceptance of Terms',
+    'terms_1_text' => 'Accessing or using the Endak website constitutes your full agreement to comply with all website rules and policies.',
+    'terms_2_title' => '2. Use of Website',
+    'terms_2_text' => 'The website may only be used for legal and legitimate purposes. Any activity that violates the law or harms others is prohibited.',
+    'terms_3_title' => '3. Accounts and Responsibility',
+    'terms_3_text' => 'You are responsible for keeping your login details confidential and for all activities that occur through your account. The site reserves the right to suspend any account that violates the rules.',
+    'terms_4_title' => '4. Services and Warranties',
+    'terms_4_text' => 'Endak provides its services at the highest possible quality, but we do not guarantee that the service will be free of errors or technical interruptions.',
+    'terms_5_title' => '5. Privacy Policy',
+    'terms_5_text' => 'We respect your privacy and safeguard your personal data. Information is used only to improve your experience and provide better services.',
+    'terms_6_title' => '6. Intellectual Property Rights',
+    'terms_6_text' => 'All rights are reserved for Endak. No content may be copied or reused without prior written permission from the site administration.',
+    'terms_7_title' => '7. Changes to Terms',
+    'terms_7_text' => 'The website reserves the right to modify these terms at any time. Users will be notified of updates via the site or email.',
+    'terms_8_title' => '8. Disclaimer',
+    'terms_8_text' => 'Endak is not responsible for any direct or indirect losses or damages resulting from the use of the site’s services.',
+    'terms_9_title' => '9. Contact Us',
+    'terms_9_text' => 'For any inquiries or complaints, you can contact us via the official site email.',
+    'terms_agree' => 'By using this website, you acknowledge that you have read, understood, and agreed to these terms.',
+
+
+    'provider_title' => 'No services available',
+    'provider_text' => 'There are currently no services available. Check back later!',
+    'client_title' => 'No requested services',
+    'client_text' => 'You have not requested any services yet. Start by requesting a new service!',
+    'client_btn' => 'Request New Service',
+
+ 'back_to_categories' => 'Back to Categories',
+    'request_service_title' => 'Request a Service from this Category',
+    'selected_subcategory_label' => 'Selected Subcategory:',
+    'warning_choose_subcategory' => 'Warning: You must select a subcategory to request a service',
+    'choose_subcategory_note' => 'Please go back to the category page and choose the appropriate subcategory',
+    'back_to_subcategories' => 'Back to Subcategories',
+    'choose_city' => 'Choose City *',
+    'available_cities_count' => 'available city',
+    'no_cities_available' => 'There are no available cities for this category currently. Please contact the administration to add available cities.',
+    'custom_fields_select_placeholder' => 'Select',
+    'image_upload_drag_drop' => 'Drag images here or click to select',
+    'image_upload_multiple_note' => 'You can upload multiple images at once',
+    'choose_images' => 'Select Images',
+    'add_more_images' => 'Add More Images',
+    'additional_notes' => 'Additional Notes',
+    'additional_notes_placeholder' => 'Add any additional notes here...',
+    'submit_request' => 'Submit Request',
+        'add_group'=>'Add group',
+            'del_group'=>'delete group',
+
+
 ];

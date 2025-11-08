@@ -89,19 +89,16 @@ class Category extends Model
                    ->get();
     }
 
-    // الحصول على جميع الأقسام الفرعية
     public function getAllChildren()
     {
         return $this->children()->with('children')->get();
     }
 
-    // التحقق من وجود أقسام فرعية
     public function hasChildren()
     {
         return $this->children()->count() > 0;
     }
 
-    // الحصول على عدد الخدمات في القسم
     public function getServicesCount()
     {
         return $this->services()->count();

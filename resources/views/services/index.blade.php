@@ -38,7 +38,6 @@
     background-size: cover;
 }
 
-/* ===== أنميشن النصوص ===== */
 @keyframes fadeDown {
     from { opacity: 0; transform: translateY(-20px); }
     to { opacity: 1; transform: translateY(0); }
@@ -49,7 +48,6 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* ===== القسم الرئيسي للخدمات ===== */
 .services-section {
     background: linear-gradient(135deg, #e6eefc, #f1f7ff);
     color: #2f5c69;
@@ -74,7 +72,6 @@
     margin: 10px auto 0;
 }
 
-/* ===== تصميم الكارد ===== */
 .service-card {
     display: flex;
     align-items: stretch;
@@ -157,7 +154,6 @@
     transform: scale(1.05);
 }
 
-/* ===== الملاحظات الصوتية ===== */
 .voice-note-mini {
     display: inline-flex;
     align-items: center;
@@ -167,7 +163,6 @@
     border: 1px solid #d3e3e7;
 }
 
-/* ===== استجابة الموبايل ===== */
 @media (max-width: 992px) {
     .service-card {
         flex-direction: column;
@@ -178,7 +173,6 @@
     }
 }
 
-/* ===== الفلاتر ===== */
 .filter-section {
     background: #ffffff;
     padding: 60px 0;
@@ -200,7 +194,6 @@
     box-shadow: 0 0 8px rgba(47, 92, 105, 0.2);
 }
 
-/* ===== الأزرار العامة ===== */
 .btn-main {
     background-color: #f3a446;
     color: #fff;
@@ -240,7 +233,6 @@
     color: #2f5c69;
 }
 
-/* ===== حركة ظهور الكروت عند التمرير ===== */
 @keyframes slideUp {
     from { opacity: 0; transform: translateY(40px); }
     to { opacity: 1; transform: translateY(0); }
@@ -261,32 +253,33 @@
 <!-- Header -->
 <section class="header-section">
     <div class="container text-center">
-        <h1 class="fw-bold">
-            @auth
-                @if(auth()->user()->isProvider())
-                    جميع الخدمات المتاحة
-                @else
-                    خدماتي المطلوبة
-                @endif
-            @else
-                الخدمات
-            @endauth
-        </h1>
-        <p class="mt-2">
-            @auth
-                @if(auth()->user()->isProvider())
-                    اكتشف الخدمات وابدأ بتقديم عروضك المميزة على المشاريع المناسبة لك.
-                @else
-                    تابع خدماتك المطلوبة وتفاصيلها بسهولة واحترافية.
-                @endif
-            @else
-                اكتشف مجموعة متنوعة من الخدمات التي تناسب احتياجاتك.
-            @endauth
-        </p>
+<h1 class="fw-bold">
+    @guest
+        {{ __('messages.services_title_guest') }}
+    @else
+        @if(auth()->user()->isProvider())
+            {{ __('messages.services_title_provider') }}
+        @else
+            {{ __('messages.services_title_client') }}
+        @endif
+    @endguest
+</h1>
+
+<p class="mt-2">
+    @guest
+        {{ __('messages.services_desc_guest') }}
+    @else
+        @if(auth()->user()->isProvider())
+            {{ __('messages.services_desc_provider') }}
+        @else
+            {{ __('messages.services_desc_client') }}
+        @endif
+    @endguest
+</p>
+
     </div>
 </section>
 
-<!-- Filter -->
 <section class="filter-section">
     <div class="container">
         @auth
@@ -294,40 +287,35 @@
                 <div class="user-alert alert text-center mb-4 border-0 shadow-sm" 
                      style="background: linear-gradient(135deg, #e0f7f6, #fdf8e3); border-radius: 15px;">
                     <i class="fas fa-info-circle fa-lg mb-2" style="color: #007b8f;"></i>
-                    <h6 class="fw-bold text-dark mb-2">مرحباً!</h6>
-                    <p class="mb-3 text-secondary">أنت تتصفح <span style="color: #00a6a6;">خدماتك المطلوبة فقط</span>.</p>
+<h6 class="fw-bold text-dark mb-2">{{ __('messages.filter_user_client_title') }}</h6>
+<p class="mb-3 text-secondary">{!! __('messages.filter_user_client_text') !!}</p>
                     <div class="mt-3">
-                        <a href="{{ route('categories.index') }}" 
-                           class="btn text-white px-4" 
-                           style="background-color: #00a6a6; border-radius: 8px;">
-                            <i class="fas fa-th-large"></i> تصفح الأقسام
-                        </a>
-                        <a href="{{ route('services.index') }}" 
-                           class="btn btn-outline-main px-4" 
-                           style="border: 2px solid #d4a017; color: #d4a017; border-radius: 8px;">
-                            <i class="fas fa-list"></i> جميع خدماتي
-                        </a>
+<a href="{{ route('categories.index') }}" class="btn text-white px-4" style="background-color: #00a6a6; border-radius: 8px;">
+    <i class="fas fa-th-large"></i> {{ __('messages.filter_user_client_btn_categories') }}
+</a>
+<a href="{{ route('services.index') }}" class="btn btn-outline-main px-4" style="border: 2px solid #d4a017; color: #d4a017; border-radius: 8px;">
+    <i class="fas fa-list"></i> {{ __('messages.filter_user_client_btn_services') }}
+</a>
                     </div>
                 </div>
             @else
                 <div class="user-alert alert text-center mb-4 border-0 shadow-sm" 
                      style="background: linear-gradient(135deg, #e8fff9, #fff6e3); border-radius: 15px;">
                     <i class="fas fa-handshake fa-lg mb-2" style="color: #d4a017;"></i>
-                    <h6 class="fw-bold text-dark mb-2">مرحباً مزود الخدمة!</h6>
-                    <p class="mb-0 text-secondary">يمكنك تصفح جميع الخدمات المتاحة وتقديم عروضك.</p>
+<h6 class="fw-bold text-dark mb-2">{{ __('messages.filter_user_provider_title') }}</h6>
+<p class="mb-0 text-secondary">{{ __('messages.filter_user_provider_text') }}</p>
                 </div>
             @endif
         @endauth
 
         <form method="GET" class="filter-form row g-3 align-items-center justify-content-center">
             <div class="col-md-3 col-sm-6">
-                <input type="text" name="search" class="form-control"
-                       placeholder="ابحث في الخدمات..." value="{{ request('search') }}">
+<input type="text" name="search" class="form-control" placeholder="{{ __('messages.filter_search_placeholder') }}">
             </div>
 
             <div class="col-md-2 col-sm-6">
                 <select name="category" id="category" class="form-select">
-                    <option value="">جميع الأقسام</option>
+<option value="">{{ __('messages.filter_category_all') }}</option>
                     @foreach($categories as $category)
                     <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
                         {{ app()->getLocale() == 'ar' ? $category->name : $category->name_en }}
@@ -338,7 +326,7 @@
 
             <div class="col-md-2 col-sm-6">
                 <select name="sub_category" id="sub_category" class="form-select" {{ empty(request('category')) ? 'disabled' : '' }}>
-                    <option value="">جميع الأقسام الفرعية</option>
+<option value="">{{ __('messages.filter_subcategory_all') }}</option>
                     @if(isset($subCategories) && $subCategories->count() > 0)
                         @foreach($subCategories as $subCategory)
                         <option value="{{ $subCategory->id }}" {{ request('sub_category') == $subCategory->id ? 'selected' : '' }}>
@@ -351,7 +339,7 @@
 
             <div class="col-md-2 col-sm-6">
                 <select name="city" class="form-select">
-                    <option value="">جميع المدن</option>
+<option value="">{{ __('messages.filter_city_all') }}</option>
                     @foreach($cities as $city)
                     <option value="{{ $city->id }}" {{ request('city') == $city->id ? 'selected' : '' }}>
                         {{ app()->getLocale() == 'ar' ? $city->name : $city->name_en }}
@@ -361,9 +349,9 @@
             </div>
 
             <div class="col-md-3 col-sm-12">
-                <button type="submit" class="btn btn-main w-100">
-                    <i class="fas fa-search"></i> بحث
-                </button>
+<button type="submit" class="btn btn-main w-100">
+    <i class="fas fa-search"></i> {{ __('messages.filter_btn_search') }}
+</button>
             </div>
         </form>
     </div>
@@ -372,7 +360,7 @@
 <!-- Services -->
 <section class="services-section">
     <div class="container">
-        <h2>خدماتنا</h2>
+<h2>{{ __('messages.services_title') }}</h2>
         @if($services->count() > 0)
             @foreach($services as $service)
                 <div class="service-card">
@@ -405,14 +393,14 @@
                             <div class="mt-3">
                                 <div class="voice-note-mini">
                                     <i class="fas fa-microphone text-primary me-1"></i>
-                                    <small>تسجيل صوتي متاح</small>
+<small>{{ __('messages.voice_available') }}</small>
                                 </div>
                             </div>
                             @endif
                         </div>
                         <div class="card-footer mt-3">
                             <a href="{{ route('services.show', $service->slug) }}" class="btn btn-outline-primary w-100">
-                                <i class="fas fa-eye"></i> عرض التفاصيل
+<i class="fas fa-eye"></i> {{ __('messages.view_details') }}
                             </a>
                         </div>
                     </div>
@@ -424,8 +412,8 @@
         @else
             <div class="text-center py-5">
                 <i class="fas fa-search text-muted" style="font-size: 4rem;"></i>
-                <h4 class="mt-3 text-muted">لا توجد خدمات حالياً</h4>
-                <p class="text-muted">سيتم إضافة خدمات جديدة قريباً.</p>
+<h4 class="mt-3 text-muted">{{ __('messages.no_services_title') }}</h4>
+<p class="text-muted">{{ __('messages.no_services_desc') }}</p>
             </div>
         @endif
     </div>
@@ -447,7 +435,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 fetch(`/api/categories/${selectedCategory}/subcategories`)
                     .then(response => response.json())
                     .then(data => {
-                        subCategorySelect.innerHTML = '<option value="">جميع الأقسام الفرعية</option>';
+                        subCategorySelect.innerHTML = '<option value="">  {{ __('messages.filter_subcategory_all') }}</option>';
                         data.forEach(subCategory => {
                             const option = document.createElement('option');
                             option.value = subCategory.id;
@@ -458,7 +446,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     .catch(error => console.error('Error fetching subcategories:', error));
             } else {
                 subCategorySelect.disabled = true;
-                subCategorySelect.innerHTML = '<option value="">جميع الأقسام الفرعية</option>';
+                subCategorySelect.innerHTML = '<option value="">{{ __('messages.filter_subcategory_all') }}  </option>';
             }
         });
     }

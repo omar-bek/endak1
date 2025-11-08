@@ -1375,7 +1375,7 @@
                 <div class="footer-nav-icon">
                     <i class="fas fa-home"></i>
                 </div>
-                <span class="footer-nav-text">الرئيسية</span>
+                <span class="footer-nav-text">{{ __('messages.home') }}</span>
             </a>
 
             @auth
@@ -1385,7 +1385,7 @@
                         <div class="footer-nav-icon">
                             <i class="fas fa-concierge-bell"></i>
                         </div>
-                        <span class="footer-nav-text">الخدمات</span>
+                        <span class="footer-nav-text">{{ __('messages.services') }}</span>
                     </a>
                 @else
                     <a href="{{ route('services.index') }}"
@@ -1393,7 +1393,7 @@
                         <div class="footer-nav-icon">
                             <i class="fas fa-th-large"></i>
                         </div>
-                        <span class="footer-nav-text">إعلاناتي</span>
+                        <span class="footer-nav-text">{{ __('messages.Ads') }}</span>
                     </a>
                 @endif
             @else
@@ -1401,7 +1401,7 @@
                     <div class="footer-nav-icon">
                         <i class="fas fa-th-large"></i>
                     </div>
-                    <span class="footer-nav-text">إعلاناتي</span>
+                    <span class="footer-nav-text">{{ __('messages.Ads') }}</span>
                 </a>
             @endauth
 
@@ -1412,14 +1412,14 @@
                         <div class="footer-nav-icon footer-nav-icon-center">
                             <i class="fas fa-handshake"></i>
                         </div>
-                        <span class="footer-nav-text">عروضي</span>
+                        <span class="footer-nav-text">{{ __('messages.my_offers') }}</span>
                     </a>
                 @else
                     <a href="{{ route('categories.index') }}" class="footer-nav-item footer-nav-center">
                         <div class="footer-nav-icon footer-nav-icon-center">
                             <i class="fas fa-plus"></i>
                         </div>
-                        <span class="footer-nav-text">نشر إعلان</span>
+                        <span class="footer-nav-text"> {{ __('messages.ad_pup') }}</span>
                     </a>
                 @endif
             @else
@@ -1427,7 +1427,7 @@
                     <div class="footer-nav-icon footer-nav-icon-center">
                         <i class="fas fa-plus"></i>
                     </div>
-                    <span class="footer-nav-text">نشر إعلان</span>
+                    <span class="footer-nav-text"> {{ __('messages.ad_pup') }} </span>
                 </a>
             @endauth
 
@@ -1441,14 +1441,14 @@
                                 class="footer-nav-badge footer-nav-badge-messages">{{ Auth::user()->unread_messages_count > 99 ? '99+' : Auth::user()->unread_messages_count }}</span>
                         @endif
                     </div>
-                    <span class="footer-nav-text">الرسائل</span>
+                    <span class="footer-nav-text"> {{ __('messages.Message') }}</span>
                 </a>
             @else
                 <a href="{{ route('login') }}" class="footer-nav-item">
                     <div class="footer-nav-icon">
                         <i class="fas fa-comments"></i>
                     </div>
-                    <span class="footer-nav-text">الرسائل</span>
+                    <span class="footer-nav-text"> {{ __('messages.Message') }}</span>
                 </a>
             @endauth
 
@@ -1462,14 +1462,14 @@
                                 class="footer-nav-badge footer-nav-badge-notifications">{{ Auth::user()->unread_notifications_count > 99 ? '99+' : Auth::user()->unread_notifications_count }}</span>
                         @endif
                     </div>
-                    <span class="footer-nav-text">الإشعارات</span>
+                    <span class="footer-nav-text"> {{ __('messages.notifications') }}</span>
                 </a>
             @else
                 <a href="{{ route('login') }}" class="footer-nav-item">
                     <div class="footer-nav-icon">
                         <i class="fas fa-bell"></i>
                     </div>
-                    <span class="footer-nav-text">الإشعارات</span>
+                    <span class="footer-nav-text"> {{ __('messages.notifications') }}</span>
                 </a>
             @endauth
 
@@ -1477,7 +1477,7 @@
                 <div class="footer-nav-icon">
                     <i class="fas fa-bars"></i>
                 </div>
-                <span class="footer-nav-text">القائمة</span>
+                <span class="footer-nav-text"> {{ __('messages.menu') }}</span>
             </a>
         </div>
     </nav>
@@ -1857,25 +1857,24 @@
                 ];
             @endif
         @else
-            // غير مسجل دخول
             const menuItems = [{
                     icon: 'fas fa-sign-in-alt',
-                    text: 'تسجيل الدخول',
+                    text:  '{{ __('messages.login') }}',
                     href: '{{ route('login') }}'
                 },
                 {
                     icon: 'fas fa-user-plus',
-                    text: 'إنشاء حساب',
+                    text: '{{ __('messages.create_account') }} ',
                     href: '{{ route('register') }}'
                 },
                 {
                     icon: 'fas fa-question-circle',
-                    text: 'المساعدة',
+                    text: '{{ __('messages.help') }} ',
                     href: '{{ route('contact') }}'
                 },
                 {
                     icon: 'fas fa-info-circle',
-                    text: 'حول التطبيق',
+                    text: '{{ __('messages.about') }} ',
                     href: '#'
                 }
             ];
@@ -1943,7 +1942,7 @@
                             <hr class="footer-menu-divider">
                             <a href="{{ route('logout') }}" class="footer-menu-item" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                 <i class="fas fa-sign-out-alt"></i>
-                                <span>تسجيل الخروج</span>
+                                <span> </span>
                             </a>
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                 @csrf
@@ -1952,7 +1951,7 @@
                             <hr class="footer-menu-divider">
                             <a href="{{ route('login') }}" class="footer-menu-item">
                                 <i class="fas fa-sign-in-alt"></i>
-                                <span>تسجيل الدخول</span>
+                                <span> {{ __('messages.login') }}</span>
                             </a>
                         @endauth
 
@@ -2163,7 +2162,6 @@
         }
 
 
-        // Update badges every 30 seconds
         setInterval(updateFooterNavBadges, 30000);
         updateFooterNavBadges();
         @endauth
@@ -2175,11 +2173,9 @@
                 document.body.style.overflow = '';
             }
         }
-        // Handle login requirement for protected links
         function handleProtectedLink(event, href) {
             @guest
             event.preventDefault();
-            // Show login modal or redirect to login
             if (confirm('يجب تسجيل الدخول أولاً. هل تريد الانتقال لصفحة تسجيل الدخول؟')) {
                 window.location.href = '{{ route('login') }}';
             }
@@ -2190,7 +2186,6 @@
     @stack('scripts')
 
     <style>
-        /* تحسينات إضافية للرسائل */
         .dropdown-menu {
             border: none !important;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
@@ -2250,7 +2245,6 @@
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
         }
 
-        /* أيقونة الواتساب */
         .whatsapp-float {
             position: fixed;
             width: 60px;
@@ -2294,7 +2288,6 @@
             }
         }
 
-        /* تحسين للهواتف */
         @media (max-width: 768px) {
             .whatsapp-float {
                 width: 50px;
@@ -2307,7 +2300,6 @@
         }
     </style>
 
-    <!-- أيقونة الواتساب -->
     @if (\App\Helpers\WhatsAppHelper::isEnabled())
         <a href="{{ \App\Helpers\WhatsAppHelper::getWhatsAppUrl() }}" class="whatsapp-float" target="_blank"
             title="تواصل معنا عبر الواتساب">

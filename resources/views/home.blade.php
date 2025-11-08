@@ -5,157 +5,136 @@
 
 @section('content')
     <!-- Hero Section -->
-    <section class="hero-area position-relative text-white overflow-hidden">
-        <div class="hero-bg-small bg-info"></div>
+<section class="hero-area position-relative text-white overflow-hidden">
+    <div class="hero-bg-small bg-info"></div>
 
-        <div class="container py-5 d-flex align-items-center">
-            <div class="row align-items-center w-100 flex-column-reverse flex-lg-row">
-                <!-- النص -->
-                <div class="col-lg-6 text-center text-lg-start mb-4 mb-lg-0">
-                    <div class="d-flex justify-content-center justify-content-lg-start align-items-center mb-3">
-                        <i class="fas fa-star text-warning fs-4 mx-1"></i>
-                        <i class="fas fa-star text-warning fs-4 mx-1"></i>
-                        <i class="fas fa-star text-warning fs-4 mx-1"></i>
-                        <i class="fas fa-star text-warning fs-4 mx-1"></i>
-                        <i class="fas fa-star text-warning fs-4 mx-1"></i>
-                        <span class="ms-2 small">تقييم 5.0 من أكثر من 10K مستخدم</span>
-                    </div>
+    <div class="container py-5 d-flex align-items-center">
+        <div class="row align-items-center w-100 flex-column-reverse flex-lg-row">
+            <div class="col-lg-6 text-center text-lg-start mb-4 mb-lg-0">
 
-                    <h1 class="display-5 fw-bold mb-3 text-white">
-                        منصة <span style="color: #f3a446;">Endak</span> — حيث يلتقي
-                        <span class="text-info">الطلب</span> بالعَرض.
-                    </h1>
-
-                    <p class="lead mb-4 border-start border-3 ps-3 text-white">
-                        اكتشف الخدمات التي تحتاجها، أو ابدأ رحلتك كمستقل وقدم عروضك على المشاريع المناسبة لك.
-                    </p>
-
-                    <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3 mb-5">
-                        <a href="{{ route('categories.index') }}" class="btn btn-lg px-4 rounded-pill shadow"
-                            style="background-color:#f3a446;color:#fff;border:none;">تصفح الأقسام</a>
-                        <a href="{{ route('services.index') }}"
-                            class="btn btn-outline-light btn-lg px-4 rounded-pill">استكشف الخدمات</a>
-                    </div>
+                <div class="d-flex justify-content-center justify-content-lg-start align-items-center mb-3">
+                    <i class="fas fa-star text-warning fs-4 mx-1"></i>
+                    <i class="fas fa-star text-warning fs-4 mx-1"></i>
+                    <i class="fas fa-star text-warning fs-4 mx-1"></i>
+                    <i class="fas fa-star text-warning fs-4 mx-1"></i>
+                    <i class="fas fa-star text-warning fs-4 mx-1"></i>
+                    <span class="ms-2 small">{{ __('messages.hero_rating') }}</span>
                 </div>
 
-                <div class="col-lg-6 text-center position-relative mb-4 mb-lg-0">
-                    <img src="{{ asset(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}"
-                        alt="{{ \App\Models\SystemSetting::get('site_name_ar', 'إنداك') }}" class="img-fluid hero-img">
+                <h1 class="display-5 fw-bold mb-3 text-white">
+                    {{ __('messages.hero_title_1') }} <span style="color: #f3a446;">Endak</span>
+                    {{ __('messages.hero_title_2') }} <span class="text-info">{{ __('messages.hero_title_3') }}</span>
+                    {{ __('messages.hero_title_4') }}
+                </h1>
+
+                <p class="lead mb-4 border-start border-3 ps-3 text-white">
+                    {{ __('messages.hero_description') }}
+                </p>
+
+                <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3 mb-5">
+                    <a href="{{ route('categories.index') }}" class="btn btn-lg px-4 rounded-pill shadow"
+                        style="background-color:#f3a446;color:#fff;border:none;">{{ __('messages.hero_explore_categories') }}</a>
+
+                    <a href="{{ route('services.index') }}"
+                        class="btn btn-outline-light btn-lg px-4 rounded-pill">{{ __('messages.hero_explore_services') }}</a>
                 </div>
             </div>
+
+            <div class="col-lg-6 text-center position-relative mb-4 mb-lg-0">
+                <img src="{{ asset(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}"
+                    alt="{{ \App\Models\SystemSetting::get('site_name_ar', 'إنداك') }}" class="img-fluid hero-img">
+            </div>
         </div>
+    </div>
 
-        <svg viewBox="0 0 1440 200" preserveAspectRatio="none" class="position-absolute bottom-0 start-0 w-100 hero-wave">
-            <defs>
-                <linearGradient id="waveGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#2f5c69" />
-                    <stop offset="100%" stop-color="#f1f7ff" />
-                </linearGradient>
+    <svg viewBox="0 0 1440 200" preserveAspectRatio="none" class="position-absolute bottom-0 start-0 w-100 hero-wave">
+        <defs>
+            <linearGradient id="waveGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#2f5c69" />
+                <stop offset="100%" stop-color="#f1f7ff" />
+            </linearGradient>
 
-                <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-                    <feDropShadow dx="0" dy="-2" stdDeviation="4" flood-color="#1c3944"
-                        flood-opacity="0.5" />
-                </filter>
-            </defs>
+            <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+                <feDropShadow dx="0" dy="-2" stdDeviation="4" flood-color="#1c3944" flood-opacity="0.5" />
+            </filter>
+        </defs>
 
-            <path id="wavePath" d="M0,120 Q360,70 720,120 T1440,120 L1440,200 L0,200 Z" fill="url(#waveGradient)"
-                filter="url(#shadow)" opacity="0.95">
-                <animate attributeName="d" dur="6s" repeatCount="indefinite"
-                    values="
-                    M0,120 Q360,70 720,120 T1440,120 L1440,200 L0,200 Z;
-                    M0,125 Q360,80 720,125 T1440,125 L1440,200 L0,200 Z;
-                    M0,120 Q360,70 720,120 T1440,120 L1440,200 L0,200 Z" />
-            </path>
-        </svg>
+        <path id="wavePath" d="M0,120 Q360,70 720,120 T1440,120 L1440,200 L0,200 Z" fill="url(#waveGradient)"
+            filter="url(#shadow)" opacity="0.95">
+            <animate attributeName="d" dur="6s" repeatCount="indefinite"
+                values="
+                M0,120 Q360,70 720,120 T1440,120 L1440,200 L0,200 Z;
+                M0,125 Q360,80 720,125 T1440,125 L1440,200 L0,200 Z;
+                M0,120 Q360,70 720,120 T1440,120 L1440,200 L0,200 Z" />
+        </path>
+    </svg>
 
-        <style>
+    <style>
+        .hero-area {
+            background: linear-gradient(135deg, #2f5c69, #3c6f7d, #2f5c69);
+            min-height: auto;
+            position: relative;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            padding: 0;
+            margin-top: 40px
+        }
+
+        .hero-img {
+            max-width: 80%;
+            z-index: 2;
+            position: relative;
+            animation: floatMove 4s ease-in-out infinite;
+        }
+
+        @keyframes floatMove {
+            0% { transform: rotate(0deg) translateX(0); }
+            25% { transform: rotate(1.5deg) translateX(8px); }
+            50% { transform: rotate(0deg) translateX(0); }
+            75% { transform: rotate(-1.5deg) translateX(-8px); }
+            100% { transform: rotate(0deg) translateX(0); }
+        }
+
+        .hero-wave {
+            z-index: 3;
+            bottom: 0;
+        }
+
+        @media (max-width: 768px) {
             .hero-area {
-                background: linear-gradient(135deg, #2f5c69, #3c6f7d, #2f5c69);
-                min-height: auto;
-                position: relative;
-                display: flex;
-                align-items: center;
-                overflow: hidden;
-                padding: 0;
-                margin-top: 40px
+                padding: 0 !important;
+                text-align: center;
+                margin-top: 0px
             }
-
-
             .hero-img {
-                max-width: 80%;
-                z-index: 2;
-                position: relative;
-                animation: floatMove 4s ease-in-out infinite;
+                width: 80%;
+                margin: 0 auto;
             }
-
-            @keyframes floatMove {
-                0% {
-                    transform: rotate(0deg) translateX(0);
-                }
-
-                25% {
-                    transform: rotate(1.5deg) translateX(8px);
-                }
-
-                50% {
-                    transform: rotate(0deg) translateX(0);
-                }
-
-                75% {
-                    transform: rotate(-1.5deg) translateX(-8px);
-                }
-
-                100% {
-                    transform: rotate(0deg) translateX(0);
-                }
+            .col-lg-6 {
+                padding: 0 !important;
             }
-
-            .hero-wave {
-                z-index: 3;
-                bottom: 0;
+            .hero-area .container {
+                padding: 0 !important;
             }
-
-            @media (max-width: 768px) {
-                .hero-area {
-                    padding: 0 !important;
-                    text-align: center;
-                    margin-top: 0px
-                }
-
-                .hero-img {
-                    width: 80%;
-                    margin: 0 auto;
-                }
-
-                .col-lg-6 {
-                    padding: 0 !important;
-                }
-
-                .hero-area .container {
-                    padding: 0 !important;
-                }
-
-                .hero-area h1 {
-                    font-size: 1.6rem;
-                }
-
-                .hero-area p {
-                    font-size: 1rem;
-                    margin-bottom: 1rem;
-                }
+            .hero-area h1 {
+                font-size: 1.6rem;
             }
-        </style>
-    </section>
+            .hero-area p {
+                font-size: 1rem;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</section>
 
-
-
-
+    
 
     <section class="categories-section py-5 text-center">
         <div class="container">
             <div class="text-center mb-5">
-                <h2 class="fw-bold text-black">الأقسام الرئيسية</h2>
-                <p class="text-light-50">اختر من بين مجموعة واسعة من الأقسام</p>
+<h2 class="fw-bold text-black">{{ __('messages.categories_title') }}</h2>
+<p class="text-light-50">{{ __('messages.categories_subtitle') }}</p>
             </div>
 
             <div class="row justify-content-center">

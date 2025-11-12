@@ -962,13 +962,13 @@
                             href="{{ route('services.index') }}">{{ __('messages.services') }}</a>
                     </li>
                     <!-- @auth
-                                                                        <li class="nav-item">
-                                                                            <a class="nav-link {{ request()->routeIs('services.my-services') ? 'active' : '' }}" href="{{ route('services.my-services') }}">{{ __('messages.my_services') }}</a>
-                                                                        </li>
-                                                                        @if (Auth::user()->isProvider())
-    <li class="nav-item">
-                                                                                <a class="nav-link {{ request()->routeIs('service-offers.my-offers') ? 'active' : '' }}" href="{{ route('service-offers.my-offers') }}">{{ __('messages.my_offers') }}</a>
+                                                                            <li class="nav-item">
+                                                                                <a class="nav-link {{ request()->routeIs('services.my-services') ? 'active' : '' }}" href="{{ route('services.my-services') }}">{{ __('messages.my_services') }}</a>
                                                                             </li>
+                                                                            @if (Auth::user()->isProvider())
+    <li class="nav-item">
+                                                                                    <a class="nav-link {{ request()->routeIs('service-offers.my-offers') ? 'active' : '' }}" href="{{ route('service-offers.my-offers') }}">{{ __('messages.my_offers') }}</a>
+                                                                                </li>
     @endif
                 @endauth -->
                     <li class="nav-item">
@@ -1858,11 +1858,6 @@
             @endif
         @else
             const menuItems = [{
-                    icon: 'fas fa-sign-in-alt',
-                    text:  '{{ __('messages.login') }}',
-                    href: '{{ route('login') }}'
-                },
-                {
                     icon: 'fas fa-user-plus',
                     text: '{{ __('messages.create_account') }} ',
                     href: '{{ route('register') }}'
@@ -1914,23 +1909,23 @@
                                 <span>اللغة / Language</span>
                             </div>
                             ${languageItems.map(item => `
-                                                                            <a href="${item.href}" class="footer-menu-item ${item.isActive ? 'active' : ''}">
-                                                                                <i class="${item.icon}"></i>
-                                                                                <span>${item.text}</span>
-                                                                                ${item.isActive ? '<i class="fas fa-check text-success"></i>' : ''}
-                                                                            </a>
-                                                                        `).join('')}
+                                                                                <a href="${item.href}" class="footer-menu-item ${item.isActive ? 'active' : ''}">
+                                                                                    <i class="${item.icon}"></i>
+                                                                                    <span>${item.text}</span>
+                                                                                    ${item.isActive ? '<i class="fas fa-check text-success"></i>' : ''}
+                                                                                </a>
+                                                                            `).join('')}
                         </div>
 
                         <hr class="footer-menu-divider">
 
                         <!-- Main Menu Items -->
                         ${menuItems.map(item => `
-                                                                        <a href="${item.href}" class="footer-menu-item">
-                                                                            <i class="${item.icon}"></i>
-                                                                            <span>${item.text}</span>
-                                                                        </a>
-                                                                    `).join('')}
+                                                                            <a href="${item.href}" class="footer-menu-item">
+                                                                                <i class="${item.icon}"></i>
+                                                                                <span>${item.text}</span>
+                                                                            </a>
+                                                                        `).join('')}
 
                         @auth
                          @if (Auth::user()->is_admin)
@@ -2173,6 +2168,7 @@
                 document.body.style.overflow = '';
             }
         }
+
         function handleProtectedLink(event, href) {
             @guest
             event.preventDefault();

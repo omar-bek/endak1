@@ -76,17 +76,9 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'phone' => 'required|string|max:20|unique:users',
-            'password' => [
-                'required',
-                'string',
-                'min:8',
-                'confirmed',
-                'regex:/^\d{4}/', // يجب أن تبدأ بأربعة أرقام
-            ],
+            'password' => 'required|string',
             'user_type' => 'required|in:customer,provider',
             'terms' => 'required|accepted',
-        ], [
-            'password.regex' => 'كلمة المرور يجب أن تبدأ بأربعة أرقام على الأقل.',
         ]);
 
         // Create user account
@@ -260,26 +252,41 @@ class AuthController extends Controller
             // Remove session flag
             session()->forget('show_user_type_modal');
 
-            return response()->json([
-                'success' => true,
-                'message' => 'تم تحديث نوع الحساب بنجاح',
-                'user_type' => $user->user_type
-            ]);
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'تم تحديث نوع الحساب بنجاح',
+                    'user_type' => $user->user_type
+                ]);
+            }
+
+            return redirect()->intended('/')
+                ->with('success', 'تم تحديث نوع الحساب بنجاح! يمكنك الآن متابعة استخدام الموقع.');
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'التحقق من البيانات فشل',
-                'errors' => $e->errors()
-            ], 422);
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'التحقق من البيانات فشل',
+                    'errors' => $e->errors()
+                ], 422);
+            }
+
+            return back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
             Log::error('Save user type error: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString()
             ]);
 
-            return response()->json([
-                'success' => false,
-                'message' => 'حدث خطأ أثناء حفظ البيانات: ' . $e->getMessage()
-            ], 500);
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'حدث خطأ أثناء حفظ البيانات: ' . $e->getMessage()
+                ], 500);
+            }
+
+            return back()->withErrors([
+                'error' => 'حدث خطأ أثناء حفظ البيانات. يرجى المحاولة مرة أخرى.'
+            ])->withInput();
         }
     }
 

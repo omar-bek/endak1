@@ -16,12 +16,21 @@ class EnsureUserTypeAndTermsAccepted
     public function handle(Request $request, Closure $next)
     {
         $user = $request->user();
-        if (!$user || $user->user_type !== 'provider') {
-            // redirect or abort
+        if (!$user) {
             if ($request->expectsJson()) {
-                return response()->json(['message' => 'غير مصرح لك بالدخول. (مزود خدمة فقط)'], 403);
+                return response()->json(['message' => 'يجب تسجيل الدخول للوصول إلى هذه الصفحة.'], 401);
             }
-            return redirect('/')->withErrors(['unauthorized' => 'هذه الصفحة خاصة بمزودي الخدمة فقط.']);
+            return redirect()->route('login');
+        }
+
+        if (!$user->user_type || !$user->terms_accepted_at) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'يرجى إكمال بيانات الحساب والموافقة على الشروط قبل المتابعة.'
+                ], 403);
+            }
+            return redirect()->route('complete-profile')
+                ->withErrors(['incomplete_profile' => 'يرجى إكمال بيانات الحساب والموافقة على الشروط قبل المتابعة.']);
         }
         return $next($request);
     }

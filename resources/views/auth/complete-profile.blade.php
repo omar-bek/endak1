@@ -37,7 +37,7 @@
                         @endif
 
                         <!-- Form -->
-                        <form method="POST" action="{{ route('complete-profile') }}">
+                        <form method="POST" action="{{ route('save-user-type') }}">
                             @csrf
                             
                             <div class="mb-4 position-relative">

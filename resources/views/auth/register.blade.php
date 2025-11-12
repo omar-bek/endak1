@@ -59,17 +59,10 @@
                     <div class="mb-3 position-relative">
                         <i class="fas fa-lock input-icon text-secondary"></i>
                         <input type="password" class="form-control @error('password') is-invalid @enderror" name="password"
-                            placeholder="{{ __('messages.password') }}" required minlength="8">
-                        <small class="form-text text-muted ms-2">{{ __('messages.password_note') }}</small>
+                            placeholder="{{ __('messages.password') }}" required>
                         @error('password')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                    </div>
-
-                    <div class="mb-3 position-relative">
-                        <i class="fas fa-key input-icon text-secondary"></i>
-                        <input type="password" class="form-control" name="password_confirmation"
-                            placeholder="{{ __('messages.password_confirmation') }}" required minlength="8">
                     </div>
 
                     <div class="mb-3 position-relative">

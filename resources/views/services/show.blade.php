@@ -317,10 +317,8 @@
         @if($fieldValues && $fieldValues !== '')
         <tr>
             <td class="text-center fw-bold text-primary">
-                {{-- يتم اختيار الأيقونة بناءً على نوع الحقل --}}
                 <i class="fas fa-{{ $fieldType === 'checkbox' ? 'check-square' : ($fieldType === 'textarea' ? 'align-left' : ($fieldType === 'number' ? 'calculator' : 'edit')) }} me-1 text-warning"></i>
                 
-                {{-- الاسم الذي يتغير حسب لغة التطبيق --}}
                 {{ app()->getLocale() == 'ar' ? $field->name_ar : $field->name_en }}
             </td>
             <td class="text-center">
@@ -330,16 +328,13 @@
                 $isChecked = in_array($value, ['1', 1, true, 'true', 'on']);
                 @endphp
                 @if($isChecked)
-                {{-- نص 'نعم' المترجم --}}
                 <span class="badge bg-success"><i class="fas fa-check me-1"></i>{{ __('messages.yes_checkbox') }}</span>
                 @else
-                {{-- نص 'لا' المترجم --}}
                 <span class="badge bg-danger"><i class="fas fa-times me-1"></i>{{ __('messages.no_checkbox') }}</span>
                 @endif
                 @elseif($fieldType === 'image')
                 @if(is_array($fieldValues) && count($fieldValues) > 0)
                 @foreach($fieldValues as $imagePath)
-                {{-- وصف الصورة 'صورة' المترجم --}}
                 <img src="{{ asset('storage/' . (is_array($imagePath) ? $imagePath[0] : $imagePath)) }}" alt="{{ __('messages.image_alt') }}" class="img-thumbnail me-1 mb-1" style="width: 50px; height: 50px; border: 2px solid #009f9c;" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImageModal('{{ asset('storage/' . (is_array($imagePath) ? $imagePath[0] : $imagePath)) }}')">
                 @endforeach
                 @else

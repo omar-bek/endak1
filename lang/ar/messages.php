@@ -504,4 +504,78 @@ return [
     // الخاتمة (Footer)
     'about_footer_main' => 'مع Endak، الخدمة توصلك لحد بابك 🚪✨',
     'about_footer_sub' => 'راحة بالك تبدأ بخدمة سهلة وآمنة بين يديك.',
+
+
+    'edit_button' => 'تعديل',
+    'delete_button' => 'حذف',
+    'provider_title' => 'مقدم الخدمة',
+    'publish_date' => 'تاريخ النشر',
+    'category_title' => 'القسم',
+    'subcategory_title' => 'القسم الفرعي',
+    'location_title' => 'الموقع',
+    'service_description_title' => 'وصف الخدمة',
+    'voice_note_title' => 'تسجيل صوتي',
+    'audio_not_supported' => 'متصفحك لا يدعم تشغيل الصوت.',
+    'custom_field_group_default' => 'تفاصيل الخدمة',
+    'custom_field_type' => 'نوع الحقل',
+    'custom_field_value' => 'القيمة',
+    'yes_checkbox' => 'نعم',
+    'no_checkbox' => 'لا',
+    'image_alt' => 'صورة',
+    'delete_confirm_prompt' => 'هل أنت متأكد أنك تريد حذف هذه الخدمة؟',
+
+
+    'contact_info_title' => 'معلومات الاتصال',
+    'phone_number' => 'رقم الهاتف',
+    'email_address' => 'البريد الإلكتروني',
+    'send_message_button' => 'إرسال رسالة',
+    'service_status_title' => 'حالة الخدمة',
+    'status_featured' => 'خدمة مميزة',
+    'status_available' => 'متاحة',
+    'status_unavailable' => 'غير متاحة',
+
+
+
+    'provider_info_title' => 'معلومات مزود الخدمة',
+    'offer_rejected_title' => 'تم رفض عرضك:',
+    'offer_rejected_body' => 'يمكنك تقديم عرض جديد إذا كنت ترغب في ذلك.',
+    'offer_expired_title' => 'انتهت صلاحية عرضك:',
+    'offer_expired_body' => 'يمكنك تقديم عرض جديد إذا كنت ترغب في ذلك.',
+    'offer_accepted_title' => 'تم قبول عرضك!',
+    'offer_accepted_body' => 'يمكنك التواصل مع صاحب الخدمة لإتمام العمل.',
+    'offer_pending_title' => 'عرضك قيد المراجعة:',
+    'offer_pending_body' => 'في انتظار رد صاحب الخدمة.',
+    'current_offer_title' => 'العرض المقدم',
+    'offer_price' => 'السعر المقدم:',
+    'offer_status' => 'حالة العرض:',
+    'status_rejected' => 'تم رفض العرض',
+    'status_accepted' => 'تم قبول العرض',
+    'status_pending' => 'في انتظار الرد',
+    'provider_notes' => 'ملاحظاتك:',
+    'offer_expired_note' => 'انتهت صلاحية العرض',
+    'offer_expires_at' => 'ينتهي في:',
+    'offer_submitted_at' => 'تم التقديم في:',
+    'submit_new_offer' => 'قدم عرض جديد',
+    'view_all_offers' => 'عرض جميع عروضي',
+
+    // مفاتيح الإجراءات السريعة (Quick Actions)
+    'quick_actions_title' => 'إجراءات سريعة',
+    'offer_submitted_button' => 'تم تقديم عرض',
+    'submit_offer_button' => 'قدم عرض',
+    'cannot_submit_offer' => 'لا يمكن تقديم عرض',
+    'cannot_offer_tooltip' => 'لا يمكنك تقديم عرض لهذه الخدمة. تأكد من أن القسم والمدينة متطابقان مع اختياراتك في الملف الشخصي',
+    'send_message_button_action' => 'إرسال رسالة',
+    'view_offers_button' => 'عرض العروض',
+    'view_offers_count_button' => 'عرض العروض',
+    'edit_service_button' => 'تعديل الخدمة',
+    'delete_service_button' => 'حذف الخدمة',
+    'login_to_offer' => 'تسجيل دخول لتقديم عرض',
+    'print_button' => 'طباعة',
+    'share_button' => 'مشاركة',
+
+
+    'related_services_title' => 'خدمات مشابهة',
+    'view_button' => 'عرض',
 ];
+
+

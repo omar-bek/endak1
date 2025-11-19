@@ -49,10 +49,10 @@
     <div class="container">
         <nav aria-label="breadcrumb" class="fade-in">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('home') }}">الرئيسية</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('categories.index') }}">الأقسام</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('home') }}">{{ __('messages.home') }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('categories.index') }}">{{ __('messages.categories') }}</a></li>
                 @if($category->parent)
-                    <li class="breadcrumb-item"><a href="{{ route('categories.show', $category->parent->slug) }}">{{ $category->parent->name }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('categories.show', $category->parent->slug) }}">{{ $category->parent->name }}</a></li>
                 @endif
                 <li class="breadcrumb-item active" aria-current="page">{{ $category->name }}</li>
             </ol>
@@ -60,33 +60,33 @@
 
         <div class="row align-items-center fade-in-up">
             <div class="col-md-8 mb-4 mb-md-0">
-                <h1 class="fw-bold  mb-3">{{ $category->name }}</h1>
+                <h1 class="fw-bold  mb-3">{{ app()->getLocale() == 'ar' ? $category->name : $category->name_en }}</h1>
                 <p class="lead text-light opacity-75">{{ $category->description }}</p>
 
                 <div class="d-flex flex-wrap gap-2 align-items-center mt-3">
-                    <span class="badge bg-light text-dark fw-semibold">{{ $services->total() }} خدمة</span>
+                    <span class="badge bg-light text-dark fw-semibold">{{ $services->total() }} {{ trans_choice('messages.service_count_unit', $services->total()) }}</span>
                     @if($category->subCategories && $category->subCategories->count() > 0)
-                        <span class="badge bg-warning text-dark fw-semibold">{{ $category->subCategories->count() }} قسم فرعي</span>
+                    <span class="badge bg-warning text-dark fw-semibold">{{ $category->subCategories->count() }} {{ trans_choice('messages.subcategory_count_unit', $category->subCategories->count()) }}</span>
                     @endif
 
                     @auth
-                        @if(!auth()->user()->isProvider())
-                            @if($category->subCategories && $category->subCategories->count() > 0)
-                                <div class="alert alert-info mt-3 w-100 fade-in info-box">
-                                    <i class="fas fa-info-circle "></i>
-                                    <strong>يرجى اختيار قسم فرعي لطلب الخدمة</strong>
-                                    <br><small>هذا القسم يحتوي على أقسام فرعية، يرجى اختيار القسم الفرعي المناسب من القائمة أدناه</small>
-                                </div>
-                            @else
-                                <a href="{{ route('services.request', $category->id) }}" class="btn btn-warning mt-3 fw-bold text-dark shine-btn">
-                                    <i class="fas fa-concierge-bell"></i> طلب خدمة من هذا القسم
-                                </a>
-                            @endif
-                        @endif
+                    @if(!auth()->user()->isProvider())
+                    @if($category->subCategories && $category->subCategories->count() > 0)
+                    <div class="alert alert-info mt-3 w-100 fade-in info-box">
+                        <i class="fas fa-info-circle "></i>
+                        <strong>{{ __('messages.info_alert_title') }}</strong>
+                        <br><small>{{ __('messages.info_alert_body') }}</small>
+                    </div>
                     @else
-                        <a href="{{ route('login') }}" class="btn btn-outline-light mt-3 fw-bold">
-                            <i class="fas fa-sign-in-alt"></i> تسجيل دخول لطلب الخدمة
-                        </a>
+                    <a href="{{ route('services.request', $category->id) }}" class="btn btn-warning mt-3 fw-bold text-dark shine-btn">
+                        <i class="fas fa-concierge-bell"></i> {{ __('messages.request_service_button_text') }}
+                    </a>
+                    @endif
+                    @endif
+                    @else
+                    <a href="{{ route('login') }}" class="btn btn-outline-light mt-3 fw-bold">
+                        <i class="fas fa-sign-in-alt"></i> {{ __('messages.login_to_request_button_text') }}
+                    </a>
                     @endauth
                 </div>
             </div>
@@ -104,21 +104,21 @@
 <section class="py-5 subcategories-section fade-in-up">
     <div class="container">
         <h3 class="mb-5 text-center section-title">
-            <i class="fas fa-layer-group me-2 text-warning"></i> الأقسام الفرعية
+            <i class="fas fa-layer-group me-2 text-warning"></i> {{ __('messages.subcategories_title') }}
         </h3>
         <div class="row">
             @foreach($category->subCategories as $subCategory)
                 @if($subCategory->status)
-                <div class="col-md-3 col-sm-6 mb-4">
+                <div class="col-6 col-md-3 mb-4">
                     <a href="{{ route('services.request', $category->id) }}?sub_category_id={{ $subCategory->id }}" class="text-decoration-none text-dark">
                         <div class="card sub-category-card h-100 text-center clickable-card">
                             <div class="subcategory-image-container">
                                 @if($subCategory->image)
-                                    <img src="{{ asset('storage/' . $subCategory->image) }}" class="subcategory-image" alt="{{ $subCategory->name_ar ?? $subCategory->name_en }}">
+                                <img src="{{ asset('storage/' . $subCategory->image) }}" class="subcategory-image" alt="{{ $subCategory->name_ar ?? $subCategory->name_en }}">
                                 @else
-                                    <div class="subcategory-image-placeholder">
-                                        <i class="fas fa-folder" style="font-size: 3rem; color: #6c757d;"></i>
-                                    </div>
+                                <div class="subcategory-image-placeholder">
+                                    <i class="{{ __('messages.no_image_folder_icon') }}" style="font-size: 3rem; color: #6c757d;"></i>
+                                </div>
                                 @endif
                                 <div class="subcategory-overlay">
                                     <h6 class="subcategory-title">{{ app()->getLocale() == 'ar' ? $subCategory->name_ar : $subCategory->name_en }}</h6>
@@ -126,27 +126,27 @@
                             </div>
                             <div class="card-body">
                                 @if($subCategory->description_ar || $subCategory->description_en)
-                                    <p class="card-text text-muted small mb-3">
-                                        {{ app()->getLocale() == 'ar' ? $subCategory->description_ar : $subCategory->description_en }}
-                                    </p>
+                                <p class="card-text text-muted small mb-3">
+                                    {{ app()->getLocale() == 'ar' ? $subCategory->description_ar : $subCategory->description_en }}
+                                </p>
                                 @endif
 
                                 @php
-                                    $servicesCount = \App\Models\Service::where('category_id', $category->id)
-                                                                       ->where('sub_category_id', $subCategory->id)
-                                                                       ->where('is_active', true)
-                                                                       ->count();
+                                $servicesCount = \App\Models\Service::where('category_id', $category->id)
+                                ->where('sub_category_id', $subCategory->id)
+                                ->where('is_active', true)
+                                ->count();
                                 @endphp
                                 <small class="text-muted d-block mb-2">
-                                    <i class="fas fa-tasks"></i> {{ $servicesCount }} خدمة
+                                    <i class="fas fa-tasks"></i> {{ $servicesCount }} {{ __('messages.service_count_suffix') }}
                                 </small>
 
                                 @auth
-                                    @if(!auth()->user()->isProvider())
-                                        <span class="btn btn-sm btn-success disabled" style="pointer-events: none;">
-                                            <i class="fas fa-concierge-bell"></i> طلب خدمة
-                                        </span>
-                                    @endif
+                                @if(!auth()->user()->isProvider())
+                                <span class="btn btn-sm btn-success disabled" style="pointer-events: none;">
+                                    <i class="fas fa-concierge-bell"></i> {{ __('messages.request_service_button') }}
+                                </span>
+                                @endif
                                 @endauth
                             </div>
                         </div>
@@ -202,7 +202,6 @@
     opacity: 0.7;
 }
 </style>
-
 @endif
 
 <section class="py-5 services-section fade-in-up">
@@ -210,30 +209,30 @@
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
             <div>
                 <h3 class="fw-bold text-success">
-                    الخدمات في {{ $category->name }}
+                    {{ __('messages.services_in') }} {{ app()->getLocale() == 'ar' ? $category->name : $category->name_en }}
                     @if($selectedSubCategory)
-                        <small class="text-muted">- {{ app()->getLocale() == 'ar' ? $selectedSubCategory->name_ar : $selectedSubCategory->name_en }}</small>
+                    <small class="text-muted">- {{ app()->getLocale() == 'ar' ? $selectedSubCategory->name_ar : $selectedSubCategory->name_en }}</small>
                     @endif
-                    <span class="badge bg-warning text-dark ms-2">{{ $services->total() }} خدمة</span>
+                    <span class="badge bg-warning text-dark ms-2">{{ $services->total() }} {{ trans_choice('messages.service_count_unit', $services->total()) }}</span>
                 </h3>
                 @if($selectedSubCategory)
-                    <div class="alert alert-info mt-3 fade-in info-box">
-                        <i class="fas fa-filter text-primary"></i>
-                        <strong>القسم الفرعي المحدد:</strong>
-                        {{ app()->getLocale() == 'ar' ? $selectedSubCategory->name_ar : $selectedSubCategory->name_en }}
-                        <a href="{{ route('categories.show', $category->slug) }}" class="btn btn-sm btn-outline-secondary ms-2">
-                            <i class="fas fa-times"></i> إلغاء التصفية
-                        </a>
-                    </div>
+                <div class="alert alert-info mt-3 fade-in info-box">
+                    <i class="fas fa-filter text-primary"></i>
+                    <strong>{{ __('messages.selected_subcategory') }}</strong>
+                    {{ app()->getLocale() == 'ar' ? $selectedSubCategory->name_ar : $selectedSubCategory->name_en }}
+                    <a href="{{ route('categories.show', $category->slug) }}" class="btn btn-sm btn-outline-secondary ms-2">
+                        <i class="fas fa-times"></i> {{ __('messages.cancel_filter') }}
+                    </a>
+                </div>
                 @endif
             </div>
 
             <form class="d-flex mt-3 mt-md-0" method="GET">
                 @if(request('sub_category_id'))
-                    <input type="hidden" name="sub_category_id" value="{{ request('sub_category_id') }}">
+                <input type="hidden" name="sub_category_id" value="{{ request('sub_category_id') }}">
                 @endif
-                <input type="text" name="search" class="form-control me-2" placeholder="البحث في الخدمات..." value="{{ request('search') }}">
-                <button type="submit" class="btn btn-outline-primary">بحث</button>
+                <input type="text" name="search" class="form-control me-2" placeholder="{{ __('messages.search_services_placeholder') }}" value="{{ request('search') }}">
+                <button type="submit" class="btn btn-outline-primary">{{ __('messages.search_button') }}</button>
             </form>
         </div>
 
@@ -258,7 +257,7 @@
                         <div class="mb-2">
                             <span class="badge bg-primary">{{ $service->category->name }}</span>
                             @if($service->subCategory)
-                                <span class="badge bg-secondary">{{ app()->getLocale() == 'ar' ? $service->subCategory->name_ar : $service->subCategory->name_en }}</span>
+                            <span class="badge bg-secondary">{{ app()->getLocale() == 'ar' ? $service->subCategory->name_ar : $service->subCategory->name_en }}</span>
                             @endif
                         </div>
 
@@ -275,7 +274,7 @@
                     </div>
                     <div class="card-footer bg-transparent border-0">
                         <a href="{{ route('services.show', $service->slug) }}" class="btn btn-warning w-100 ">
-                            <i class="fas fa-eye me-1"></i> عرض التفاصيل
+                            <i class="fas fa-eye me-1"></i> {{ __('messages.view_details') }}
                         </a>
                     </div>
                 </div>
@@ -289,9 +288,9 @@
         <div class="text-center py-5 fade-in">
             <i class="fas fa-search text-muted" style="font-size: 4rem;"></i>
             <h4 class="mt-3 text-muted">
-                لا توجد خدمات في هذا القسم
+                {{ __('messages.no_services_title') }}
             </h4>
-            <p class="text-muted">سيتم إضافة خدمات قريباً</p>
+            <p class="text-muted">{{ __('messages.no_services_message') }}</p>
         </div>
         @endif
     </div>
@@ -302,7 +301,6 @@
     background-color: #f8fafb;
 }
 
-/* ======= الكروت ======= */
 .service-card {
     border: none;
     border-radius: 14px;

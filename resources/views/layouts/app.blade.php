@@ -1251,10 +1251,10 @@
             <div class="row mt-3">
                 <div class="col-md-12 d-flex justify-content-start align-items-center">
                     <a href="{{ route('terms') }}" class="footer-link me-3">
-                        <i class="fas fa-file-contract text-warning"></i> الشروط والأحكام
+                        <i class="fas fa-file-contract text-warning"></i> {{ __('messages.terms_conditions') }}
                     </a>
                     <a href="{{ route('about') }}" class="footer-link">
-                        <i class="fas fa-info-circle text-success"></i> من نحن
+                        <i class="fas fa-info-circle text-success"></i> {{ __('messages.about_us') }} 
                     </a>
                 </div>
             </div>
@@ -1795,85 +1795,86 @@
             // Create a modal or dropdown menu for the menu button
             @auth
             @if (Auth::user()->isProvider())
-                // مزود الخدمة
-                const menuItems = [{
-                        icon: 'fas fa-user',
-                        text: 'الملف الشخصي',
-                        href: '{{ route('provider.profile') }}'
-                    },
-                    {
-                        icon: 'fas fa-concierge-bell',
-                        text: 'خدماتي',
-                        href: '{{ route('services.my-services') }}'
-                    },
-                    {
-                        icon: 'fas fa-handshake',
-                        text: 'عروضي',
-                        href: '{{ route('service-offers.my-offers') }}'
-                    },
-                    {
-                        icon: 'fas fa-cog',
-                        text: 'الإعدادات',
-                        href: '#'
-                    },
-                    {
-                        icon: 'fas fa-question-circle',
-                        text: 'المساعدة',
-                        href: '{{ route('contact') }}'
-                    },
-                    {
-                        icon: 'fas fa-info-circle',
-                        text: 'حول التطبيق',
-                        href: '#'
-                    }
-                ];
-            @else
-                // مستخدم عادي
-                const menuItems = [{
-                        icon: 'fas fa-user',
-                        text: 'الملف الشخصي',
-                        href: '{{ route('profile') }}'
-                    },
-                    {
-                        icon: 'fas fa-th-large',
-                        text: 'إعلاناتي',
-                        href: '{{ route('services.index') }}'
-                    },
-                    {
-                        icon: 'fas fa-cog',
-                        text: 'الإعدادات',
-                        href: '#'
-                    },
-                    {
-                        icon: 'fas fa-question-circle',
-                        text: 'المساعدة',
-                        href: '{{ route('contact') }}'
-                    },
-                    {
-                        icon: 'fas fa-info-circle',
-                        text: 'حول التطبيق',
-                        href: '#'
-                    }
-                ];
-            @endif
-        @else
+            // مزود الخدمة
             const menuItems = [{
-                    icon: 'fas fa-user-plus',
-                    text: '{{ __('messages.create_account') }} ',
-                    href: '{{ route('register') }}'
+                    icon: 'fas fa-user',
+                    text: '{{ __('messages.menu_profile') }}',
+                    href: '{{ route('provider.profile') }}'
+                },
+                {
+                    icon: 'fas fa-concierge-bell',
+                    text: '{{ __('messages.menu_my_services') }}',
+                    href: '{{ route('services.my-services') }}'
+                },
+                {
+                    icon: 'fas fa-handshake',
+                    text: '{{ __('messages.menu_my_offers') }}',
+                    href: '{{ route('service-offers.my-offers') }}'
+                },
+                {
+                    icon: 'fas fa-cog',
+                    text: '{{ __('messages.menu_settings') }}',
+                    href: '#'
                 },
                 {
                     icon: 'fas fa-question-circle',
-                    text: '{{ __('messages.help') }} ',
+                    text: '{{ __('messages.menu_help') }}',
                     href: '{{ route('contact') }}'
                 },
                 {
                     icon: 'fas fa-info-circle',
-                    text: '{{ __('messages.about') }} ',
+                    text: '{{ __('messages.menu_about') }}',
                     href: '#'
                 }
             ];
-        @endauth
+            @else
+                // مستخدم عادي
+               const menuItems = [{
+                    icon: 'fas fa-user',
+                    text: '{{ __('messages.menu_profile') }}',
+                    href: '{{ route('profile') }}'
+                },
+                {
+                    icon: 'fas fa-th-large',
+                    text: '{{ __('messages.menu_my_ads') }}',
+                    href: '{{ route('services.index') }}'
+                },
+                {
+                    icon: 'fas fa-cog',
+                    text: '{{ __('messages.menu_settings') }}',
+                    href: '#'
+                },
+                {
+                    icon: 'fas fa-question-circle',
+                    text: '{{ __('messages.menu_help') }}',
+                    href: '{{ route('contact') }}'
+                },
+                {
+                    icon: 'fas fa-info-circle',
+                    text: '{{ __('messages.menu_about') }}',
+                    href: '#'
+                }
+            ];
+        @endif
+    @else
+        // ضيف (غير مسجل الدخول)
+        const menuItems = [{
+                icon: 'fas fa-user-plus',
+                text: '{{ __('messages.menu_create_account') }}',
+                href: '{{ route('register') }}'
+            },
+            {
+                icon: 'fas fa-question-circle',
+                text: '{{ __('messages.menu_help') }}',
+                href: '{{ route('contact') }}'
+            },
+            {
+                icon: 'fas fa-info-circle',
+                text: '{{ __('messages.menu_about') }}',
+                href: '#'
+            }
+        ];
+    @endauth
 
         // Language switcher items
         const languageItems = [{

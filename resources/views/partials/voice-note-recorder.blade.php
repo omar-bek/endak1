@@ -1,39 +1,39 @@
 <div class="voice-note-recorder mb-3">
     <label class="form-label" style="font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem;">
-        <i class="fas fa-microphone text-primary me-2"></i> تسجيل صوتي
+        <i class="fas fa-microphone text-primary me-2"></i> {{ __('messages.voice_recorder_title') }}
     </label>
 
     <div class="voice-recorder-container">
         <div class="recorder-controls d-flex align-items-center gap-3 mb-2">
             <button type="button" class="btn btn-outline-primary btn-sm record-btn" id="recordBtn">
                 <i class="fas fa-microphone"></i>
-                <span class="btn-text">بدء التسجيل</span>
+                <span class="btn-text">{{ __('messages.recorder_start_btn') }}</span>
             </button>
 
             <button type="button" class="btn btn-outline-danger btn-sm stop-btn" id="stopBtn" style="display: none;">
                 <i class="fas fa-stop"></i>
-                <span class="btn-text">إيقاف التسجيل</span>
+                <span class="btn-text">{{ __('messages.recorder_stop_btn') }}</span>
             </button>
 
             <button type="button" class="btn btn-outline-secondary btn-sm play-btn" id="playBtn" style="display: none;">
                 <i class="fas fa-play"></i>
-                <span class="btn-text">تشغيل</span>
+                <span class="btn-text">{{ __('messages.recorder_play_btn') }}</span>
             </button>
 
             <button type="button" class="btn btn-outline-warning btn-sm delete-btn" id="deleteBtn" style="display: none;">
                 <i class="fas fa-trash"></i>
-                <span class="btn-text">حذف</span>
+                <span class="btn-text">{{ __('messages.recorder_delete_btn') }}</span>
             </button>
         </div>
 
         <div class="recorder-status d-flex align-items-center gap-2">
             <div class="recording-indicator" id="recordingIndicator" style="display: none;">
                 <div class="pulse-dot"></div>
-                <span class="text-danger">جاري التسجيل...</span>
+                <span class="text-danger">{{ __('messages.recorder_status_recording') }}</span>
             </div>
 
             <div class="timer" id="timer" style="display: none;">
-                <span class="text-muted">الوقت: </span>
+                <span class="text-muted">{{ __('messages.recorder_status_time') }}</span>
                 <span id="timeDisplay">00:00</span>
             </div>
         </div>
@@ -44,7 +44,7 @@
 
         <div class="audio-player" id="audioPlayer" style="display: none;">
             <audio id="recordedAudio" controls class="w-100">
-                متصفحك لا يدعم تشغيل الصوت.
+                {{ __('messages.recorder_audio_unsupported') }}
             </audio>
         </div>
 

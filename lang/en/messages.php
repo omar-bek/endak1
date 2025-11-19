@@ -317,5 +317,189 @@ return [
         'add_group'=>'Add group',
             'del_group'=>'delete group',
 
+            'home' => 'Home',
+    'categories' => 'Categories',
+    'request_service' => 'Request Service',
+    'service_from_category' => 'Request service from category:',
+    'subcategory' => 'Subcategory:',
+    'select_subcategory_warning' => '⚠️ You must select a subcategory to request',
 
+    'voice_recorder_title' => 'Voice Recording',
+    'recorder_start_btn' => 'Start Recording',
+    'recorder_stop_btn' => 'Stop Recording',
+    'recorder_play_btn' => 'Play',
+    'recorder_delete_btn' => 'Delete',
+    'recorder_status_recording' => 'Recording...',
+    'recorder_status_time' => 'Time: ',
+    'recorder_audio_unsupported' => 'Your browser does not support audio playback.',
+
+    'subcategories_title' => 'Subcategories',
+    'service_count_suffix' => 'Service|Services', 
+    'request_service_button' => 'Request Service',
+    'no_image_folder_icon' => 'fas fa-folder',
+
+    'subcategories_title' => 'Subcategories',
+    'service_count_suffix' => 'Service|Services',
+    'request_service_button' => 'Request Service',
+    'no_image_folder_icon' => 'fas fa-folder',
+    'home' => 'Home',
+    'categories' => 'Categories',
+    'service_count_unit' => 'service|services',
+    'subcategory_count_unit' => 'subcategory|subcategories',
+    'info_alert_title' => 'Please choose a subcategory to request the service',
+    'info_alert_body' => 'This category contains subcategories, please choose the appropriate subcategory from the list below',
+    'request_service_button_text' => 'Request a service from this category',
+    'login_to_request_button_text' => 'Login to request the service',
+
+
+    'services_in' => 'Services in',
+    'selected_subcategory' => 'Selected Subcategory:',
+    'cancel_filter' => 'Cancel Filter',
+    'search_services_placeholder' => 'Search services...',
+    'search_button' => 'Search',
+    'view_details' => 'View Details',
+    'no_services_title' => 'No services in this category',
+    'no_services_message' => 'Services will be added soon',
+
+
+    'notifications_title' => 'Notifications',
+    'mark_all_read' => 'Mark All as Read',
+    'new_badge' => 'New',
+    'view_my_offer' => 'View My Offer',
+    'view_offer' => 'View Offer',
+    'deleted_service' => 'Deleted Service',
+    'view_service' => 'View Service',
+    'mark_read_title' => 'Mark as Read',
+    'delete_notification_title' => 'Delete Notification',
+    'delete_confirm' => 'Are you sure you want to delete this notification?',
+    'no_notifications_title' => 'No notifications yet',
+    'no_notifications_message' => 'New notifications will appear here when they arrive',
+    'success_session_message' => 'Success',
+
+    'conversations_title' => 'Conversations',
+    'search_conversations_placeholder' => 'Search conversations...',
+    'no_messages_preview' => 'No messages',
+    'message_preview_image' => 'Image',
+    'message_preview_voice' => 'Voice message',
+    'message_preview_file' => 'File',
+    'message_preview_location' => 'Location',
+    'message_preview_contact' => 'Contact information',
+    'no_conversations_title' => 'No conversations',
+    'chat_header_default_title' => 'Select a chat to start',
+    'chat_header_default_subtitle' => 'From the sidebar',
+    'welcome_message_title' => 'Welcome to the Messaging System',
+    'welcome_message_body' => 'Select a conversation from the sidebar to start chatting',
+
+
+    'menu_profile' => 'Profile',
+    'menu_my_services' => 'My Services',
+    'menu_my_offers' => 'My Offers',
+    'menu_settings' => 'Settings',
+    'menu_help' => 'Help',
+    'menu_about' => 'About App',
+
+    'menu_my_ads' => 'My Ads',
+
+    'menu_create_account' => 'Create Account',
+    'menu_register' => 'Register',
+
+    'language_ar' => 'العربية',
+    'language_en' => 'English',
+
+    'terms_title' => 'Terms and Conditions',
+    'terms_intro_1' => 'Welcome to',
+    'terms_intro_2' => ', please read these terms carefully before using the site.',
+    'terms_intro_3' => 'Your continued browsing or use of our services means your full acceptance of these terms and policies.',
+
+    // Section 1: Site Usage Terms
+    'terms_section_1_title' => 'First: Site Usage Terms',
+    'terms_section_1_item_1' => 'It is prohibited to use the site for any illegal purpose or one that harms others.',
+    'terms_section_1_item_2' => 'It is forbidden to collect any data from the site or its users without prior permission.',
+    'terms_section_1_item_3' => 'The site must be used in a manner that maintains respect for other users and adheres to local laws.',
+    'terms_section_1_item_4' => 'No tools or software may be used to hack or disrupt the site.',
+
+    // Section 2: Account Creation and Usage
+    'terms_section_2_title' => 'Second: Account Creation and Usage',
+    'terms_section_2_item_1' => 'The user is responsible for the confidentiality of their account data and not sharing it with others.',
+    'terms_section_2_item_2' => 'Only one account is allowed per user.',
+    'terms_section_2_item_3' => 'In case of suspicious activity, the site administration has the right to temporarily or permanently suspend the account.',
+    'terms_section_2_item_4' => 'The information provided during registration must be accurate and up-to-date.',
+
+    // Section 3: Services and Dealings
+    'terms_section_3_title' => 'Third: Services and Dealings',
+    'terms_section_3_item_1' => 'The site only acts as an intermediary between service providers and users.',
+    'terms_section_3_item_2' => 'Endak bears no responsibility for agreements or financial dealings between the parties.',
+    'terms_section_3_item_3' => 'The site administration has the right to remove any service or advertisement that violates laws or general policies.',
+    'terms_section_3_item_4' => 'Prices and offers are subject to change by the service provider.',
+
+    // Section 4: Privacy and Data Protection
+    'terms_section_4_title' => 'Fourth: Privacy and Data Protection',
+    'terms_section_4_item_1' => 'The site is committed to protecting user data and not sharing it with any third party without consent.',
+    'terms_section_4_item_2' => 'Information is used only to improve user experience and services offered.',
+    'terms_section_4_item_3' => 'The site may use cookies to personalize content.',
+    'terms_section_4_item_4' => 'You can review the Privacy Policy to learn more about data management.',
+
+    // Section 5: Limitation of Liability
+    'terms_section_5_title' => 'Fifth: Limitation of Liability',
+    'terms_section_5_item_1' => 'The site bears no responsibility for damages resulting from user misuse of the service.',
+    'terms_section_5_item_2' => 'The published content expresses the opinion of its owner only.',
+    'terms_section_5_item_3' => 'The site is not responsible for service interruption or temporary failures beyond its control.',
+
+    // Section 6: Amendments and Updates
+    'terms_section_6_title' => 'Sixth: Amendments and Updates',
+    'terms_section_6_item_1' => 'We reserve the right to amend or update these terms at any time without prior notice.',
+    'terms_section_6_item_2' => 'The user is advised to review the page occasionally to check for changes.',
+    'terms_section_6_item_3' => 'Continued use of the site after modifications means your acceptance of them.',
+
+    // Section 7: General Laws
+    'terms_section_7_title' => 'Seventh: General Laws',
+    'terms_section_7_item_1' => 'These terms are governed by the laws of the Arab Republic of Egypt.',
+    'terms_section_7_item_2' => 'In case of dispute, local courts shall have jurisdiction.',
+    'terms_section_7_item_3' => 'Any invalid or unenforceable clause shall be severable without affecting the remaining clauses.',
+
+    'terms_footer_note' => 'By using the Endak website, you acknowledge reading, understanding, and fully agreeing to the Terms and Conditions.',
+
+
+    'about_us_title' => 'About Us',
+    'about_intro_1' => 'Endak is an integrated platform that brings customers and service providers together in one place, making it easy to access everything you need in your daily life with simple and secure steps.',
+    'about_intro_2' => 'We don’t just offer digital services; we connect you directly with real-world service providers — whether you need',
+    'about_intro_3' => 'cleaning, car maintenance, decoration, plumbing, electrical work, or even gardening services',
+    'about_intro_4' => '— we provide you with the right people, at the right time.',
+
+    // Vision
+    'about_vision_title' => 'Our Vision',
+    'about_vision_body_1' => 'To be the leading platform in the Arab world that changes the concept of home and field services, by combining technology, convenience, and trust.',
+    'about_vision_body_2' => 'Our goal is for users to feel that every service comes right to their door without effort, and for every service provider to find a professional environment that facilitates communication with their clients.',
+
+    // Mission
+    'about_mission_title' => 'Our Mission',
+    'about_mission_body_1' => 'We work to build a real service system based on trust and professionalism.',
+    'about_mission_body_2' => 'Endak is not just a website, but an interactive community that directly connects the service provider and the client.',
+    'about_mission_body_3' => 'The client chooses the service, receives offers from providers, and decides who to deal with — with full transparency and ease.',
+
+    // Services
+    'about_services_title' => 'Our Services',
+    'about_services_intro' => 'We offer a wide range of field services that are executed in the real world, not just online, including:',
+    'about_service_item_1' => 'Home and office cleaning services.',
+    'about_service_item_2' => 'Maintenance work (electrical, plumbing, home appliances, cars).',
+    'about_service_item_3' => 'Design and execution of interior and exterior decorations.',
+    'about_service_item_4' => 'Moving, installation, and periodic maintenance services.',
+    'about_service_item_5' => 'Gardening and green space care.',
+    'about_service_item_6' => 'Providing required spare parts and delivery to the doorstep.',
+
+    // Values
+    'about_values_title' => 'Our Values',
+    'about_values_body_1' => 'We believe that success is only achieved through',
+    'about_values_body_2' => 'Trust, Transparency, Quality, and Commitment',
+    'about_values_body_3' => '. Therefore, we always ensure to follow up with service providers and evaluate their performance to guarantee the highest level of client satisfaction.',
+
+    // Disclaimer
+    'about_disclaimer_title' => 'Disclaimer',
+    'about_disclaimer_body_1' => 'Endak strives to provide a safe environment for dealings between clients and service providers,',
+    'about_disclaimer_body_2' => 'However, the platform is not responsible for any financial dealings or agreements made outside of its official system.',
+    'about_disclaimer_body_3' => 'We always recommend dealing through the platform to ensure full protection and support.',
+
+    // Footer
+    'about_footer_main' => 'With Endak, the service comes to your door 🚪✨',
+    'about_footer_sub' => 'Your peace of mind starts with an easy and safe service in your hands.',
 ];

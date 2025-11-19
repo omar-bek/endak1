@@ -88,56 +88,55 @@
     <div class="container">
         <div class="card about-card shadow-lg border-2 rounded-4 p-5">
             <div class="about-header">
-                <h2><i class="fas fa-info-circle me-2"></i>من نحن</h2>
+                <h2><i class="fas fa-info-circle me-2"></i>{{ __('messages.about_us_title') }}</h2>
             </div>
 
             <p class="mb-4">
-                <strong>Endak</strong> هي منصة متكاملة تجمع بين العملاء ومقدمي الخدمات في مكان واحد، لتسهيل الوصول إلى كل ما تحتاجه في حياتك اليومية بخطوات بسيطة وآمنة.  
-                نحن لا نقدم خدمات رقمية فقط، بل نوصلك مباشرة بمقدمي الخدمات في أرض الواقع — سواء كنت تحتاج إلى <strong>تنظيف، أو صيانة سيارات، أو ديكور، أو أعمال سباكة، أو كهرباء، أو حتى خدمات الحدائق</strong> — نحن نوفر لك الأشخاص المناسبين، في الوقت المناسب.
+                <strong>Endak</strong> {{ __('messages.about_intro_1') }}
+                {{ __('messages.about_intro_2') }} <strong>{{ __('messages.about_intro_3') }}</strong> {{ __('messages.about_intro_4') }}
             </p>
 
-            <h5>رؤيتنا</h5>
+            <h5>{{ __('messages.about_vision_title') }}</h5>
             <p>
-                أن نكون المنصة الأولى في العالم العربي التي تغيّر مفهوم الخدمات المنزلية والميدانية، من خلال الجمع بين التكنولوجيا والراحة والثقة.  
-                هدفنا أن يشعر المستخدم أن كل خدمة تأتيه إلى بابه دون عناء، وأن كل مقدم خدمة يجد بيئة احترافية تسهّل عليه التواصل مع عملائه.
+                {{ __('messages.about_vision_body_1') }}
+                {{ __('messages.about_vision_body_2') }}
             </p>
 
-            <h5 class="mt-4">رسالتنا</h5>
+            <h5 class="mt-4">{{ __('messages.about_mission_title') }}</h5>
             <p>
-                نعمل على بناء منظومة خدمات حقيقية تعتمد على الثقة والاحترافية.  
-                <strong>Endak</strong> ليست مجرد موقع إلكتروني، بل مجتمع تفاعلي يربط بين مقدم الخدمة والعميل بشكل مباشر.  
-                العميل يختار الخدمة، يتلقى العروض من مقدمي الخدمات، ويقرر بمن يتعامل — بكل شفافية وسهولة.
+                {{ __('messages.about_mission_body_1') }}
+                <strong>Endak</strong> {{ __('messages.about_mission_body_2') }}
+                {{ __('messages.about_mission_body_3') }}
             </p>
 
-            <h5 class="mt-4">خدماتنا</h5>
+            <h5 class="mt-4">{{ __('messages.about_services_title') }}</h5>
             <p>
-                نقدم مجموعة واسعة من الخدمات الميدانية التي تُنفذ على أرض الواقع وليس فقط عبر الإنترنت، ومن أبرزها:
+                {{ __('messages.about_services_intro') }}
             </p>
             <ul class="text-muted">
-                <li>🔹 خدمات التنظيف المنزلية والمكتبية.</li>
-                <li>🔹 أعمال الصيانة (كهرباء، سباكة، أجهزة منزلية، سيارات).</li>
-                <li>🔹 تصميم وتنفيذ الديكورات الداخلية والخارجية.</li>
-                <li>🔹 خدمات النقل والتركيب والصيانة الدورية.</li>
-                <li>🔹 أعمال الحدائق والعناية بالمساحات الخضراء.</li>
-                <li>🔹 توفير قطع الغيار المطلوبة والتوصيل حتى باب المنزل.</li>
+                <li>🔹 {{ __('messages.about_service_item_1') }}</li>
+                <li>🔹 {{ __('messages.about_service_item_2') }}</li>
+                <li>🔹 {{ __('messages.about_service_item_3') }}</li>
+                <li>🔹 {{ __('messages.about_service_item_4') }}</li>
+                <li>🔹 {{ __('messages.about_service_item_5') }}</li>
+                <li>🔹 {{ __('messages.about_service_item_6') }}</li>
             </ul>
 
-            <h5 class="mt-4">قيمنا</h5>
+            <h5 class="mt-4">{{ __('messages.about_values_title') }}</h5>
             <p>
-                نؤمن أن النجاح لا يتحقق إلا من خلال <strong>الثقة، الشفافية، الجودة، والالتزام</strong>.  
-                لذلك نحرص دائمًا على متابعة مقدمي الخدمات وتقييم أدائهم لضمان أعلى مستوى من الرضا لعملائنا.
+                {{ __('messages.about_values_body_1') }} <strong>{{ __('messages.about_values_body_2') }}</strong> {{ __('messages.about_values_body_3') }}
             </p>
 
-            <h5 class="mt-4">إخلاء المسؤولية</h5>
+            <h5 class="mt-4">{{ __('messages.about_disclaimer_title') }}</h5>
             <p>
-                <strong>Endak</strong> تسعى لتوفير بيئة آمنة للتعامل بين العملاء ومقدمي الخدمات،  
-                ومع ذلك، فإن المنصة غير مسؤولة عن أي تعاملات مالية أو اتفاقات تتم خارج نظامها الرسمي.  
-                نوصي دائمًا بالتعامل من خلال المنصة لضمان الحماية والدعم الكامل.
+                <strong>Endak</strong> {{ __('messages.about_disclaimer_body_1') }}
+                {{ __('messages.about_disclaimer_body_2') }}
+                {{ __('messages.about_disclaimer_body_3') }}
             </p>
 
             <div class="text-center mt-5">
-                <h5 class="text-success mb-3">مع <strong>Endak</strong>، الخدمة توصلك لحد بابك 🚪✨</h5>
-                <p class="text-muted">راحة بالك تبدأ بخدمة سهلة وآمنة بين يديك.</p>
+                <h5 class="text-success mb-3"><strong>{{ __('messages.about_footer_main') }}</strong></h5>
+                <p class="text-muted">{{ __('messages.about_footer_sub') }}</p>
             </div>
         </div>
     </div>

@@ -5,24 +5,24 @@
 @section('content')
 <!-- Category Info Alert -->
 <div class="container mt-4">
-    <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="mb-3">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('home') }}">الرئيسية</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('categories.index') }}">الأقسام</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('home') }}">{{ __('messages.home') }}</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('categories.index') }}">{{ __('messages.categories') }}</a></li>
             <li class="breadcrumb-item"><a href="{{ route('categories.show', $category->slug) }}">{{ $category->name }}</a></li>
-            <li class="breadcrumb-item active" aria-current="page">طلب خدمة</li>
+            <li class="breadcrumb-item active" aria-current="page">{{ __('messages.request_service') }}</li>
         </ol>
     </nav>
 
-<div class="custom-alert text-center mx-auto my-4">
-    <i class="fas fa-info-circle me-2"></i>
-    <strong>طلب خدمة من قسم:</strong> {{ $category->name }}
-    @if($selectedSubCategory)
-        <br><small class="text-light">القسم الفرعي: {{ app()->getLocale() == 'ar' ? $selectedSubCategory->name_ar : $selectedSubCategory->name_en }}</small>
-    @elseif($hasSubCategories)
-        <br><small class="text-warning fw-semibold">⚠️ يجب اختيار قسم فرعي لطلب الخدمة</small>
-    @endif
+    <div class="custom-alert text-center mx-auto my-4">
+        <i class="fas fa-info-circle me-2"></i>
+        <strong>{{ __('messages.service_from_category') }}</strong>{{ app()->getLocale() == 'ar' ? $category->name : $category->name_en }}
+        @if($selectedSubCategory)
+            <br><small class="text-light">{{ __('messages.subcategory') }} {{ app()->getLocale() == 'ar' ? $selectedSubCategory->name_ar : $selectedSubCategory->name_en }}</small>
+        @elseif($hasSubCategories)
+            <br><small class="text-warning fw-semibold">{{ __('messages.select_subcategory_warning') }}</small>
+        @endif
+    </div>
 </div>
 
 <style>
@@ -127,7 +127,6 @@
     box-shadow: 0 0 0 0.2rem rgba(21, 87, 36, 0.25);
 }
 
-/* رفع الصور المتعددة */
 .upload-area {
     transition: all 0.3s ease;
     cursor: pointer;
@@ -188,7 +187,6 @@
     transform: scale(1.1);
 }
 
-/* تحسينات الاستجابة للصور */
 @media (max-width: 768px) {
     .image-preview-container .col-md-3 {
         flex: 0 0 50%;
@@ -203,7 +201,6 @@
     }
 }
 
-/* تحسينات إضافية للصور */
 .image-preview-container {
     min-height: 50px;
 }
@@ -225,7 +222,6 @@
     box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
 }
 
-/* تحسين مظهر الحقول في الصف الواحد */
 .group-instance .card-body {
     padding: 1rem;
 }
@@ -293,6 +289,7 @@
     border-radius: 4px;
     border: 2px solid #ced4da;
     transition: all 0.2s ease;
+    margin-left:5px ;
 }
 
 .group-instance .form-check-input:checked {
@@ -312,7 +309,6 @@
     text-overflow: ellipsis;
 }
 
-/* تحسين مظهر الحقول */
 .group-instance .col-12 {
     width: 100%;
     flex: 0 0 100%;
@@ -361,14 +357,13 @@
                     @if($category->image)
                         <div class="category-image-wrapper mb-4">
                             <img src="{{ asset('storage/' . $category->image) }}" 
-                                 alt="{{ $category->name }}" 
+                                 alt="{{ app()->getLocale() == 'ar' ? $category->name : $category->name_en }}" 
                                  class="img-fluid category-image">
                         </div>
                     @endif
 
-                    <h2 class="category-title mb-3">{{ $category->name }}</h2>
-                    <p class="category-description mb-4">{{ $category->description }}</p>
-
+                    <h2 class="category-title mb-3">{{ app()->getLocale() == 'ar' ? $category->name : $category->name_en }}</h2>
+<p class="category-description mb-4">{{ app()->getLocale() == 'ar' ? $category->description : $category->description_en }}</p>
                     @if($selectedSubCategory)
                         <div class="selected-subcategory alert-custom mt-3 p-4 rounded-3 shadow-sm text-start">
                             <i class="fas fa-check-circle text-success fs-5 me-2"></i>
@@ -440,7 +435,7 @@
                                     <i class="fas fa-map-marker-alt text-success"></i>
                                     {{ __('messages.choose_city') }}
                                     @if($cities->count() > 0)
-                                        <small class="text-muted">({{ $cities->count() }} مدينة متاحة)</small>
+                                        <small class="text-muted">({{ $cities->count() }} {{ __('messages.available_cities_count') }} )</small>
                                     @endif
                                 </label>
                                 @if($cities->count() > 0)
@@ -461,112 +456,119 @@
                                 @endif
                             </div>
 
-                            @php
-                                $groupedFields = $category->fields->groupBy('input_group');
-                            @endphp
+@php
+    $groupedFields = $category->fields->groupBy('input_group');
+@endphp
 
-                            @foreach($groupedFields as $group => $fields)
-                                @php
-                                    $isRepeatable = $fields->first()->is_repeatable ?? false;
-                                    $groupId = $group ? 'group_' . str_replace([' ', '-'], '_', $group) : 'ungrouped';
-                                @endphp
+@foreach($groupedFields as $group => $fields)
+    @php
+        $isRepeatable = $fields->first()->is_repeatable ?? false;
+        $groupId = $group ? 'group_' . str_replace([' ', '-'], '_', $group) : 'ungrouped';
+        $groupName = app()->getLocale() == 'ar' ? $group : ($fields->first()->input_group_en ?? $group);
+    @endphp
 
-                                @if($group)
-                                    <div class="repeatable-group" data-group-id="{{ $groupId }}" data-repeatable="{{ $isRepeatable ? 'true' : 'false' }}">
-                                        <div class="card mb-3 group-instance" data-instance="0">
-                                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                                                <h5 class="mb-0 group-title">{{ $group }}</h5>
-                                                @if($isRepeatable)
-                                                    <div class="group-controls">
-                                                        <button type="button" class="btn btn-sm btn-success add-group-instance" data-group-id="{{ $groupId }}">
-                                                            <i class="fas fa-plus"></i> إضافة مجموعة
-                                                        </button>
-                                                        <button type="button" class="btn btn-sm btn-danger remove-group-instance d-none" data-group-id="{{ $groupId }}">
-                                                            <i class="fas fa-trash"></i> حذف المجموعة
-                                                        </button>
-                                                    </div>
-                                                @endif
-                                            </div>
-                                            <div class="card-body">
-                                                <div class="row">
-                                @endif
+    @if($group)
+        <div class="repeatable-group" data-group-id="{{ $groupId }}" data-repeatable="{{ $isRepeatable ? 'true' : 'false' }}">
+            <div class="card mb-3 group-instance" data-instance="0">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 group-title">{{ $groupName }}</h5>
+                    @if($isRepeatable)
+                        <div class="group-controls">
+                            <button type="button" class="btn btn-sm btn-success add-group-instance" data-group-id="{{ $groupId }}">
+                                <i class="fas fa-plus"></i> {{ __('messages.add_group') }}
+                            </button>
+                            <button type="button" class="btn btn-sm btn-danger remove-group-instance d-none" data-group-id="{{ $groupId }}">
+                                <i class="fas fa-trash"></i> {{ __('messages.remove_group') }}
+                            </button>
+                        </div>
+                    @endif
+                </div>
+                <div class="card-body">
+                    <div class="row">
+    @endif
 
-                                @foreach($fields as $field)
-                                @if($field->type === 'title')
-                                    <div class="mb-3">
-                                        <h4 class="text-dark border-bottom pb-2">
-                                            <i class="fas fa-heading"></i> {{ $field->value ?? $field->name_ar }}
-                                        </h4>
-                                    </div>
-                                @else
-                                    <div class="col-12 mb-3">
-                                        @if($field->type === 'checkbox')
-                                        @else
-                                            <label for="custom_fields_{{ $field->name }}_0" class="form-label">
-                                                <i class="fas fa-{{ $field->getTypeIconAttribute() }}"></i>
-                                                {{ $field->name_ar }}
-                                                @if($field->is_required)
-                                                    <span class="text-danger">*</span>
-                                                @endif
-                                            </label>
-                                        @endif
+    @foreach($fields as $field)
+        @php
+            $fieldName = app()->getLocale() == 'ar' ? $field->name_ar : $field->name_en;
+            $fieldValue = app()->getLocale() == 'ar' ? ($field->value ?? $field->name_ar) : ($field->value_en ?? $field->name_en);
+        @endphp
 
-                                        @if($field->type === 'select' && is_array($field->options))
-                                            <select name="custom_fields[{{ $field->name }}][0]" id="custom_fields_{{ $field->name }}_0" class="form-control" {{ $field->is_required ? 'required' : '' }}>
-                                                <option value="" disabled selected>{{ __('messages.custom_fields_select_placeholder') }}</option>
-                                                @foreach($field->options as $option)
-                                                    <option value="{{ $option }}" {{ old('custom_fields.' . $field->name . '.0') == $option ? 'selected' : '' }}>{{ $option }}</option>
-                                                @endforeach
-                                            </select>
-                                        @elseif($field->type === 'checkbox')
-                                            <div class="form-check">
-                                                <input type="checkbox" name="custom_fields[{{ $field->name }}][0]" id="custom_fields_{{ $field->name }}_0" value="1" class="form-check-input" {{ old('custom_fields.' . $field->name . '.0') == '1' ? 'checked' : '' }}>
-                                                <label for="custom_fields_{{ $field->name }}_0">{{ $field->name_ar }}</label>
-                                            </div>
-                                        @elseif($field->type === 'image')
-                                            <div class="image-upload-container" data-field-name="{{ $field->name }}">
-                                                <div class="upload-area border border-dashed border-primary rounded p-3 text-center mb-3" style="min-height: 120px;">
-                                                    <div class="upload-content">
-                                                        <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-2"></i>
-                                                        <p class="text-muted mb-2">{{ __('messages.image_upload_drag_drop') }}</p>
-                                                        <p class="small text-muted">{{ __('messages.image_upload_multiple_note') }}</p>
-                                                        <input type="file" name="custom_fields[{{ $field->name }}][0][]" id="custom_fields_{{ $field->name }}_0" class="form-control d-none" accept="image/*" multiple {{ $field->is_required ? 'required' : '' }}>
-                                                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="document.getElementById('custom_fields_{{ $field->name }}_0').click()">
-                                                            <i class="fas fa-plus"></i>  {{ __('messages.choose_images') }}
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                <div class="image-preview-container row" id="preview_{{ $field->name }}_0"></div>
-                                                <div class="add-more-images mt-2" id="add_more_{{ $field->name }}_0" style="display: none;">
-                                                    <button type="button" class="btn btn-outline-success btn-sm" onclick="showUploadArea('{{ $field->name }}')">
-                                                        <i class="fas fa-plus"></i>  {{ __('messages.add_more_images') }}   
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        @elseif($field->type === 'date')
-                                            <input type="date" name="custom_fields[{{ $field->name }}][0]" id="custom_fields_{{ $field->name }}_0" class="form-control" value="{{ old('custom_fields.' . $field->name . '.0') }}" {{ $field->is_required ? 'required' : '' }}>
-                                        @elseif($field->type === 'time')
-                                            <input type="time" name="custom_fields[{{ $field->name }}][0]" id="custom_fields_{{ $field->name }}_0" class="form-control" value="{{ old('custom_fields.' . $field->name . '.0') }}" {{ $field->is_required ? 'required' : '' }}>
-                                        @elseif($field->type === 'textarea')
-                                            <textarea name="custom_fields[{{ $field->name }}][0]" id="custom_fields_{{ $field->name }}_0" class="form-control" rows="3" {{ $field->is_required ? 'required' : '' }}>{{ old('custom_fields.' . $field->name . '.0') }}</textarea>
-                                        @else
-                                            <input type="{{ $field->type }}" name="custom_fields[{{ $field->name }}][0]" id="custom_fields_{{ $field->name }}_0" class="form-control" value="{{ old('custom_fields.' . $field->name . '.0') }}" {{ $field->is_required ? 'required' : '' }}>
-                                        @endif
-                                    </div>
-                                @endif
-                                @endforeach
+        @if($field->type === 'title')
+            <div class="mb-3">
+                <h4 class="text-dark border-bottom pb-2">
+                    <i class="fas fa-heading"></i> {{ $fieldValue }}
+                </h4>
+            </div>
+        @else
+            <div class="col-12 mb-3">
+                @if($field->type === 'checkbox')
+                    {{-- Checkbox logic handles the label inside the div --}}
+                @else
+                    <label for="custom_fields_{{ $field->name }}_0" class="form-label">
+                        <i class="fas fa-{{ $field->getTypeIconAttribute() }}"></i>
+                        {{ $fieldName }}
+                        @if($field->is_required)
+                            <span class="text-danger">*</span>
+                        @endif
+                    </label>
+                @endif
 
-                                @if($group)
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
-                            @endforeach
+                @if($field->type === 'select' && is_array($field->options))
+                    <select name="custom_fields[{{ $field->name }}][0]" id="custom_fields_{{ $field->name }}_0" class="form-control" {{ $field->is_required ? 'required' : '' }}>
+                        <option value="" disabled selected>{{ __('messages.custom_fields_select_placeholder') }}</option>
+                        @foreach($field->options as $option)
+                            <option value="{{ $option }}" {{ old('custom_fields.' . $field->name . '.0') == $option ? 'selected' : '' }}>{{ $option }}</option>
+                        @endforeach
+                    </select>
+                @elseif($field->type === 'checkbox')
+                    <div class="form-check ">
+                        <input type="checkbox" name="custom_fields[{{ $field->name }}][0]" id="custom_fields_{{ $field->name }}_0" value="1" class="form-check-input" {{ old('custom_fields.' . $field->name . '.0') == '1' ? 'checked' : '' }}>
+                        <label class="form-check-label" for="custom_fields_{{ $field->name }}_0">{{ $fieldName }}</label>
+                    </div>
+                @elseif($field->type === 'image')
+                    <div class="image-upload-container" data-field-name="{{ $field->name }}">
+                        <div class="upload-area border border-dashed border-primary rounded p-3 text-center mb-3" style="min-height: 120px;">
+                            <div class="upload-content">
+                                <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-2"></i>
+                                <p class="text-muted mb-2">{{ __('messages.image_upload_drag_drop') }}</p>
+                                <p class="small text-muted">{{ __('messages.image_upload_multiple_note') }}</p>
+                                <input type="file" name="custom_fields[{{ $field->name }}][0][]" id="custom_fields_{{ $field->name }}_0" class="form-control d-none" accept="image/*" multiple {{ $field->is_required ? 'required' : '' }}>
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="document.getElementById('custom_fields_{{ $field->name }}_0').click()">
+                                    <i class="fas fa-plus"></i> {{ __('messages.choose_images') }}
+                                </button>
+                            </div>
+                        </div>
+                        <div class="image-preview-container row" id="preview_{{ $field->name }}_0"></div>
+                        <div class="add-more-images mt-2" id="add_more_{{ $field->name }}_0" style="display: none;">
+                            <button type="button" class="btn btn-outline-success btn-sm" onclick="showUploadArea('{{ $field->name }}')">
+                                <i class="fas fa-plus"></i> {{ __('messages.add_more_images') }}
+                            </button>
+                        </div>
+                    </div>
+                @elseif($field->type === 'date')
+                    <input type="date" name="custom_fields[{{ $field->name }}][0]" id="custom_fields_{{ $field->name }}_0" class="form-control" value="{{ old('custom_fields.' . $field->name . '.0') }}" {{ $field->is_required ? 'required' : '' }}>
+                @elseif($field->type === 'time')
+                    <input type="time" name="custom_fields[{{ $field->name }}][0]" id="custom_fields_{{ $field->name }}_0" class="form-control" value="{{ old('custom_fields.' . $field->name . '.0') }}" {{ $field->is_required ? 'required' : '' }}>
+                @elseif($field->type === 'textarea')
+                    <textarea name="custom_fields[{{ $field->name }}][0]" id="custom_fields_{{ $field->name }}_0" class="form-control" rows="3" {{ $field->is_required ? 'required' : '' }}>{{ old('custom_fields.' . $field->name . '.0') }}</textarea>
+                @else
+                    <input type="{{ $field->type }}" name="custom_fields[{{ $field->name }}][0]" id="custom_fields_{{ $field->name }}_0" class="form-control" value="{{ old('custom_fields.' . $field->name . '.0') }}" {{ $field->is_required ? 'required' : '' }}>
+                @endif
+            </div>
+        @endif
+    @endforeach
 
-                            @if($category->voice_note_enabled)
-                                @include('partials.voice-note-recorder')
-                            @endif
+    @if($group)
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+@endforeach
+
+@if($category->voice_note_enabled)
+    @include('partials.voice-note-recorder')
+@endif
 
                             <div class="mb-3">
                                 <label for="notes" class="form-label">

@@ -7,112 +7,112 @@
     <div class="container py-5">
         <div class="page-header">
             <h2 class="page-title">
-                <i class="fas fa-bell"></i> الإشعارات
+                <i class="fas fa-bell"></i> {{ __('messages.notifications_title') }}
                 @if($notifications->where('read_at', null)->count() > 0)
-                    <span class="badge unread-count-badge ms-2">{{ $notifications->where('read_at', null)->count() }}</span>
+                <span class="badge unread-count-badge ms-2">{{ $notifications->where('read_at', null)->count() }}</span>
                 @endif
             </h2>
             @if($notifications->where('read_at', null)->count() > 0)
-                <button class="btn btn-mark-all" onclick="markAllAsRead()" id="markAllReadBtn">
-                    <i class="fas fa-check-double"></i> تحديد الكل كمقروء
-                </button>
+            <button class="btn btn-mark-all" onclick="markAllAsRead()" id="markAllReadBtn">
+                <i class="fas fa-check-double"></i> {{ __('messages.mark_all_read') }}
+            </button>
             @endif
         </div>
 
         @if(session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
         @endif
 
         @if($notifications->count() > 0)
-            <div class="notifications-list">
-                @foreach($notifications as $notification)
-                    <div class="notification-card {{ $notification->isRead() ? 'is-read' : 'is-unread' }}" style="animation-delay: {{ $loop->index * 0.05 }}s">
-                        <div class="notification-icon">
-                            <i class="{{ $notification->icon }}"></i>
-                        </div>
-                        <div class="notification-content">
-                            <div class="notification-header">
-                                <h6 class="notification-title">
-                                    {{ $notification->title }}
-                                    @if(!$notification->isRead())
-                                        <span class="badge new-badge ms-2">جديد</span>
-                                    @endif
-                                </h6>
-                                <small class="notification-time">
-                                    <i class="fas fa-clock"></i> {{ $notification->created_at->diffForHumans() }}
-                                </small>
-                            </div>
-                            <p class="notification-message">{{ $notification->message }}</p>
-                            
-                            <div class="notification-actions">
-                                @if($notification->data && isset($notification->data['offer_id']))
-                                    @php
-                                        $offer = \App\Models\ServiceOffer::find($notification->data['offer_id']);
-                                    @endphp
-                                    @if($offer && $offer->service)
-                                        @if(auth()->id() == $offer->provider_id)
-                                            <a href="{{ route('service-offers.show', $offer->id) }}" class="btn btn-action-view-offer">
-                                                <i class="fas fa-handshake"></i> عرض عرضي
-                                            </a>
-                                        @elseif(auth()->id() == $offer->service->user_id)
-                                            <a href="{{ route('service-offers.show', $offer->id) }}" class="btn btn-action-view-offer">
-                                                <i class="fas fa-handshake"></i> عرض العرض
-                                            </a>
-                                        @endif
-                                    @elseif($offer && !$offer->service)
-                                        <span class="btn btn-action-disabled">
-                                            <i class="fas fa-ban"></i> خدمة محذوفة
-                                        </span>
-                                    @endif
-                                @endif
-
-                                @if($notification->data && isset($notification->data['service_id']))
-                                    @php
-                                        $service = \App\Models\Service::find($notification->data['service_id']);
-                                    @endphp
-                                    @if($service)
-                                        <a href="{{ route('services.show', $service->slug) }}" class="btn btn-action-view-service">
-                                            <i class="fas fa-eye"></i> عرض الخدمة
-                                        </a>
-                                    @else
-                                        <span class="btn btn-action-disabled">
-                                            <i class="fas fa-ban"></i> خدمة محذوفة
-                                        </span>
-                                    @endif
-                                @endif
-                            </div>
-                        </div>
-                        <div class="notification-buttons">
-                            @if(!$notification->isRead())
-                                <button class="btn btn-icon btn-mark-read" title="تحديد كمقروء" onclick="markAsRead('{{ $notification->id }}')">
-                                    <i class="fas fa-check"></i>
-                                </button>
-                            @endif
-                            <form method="POST" action="{{ route('notifications.destroy', $notification->id) }}" class="d-inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-icon btn-delete" title="حذف الإشعار" onclick="return confirm('هل أنت متأكد من حذف هذا الإشعار؟')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-
-            <div class="d-flex justify-content-center mt-4">
-                {{ $notifications->links() }}
-            </div>
-        @else
-            <div class="no-notifications-placeholder">
-                <div class="no-notifications-icon">
-                    <i class="fas fa-bell-slash"></i>
+        <div class="notifications-list">
+            @foreach($notifications as $notification)
+            <div class="notification-card {{ $notification->isRead() ? 'is-read' : 'is-unread' }}" style="animation-delay: {{ $loop->index * 0.05 }}s">
+                <div class="notification-icon">
+                    <i class="{{ $notification->icon }}"></i>
                 </div>
-                <h4>لا توجد إشعارات بعد</h4>
-                <p>ستظهر هنا الإشعارات الجديدة عند وصولها</p>
+                <div class="notification-content">
+                    <div class="notification-header">
+                        <h6 class="notification-title">
+                            {{ $notification->title }}
+                            @if(!$notification->isRead())
+                            <span class="badge new-badge ms-2">{{ __('messages.new_badge') }}</span>
+                            @endif
+                        </h6>
+                        <small class="notification-time">
+                            <i class="fas fa-clock"></i> {{ $notification->created_at->diffForHumans() }}
+                        </small>
+                    </div>
+                    <p class="notification-message">{{ $notification->message }}</p>
+
+                    <div class="notification-actions">
+                        @if($notification->data && isset($notification->data['offer_id']))
+                        @php
+                        $offer = \App\Models\ServiceOffer::find($notification->data['offer_id']);
+                        @endphp
+                        @if($offer && $offer->service)
+                        @if(auth()->id() == $offer->provider_id)
+                        <a href="{{ route('service-offers.show', $offer->id) }}" class="btn btn-action-view-offer">
+                            <i class="fas fa-handshake"></i> {{ __('messages.view_my_offer') }}
+                        </a>
+                        @elseif(auth()->id() == $offer->service->user_id)
+                        <a href="{{ route('service-offers.show', $offer->id) }}" class="btn btn-action-view-offer">
+                            <i class="fas fa-handshake"></i> {{ __('messages.view_offer') }}
+                        </a>
+                        @endif
+                        @elseif($offer && !$offer->service)
+                        <span class="btn btn-action-disabled">
+                            <i class="fas fa-ban"></i> {{ __('messages.deleted_service') }}
+                        </span>
+                        @endif
+                        @endif
+
+                        @if($notification->data && isset($notification->data['service_id']))
+                        @php
+                        $service = \App\Models\Service::find($notification->data['service_id']);
+                        @endphp
+                        @if($service)
+                        <a href="{{ route('services.show', $service->slug) }}" class="btn btn-action-view-service">
+                            <i class="fas fa-eye"></i> {{ __('messages.view_service') }}
+                        </a>
+                        @else
+                        <span class="btn btn-action-disabled">
+                            <i class="fas fa-ban"></i> {{ __('messages.deleted_service') }}
+                        </span>
+                        @endif
+                        @endif
+                    </div>
+                </div>
+                <div class="notification-buttons">
+                    @if(!$notification->isRead())
+                    <button class="btn btn-icon btn-mark-read" title="{{ __('messages.mark_read_title') }}" onclick="markAsRead('{{ $notification->id }}')">
+                        <i class="fas fa-check"></i>
+                    </button>
+                    @endif
+                    <form method="POST" action="{{ route('notifications.destroy', $notification->id) }}" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-icon btn-delete" title="{{ __('messages.delete_notification_title') }}" onclick="return confirm('{{ __('messages.delete_confirm') }}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+                </div>
             </div>
+            @endforeach
+        </div>
+
+        <div class="d-flex justify-content-center mt-4">
+            {{ $notifications->links() }}
+        </div>
+        @else
+        <div class="no-notifications-placeholder">
+            <div class="no-notifications-icon">
+                <i class="fas fa-bell-slash"></i>
+            </div>
+            <h4>{{ __('messages.no_notifications_title') }}</h4>
+            <p>{{ __('messages.no_notifications_message') }}</p>
+        </div>
         @endif
     </div>
 </div>

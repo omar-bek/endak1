@@ -6,81 +6,77 @@
 <div class="chat-container" id="chatContainer">
     <div class="conversations-sidebar" id="conversationsSidebar">
         <div class="sidebar-header">
-            <h5 class="sidebar-title"><i class="fas fa-comments"></i> <span>المحادثات</span></h5>
+            <h5 class="sidebar-title"><i class="fas fa-comments"></i> <span>{{ __('messages.conversations_title') }}</span></h5>
             <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
                 <i class="fas fa-chevron-left"></i>
             </button>
         </div>
         <div class="sidebar-search">
-             <div class="search-container">
-                <input type="text" id="searchConversations" placeholder="البحث في المحادثات..." class="search-input">
+            <div class="search-container">
+                <input type="text" id="searchConversations" placeholder="{{ __('messages.search_conversations_placeholder') }}" class="search-input">
                 <i class="fas fa-search search-icon"></i>
             </div>
         </div>
         <div class="conversations-list" id="conversationsList">
             @forelse($conversations as $conversation)
-                @php
-                    $otherUser = $conversation->sender_id == auth()->id() ? $conversation->receiver : $conversation->sender;
-                    $lastMessage = $conversation;
-                    $unreadCount = \App\Models\Message::where('conversation_id', $conversation->conversation_id)
-                        ->where('receiver_id', auth()->id())
-                        ->where('is_read', false)
-                        ->where('is_deleted', false)
-                        ->count();
-                @endphp
-                <div class="conversation-item"
-                     onclick="window.location.href='{{ route('messages.show', $otherUser->id) }}'"
-                     data-name="{{ strtolower($otherUser->name) }}">
-                    <div class="conversation-avatar">
-                        @if($otherUser->image && file_exists(public_path('storage/' . $otherUser->image)))
-                            <img src="{{ asset('storage/' . $otherUser->image) }}"
-                                 alt="{{ $otherUser->name }}"
-                                 onerror="this.onerror=null;this.src='{{ asset('images/default-avatar.png') }}';">
-                        @else
-                            <div class="default-avatar">
-                                {{ strtoupper(substr($otherUser->name, 0, 1)) }}
-                            </div>
+            @php
+            $otherUser = $conversation->sender_id == auth()->id() ? $conversation->receiver : $conversation->sender;
+            $lastMessage = $conversation;
+            $unreadCount = \App\Models\Message::where('conversation_id', $conversation->conversation_id)
+            ->where('receiver_id', auth()->id())
+            ->where('is_read', false)
+            ->where('is_deleted', false)
+            ->count();
+            @endphp
+            <div class="conversation-item" onclick="window.location.href='{{ route('messages.show', $otherUser->id) }}'" data-name="{{ strtolower($otherUser->name) }}">
+                <div class="conversation-avatar">
+                    @if($otherUser->image && file_exists(public_path('storage/' . $otherUser->image)))
+                    <img src="{{ asset('storage/' . $otherUser->image) }}" alt="{{ $otherUser->name }}" onerror="this.onerror=null;this.src='{{ asset('images/default-avatar.png') }}';">
+                    @else
+                    <div class="default-avatar">
+                        {{ strtoupper(substr($otherUser->name, 0, 1)) }}
+                    </div>
+                    @endif
+                    <div class="online-indicator {{ $otherUser->isOnline() ? 'online' : 'offline' }}"></div>
+                </div>
+                <div class="conversation-info">
+                    <div class="info-header">
+                        <div class="conversation-name">{{ $otherUser->name }}</div>
+                        @if($lastMessage)
+                        <div class="conversation-time">{{ $lastMessage->formatted_time }}</div>
                         @endif
-                        <div class="online-indicator {{ $otherUser->isOnline() ? 'online' : 'offline' }}"></div>
                     </div>
-                    <div class="conversation-info">
-                        <div class="info-header">
-                            <div class="conversation-name">{{ $otherUser->name }}</div>
-                            @if($lastMessage)
-                                <div class="conversation-time">{{ $lastMessage->formatted_time }}</div>
-                            @endif
-                        </div>
-                        <div class="info-body">
-                            @if($lastMessage)
-                                <div class="conversation-preview">
-                                    @if($lastMessage->isImage())
-                                        <i class="fas fa-image me-1"></i> صورة
-                                    @elseif($lastMessage->isVoice())
-                                        <i class="fas fa-microphone me-1"></i> رسالة صوتية
-                                    @elseif($lastMessage->isFile())
-                                        <i class="fas fa-file me-1"></i> ملف
-                                    @elseif($lastMessage->isLocation())
-                                        <i class="fas fa-map-marker-alt me-1"></i> موقع
-                                    @elseif($lastMessage->isContact())
-                                         <i class="fas fa-user me-1"></i> معلومات اتصال
-                                    @else
-                                        {{ Str::limit($lastMessage->content, 25) }}
-                                    @endif
-                                </div>
+                    <div class="info-body">
+                        @if($lastMessage)
+                        <div class="conversation-preview">
+                            @if($lastMessage->isImage())
+                            <i class="fas fa-image me-1"></i> {{ __('messages.message_preview_image') }}
+                            @elseif($lastMessage->isVoice())
+                            <i class="fas fa-microphone me-1"></i> {{ __('messages.message_preview_voice') }}
+                            @elseif($lastMessage->isFile())
+                            <i class="fas fa-file me-1"></i> {{ __('messages.message_preview_file') }}
+                            @elseif($lastMessage->isLocation())
+                            <i class="fas fa-map-marker-alt me-1"></i> {{ __('messages.message_preview_location') }}
+                            @elseif($lastMessage->isContact())
+                            <i class="fas fa-user me-1"></i> {{ __('messages.message_preview_contact') }}
                             @else
-                                <div class="conversation-preview">لا توجد رسائل</div>
-                            @endif
-                            @if($unreadCount > 0)
-                                <div class="unread-badge">{{ $unreadCount }}</div>
+                            {{ Str::limit($lastMessage->content, 25) }}
                             @endif
                         </div>
+                        @else
+                        <div class="conversation-preview">{{ __('messages.no_messages_preview') }}</div>
+                        @endif
+                        @if($unreadCount > 0)
+                        <div class="unread-badge">{{ $unreadCount }}</div>
+                        @endif
                     </div>
                 </div>
+            </div>
             @empty
-                <div class="no-conversations">
-                    <i class="fas fa-comment-slash"></i>
-                    <p>لا توجد محادثات</p>
-                </div>
+            <div class="no-conversations">
+                <i class="fas fa-comment-slash"></i>
+                <p>{{ __('messages.no_conversations_title') }}</p>
+            </div>
             @endforelse
         </div>
     </div>
@@ -91,8 +87,8 @@
                 <i class="fas fa-bars"></i>
             </button>
             <div class="chat-header-info">
-                <h5>اختر محادثة للبدء</h5>
-                <small>من القائمة الجانبية</small>
+                <h5>{{ __('messages.chat_header_default_title') }}</h5>
+                <small>{{ __('messages.chat_header_default_subtitle') }}</small>
             </div>
         </div>
         <div class="chat-content" id="chatContent">
@@ -100,8 +96,8 @@
                 <div class="welcome-icon">
                     <i class="fas fa-comments"></i>
                 </div>
-                <h3>مرحباً بك في نظام الرسائل</h3>
-                <p>اختر محادثة من القائمة الجانبية لبدء المحادثة</p>
+                <h3>{{ __('messages.welcome_message_title') }}</h3>
+                <p>{{ __('messages.welcome_message_body') }}</p>
             </div>
         </div>
     </div>
@@ -109,10 +105,8 @@
 
 
 <style>
-    /* === Font Import (Optional, but recommended for a modern look) === */
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap');
 
-    /* === Color & Style Variables === */
     :root {
         --bg-dark: #2f5c69;
         --bg-dark-transparent: rgba(47, 92, 105, 0.9);

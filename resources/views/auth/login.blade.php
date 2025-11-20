@@ -60,10 +60,10 @@
                             <span class="divider-text">{{ __('messages.or') }}</span>
                         </div>
 
-                        <a href="{{ route('auth.facebook') }}" class="btn btn-social btn-facebook w-100 mb-2">
+                        {{--  <a href="{{ route('auth.facebook') }}" class="btn btn-social btn-facebook w-100 mb-2">
                             <i class="fab fa-facebook-f me-2"></i>
                             {{ __('messages.login_with_facebook') }}
-                        </a>
+                        </a>  --}}
 
                         <a href="{{ route('auth.google') }}" class="btn btn-social btn-google w-100">
                             <i class="fab fa-google me-2"></i>

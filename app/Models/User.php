@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -39,6 +40,7 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $hidden = [
         'password',
         'remember_token',
+        'api_token',
     ];
 
     /**
@@ -231,5 +233,24 @@ class User extends Authenticatable implements MustVerifyEmail
     public function hasCompletedProfile(): bool
     {
         return (bool) ($this->user_type && $this->terms_accepted_at);
+    }
+
+    public function generateApiToken(): string
+    {
+        $plainTextToken = Str::random(64);
+        $this->forceFill([
+            'api_token' => hash('sha256', $plainTextToken),
+        ])->save();
+
+        return $plainTextToken;
+    }
+
+    public function clearApiToken(): void
+    {
+        if ($this->api_token) {
+            $this->forceFill([
+                'api_token' => null,
+            ])->save();
+        }
     }
 }

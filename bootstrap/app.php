@@ -6,6 +6,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
+        api: __DIR__.'/../routes/api.php',
         web: __DIR__.'/../routes/web.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
@@ -15,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'provider' => \App\Http\Middleware\ProviderMiddleware::class,
             'user.type.terms' => \App\Http\Middleware\EnsureUserTypeAndTermsAccepted::class,
+            'api.token' => \App\Http\Middleware\ApiTokenMiddleware::class,
         ]);
 
         $middleware->web([

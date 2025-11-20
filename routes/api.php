@@ -1,0 +1,65 @@
+<?php
+
+use App\Http\Controllers\Api\AuthController as ApiAuthController;
+use App\Http\Controllers\Api\CategoryController as ApiCategoryController;
+use App\Http\Controllers\Api\MessageController as ApiMessageController;
+use App\Http\Controllers\Api\NotificationController as ApiNotificationController;
+use App\Http\Controllers\Api\ServiceController as ApiServiceController;
+use App\Http\Controllers\Api\ServiceOfferController as ApiServiceOfferController;
+use Illuminate\Support\Facades\Route;
+
+Route::prefix('v1')->name('api.v1.')->group(function () {
+    Route::get('/status', function () {
+        return response()->json([
+            'success' => true,
+            'message' => 'API is up',
+            'timestamp' => now()->toIso8601String(),
+        ]);
+    });
+
+    // Public endpoints
+    Route::get('categories', [ApiCategoryController::class, 'index']);
+    Route::get('categories/{slug}/details', [ApiCategoryController::class, 'show']);
+    Route::get('categories/{category}/subcategories', [ApiCategoryController::class, 'subcategories'])
+        ->whereNumber('category');
+
+    Route::get('services', [ApiServiceController::class, 'index']);
+    Route::get('services/{service}', [ApiServiceController::class, 'show'])->whereNumber('service');
+
+    // Auth
+    Route::post('auth/register', [ApiAuthController::class, 'register']);
+    Route::post('auth/login', [ApiAuthController::class, 'login']);
+
+    Route::middleware('api.token')->group(function () {
+        Route::post('auth/logout', [ApiAuthController::class, 'logout']);
+        Route::get('auth/profile', [ApiAuthController::class, 'profile']);
+        Route::put('auth/profile', [ApiAuthController::class, 'updateProfile']);
+
+        // Services
+        Route::get('services/me', [ApiServiceController::class, 'myServices']);
+        Route::post('services', [ApiServiceController::class, 'store']);
+        Route::put('services/{service}', [ApiServiceController::class, 'update'])->whereNumber('service');
+        Route::delete('services/{service}', [ApiServiceController::class, 'destroy'])->whereNumber('service');
+
+        // Service offers
+        Route::get('offers', [ApiServiceOfferController::class, 'index']);
+        Route::post('services/{service}/offers', [ApiServiceOfferController::class, 'store'])->whereNumber('service');
+        Route::post('offers/{offer}/accept', [ApiServiceOfferController::class, 'accept'])->whereNumber('offer');
+        Route::post('offers/{offer}/reject', [ApiServiceOfferController::class, 'reject'])->whereNumber('offer');
+        Route::post('offers/{offer}/deliver', [ApiServiceOfferController::class, 'deliver'])->whereNumber('offer');
+        Route::post('offers/{offer}/review', [ApiServiceOfferController::class, 'review'])->whereNumber('offer');
+
+        // Notifications
+        Route::get('notifications', [ApiNotificationController::class, 'index']);
+        Route::post('notifications/mark-all-read', [ApiNotificationController::class, 'markAllAsRead']);
+        Route::post('notifications/{notification}/read', [ApiNotificationController::class, 'markAsRead'])->whereNumber('notification');
+        Route::delete('notifications/{notification}', [ApiNotificationController::class, 'destroy'])->whereNumber('notification');
+
+        // Messages
+        Route::get('messages', [ApiMessageController::class, 'index']);
+        Route::get('messages/{user}', [ApiMessageController::class, 'show'])->whereNumber('user');
+        Route::post('messages', [ApiMessageController::class, 'store']);
+        Route::delete('messages/{message}', [ApiMessageController::class, 'destroy'])->whereNumber('message');
+    });
+});
+

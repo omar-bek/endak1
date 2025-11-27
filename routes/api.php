@@ -8,6 +8,10 @@ use App\Http\Controllers\Api\ServiceController as ApiServiceController;
 use App\Http\Controllers\Api\ServiceOfferController as ApiServiceOfferController;
 use Illuminate\Support\Facades\Route;
 
+// Backward compatibility routes (without v1 prefix)
+Route::post('login', [ApiAuthController::class, 'login'])->name('api.login');
+Route::post('register', [ApiAuthController::class, 'register'])->name('api.register');
+
 Route::prefix('v1')->name('api.v1.')->group(function () {
     Route::get('/status', function () {
         return response()->json([
@@ -62,4 +66,3 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         Route::delete('messages/{message}', [ApiMessageController::class, 'destroy'])->whereNumber('message');
     });
 });
-

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends BaseApiController
@@ -42,14 +43,23 @@ class AuthController extends BaseApiController
             'password' => ['required', 'string'],
         ]);
 
-        if (!Auth::attempt($credentials)) {
+        // Find user by email
+        $user = User::where('email', $credentials['email'])->first();
+
+        if (!$user) {
             throw ValidationException::withMessages([
                 'email' => ['بيانات تسجيل الدخول غير صحيحة'],
             ]);
         }
 
-        /** @var User $user */
-        $user = Auth::user();
+        // Check password manually
+        if (!Hash::check($credentials['password'], $user->password)) {
+            throw ValidationException::withMessages([
+                'email' => ['بيانات تسجيل الدخول غير صحيحة'],
+            ]);
+        }
+
+        // Generate API token
         $token = $user->generateApiToken();
 
         return $this->success([
@@ -71,7 +81,7 @@ class AuthController extends BaseApiController
     {
         return $this->success($request->user()->load([
             'providerProfile',
-            'services' => fn ($query) => $query->latest()->limit(10),
+            'services' => fn($query) => $query->latest()->limit(10),
         ]));
     }
 
@@ -92,6 +102,3 @@ class AuthController extends BaseApiController
         return $this->success($user->fresh(), 'تم تحديث الملف الشخصي بنجاح');
     }
 }
-
-
-

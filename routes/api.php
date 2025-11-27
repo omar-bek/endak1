@@ -9,7 +9,68 @@ use App\Http\Controllers\Api\ServiceOfferController as ApiServiceOfferController
 use Illuminate\Support\Facades\Route;
 
 // Backward compatibility routes (without v1 prefix)
+Route::get('login', function () {
+    return response()->json([
+        'success' => true,
+        'message' => 'Login endpoint information',
+        'endpoint' => '/api/login',
+        'method' => 'POST',
+        'required_fields' => [
+            'email' => 'string (required)',
+            'password' => 'string (required)'
+        ],
+        'example' => [
+            'email' => 'user@example.com',
+            'password' => 'password123'
+        ],
+        'response' => [
+            'success' => true,
+            'message' => 'تم تسجيل الدخول بنجاح',
+            'data' => [
+                'token' => 'api_token_here',
+                'user' => 'user_object'
+            ]
+        ]
+    ]);
+})->name('api.login.info');
+
 Route::post('login', [ApiAuthController::class, 'login'])->name('api.login');
+
+Route::get('register', function () {
+    return response()->json([
+        'success' => true,
+        'message' => 'Register endpoint information',
+        'endpoint' => '/api/register',
+        'method' => 'POST',
+        'required_fields' => [
+            'name' => 'string (required)',
+            'email' => 'string (required, unique)',
+            'password' => 'string (required, min:8)',
+            'password_confirmation' => 'string (required)'
+        ],
+        'optional_fields' => [
+            'phone' => 'string (optional, unique)',
+            'user_type' => 'customer|provider (optional, default: customer)'
+        ],
+        'example' => [
+            'name' => 'User Name',
+            'email' => 'user@example.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+            'phone' => '0123456789',
+            'user_type' => 'customer'
+        ],
+        'response' => [
+            'success' => true,
+            'message' => 'تم إنشاء الحساب بنجاح',
+            'data' => [
+                'token' => 'api_token_here',
+                'user' => 'user_object'
+            ]
+        ]
+    ]);
+})->name('api.register.info');
+
 Route::post('register', [ApiAuthController::class, 'register'])->name('api.register');
 
 Route::prefix('v1')->name('api.v1.')->group(function () {
@@ -31,8 +92,69 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
     Route::get('services/{service}', [ApiServiceController::class, 'show'])->whereNumber('service');
 
     // Auth
-    Route::post('auth/register', [ApiAuthController::class, 'register']);
+    Route::get('auth/login', function () {
+        return response()->json([
+            'success' => true,
+            'message' => 'Login endpoint information',
+            'endpoint' => '/api/v1/auth/login',
+            'method' => 'POST',
+            'required_fields' => [
+                'email' => 'string (required)',
+                'password' => 'string (required)'
+            ],
+            'example' => [
+                'email' => 'user@example.com',
+                'password' => 'password123'
+            ],
+            'response' => [
+                'success' => true,
+                'message' => 'تم تسجيل الدخول بنجاح',
+                'data' => [
+                    'token' => 'api_token_here',
+                    'user' => 'user_object'
+                ]
+            ]
+        ]);
+    })->name('api.v1.auth.login.info');
+
     Route::post('auth/login', [ApiAuthController::class, 'login']);
+
+    Route::get('auth/register', function () {
+        return response()->json([
+            'success' => true,
+            'message' => 'Register endpoint information',
+            'endpoint' => '/api/v1/auth/register',
+            'method' => 'POST',
+            'required_fields' => [
+                'name' => 'string (required)',
+                'email' => 'string (required, unique)',
+                'password' => 'string (required, min:8)',
+                'password_confirmation' => 'string (required)'
+            ],
+            'optional_fields' => [
+                'phone' => 'string (optional, unique)',
+                'user_type' => 'customer|provider (optional, default: customer)'
+            ],
+            'example' => [
+                'name' => 'User Name',
+                'email' => 'user@example.com',
+                'password' => 'password123',
+                'password_confirmation' => 'password123',
+                'phone' => '0123456789',
+                'user_type' => 'customer'
+            ],
+            'response' => [
+                'success' => true,
+                'message' => 'تم إنشاء الحساب بنجاح',
+                'data' => [
+                    'token' => 'api_token_here',
+                    'user' => 'user_object'
+                ]
+            ]
+        ]);
+    })->name('api.v1.auth.register.info');
+
+    Route::post('auth/register', [ApiAuthController::class, 'register']);
 
     Route::middleware('api.token')->group(function () {
         Route::post('auth/logout', [ApiAuthController::class, 'logout']);

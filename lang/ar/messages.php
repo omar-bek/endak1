@@ -304,7 +304,7 @@ return [
     'available_cities_count' => 'مدينة متاحة',
     'no_cities_available' => 'لا توجد مدن متاحة لهذا القسم حالياً. يرجى التواصل مع الإدارة لإضافة المدن المتاحة.',
     'custom_fields_select_placeholder' => 'اختر',
-    'image_upload_drag_drop' => 'اسحب الصور هنا أو اضغط للاختيار',
+    'image_upload_drag_drop' => ' اضف صور تشرح المطلوب اكثر لمقدم الخدمة',
     'image_upload_multiple_note' => 'يمكنك رفع عدة صور مرة واحدة',
     'choose_images' => 'اختيار الصور',
     'add_more_images' => 'إضافة المزيد من الصور',

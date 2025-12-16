@@ -14,7 +14,7 @@ return [
     'register' => 'التسجيل',
     'contact_us' => 'اتصل بنا',
     'language' => 'اللغة',
-    'Ads'=>'إعلاناتي',
+    'Ads' => 'إعلاناتي',
     'ad_pup' => 'نشر إعلان',
     'Message' => 'الرسائل',
     'menu' => 'القائمة',
@@ -49,7 +49,7 @@ return [
     'request_service_new' => ' طلب خدمة جديدة',
 
     // Offers
-    'offer'=>'عرض',
+    'offer' => 'عرض',
     'submit_offer' => 'تقديم عرض',
     'offer_price' => 'السعر المطلوب',
     'offer_notes' => 'ملاحظات إضافية',
@@ -179,62 +179,62 @@ return [
     'offer_rejected_message' => 'رفض {customer} عرضك لخدمة: {service}',
 
     'hero_rating' => 'تقييم 5.0 من أكثر من 10K مستخدم',
-'hero_title_1' => 'منصة',
-'hero_title_2' => '— حيث يلتقي',
-'hero_title_3' => 'الطلب',
-'hero_title_4' => 'بالعَرض.',
-'hero_description' => 'اكتشف الخدمات التي تحتاجها، أو ابدأ رحلتك كمستقل وقدم عروضك على المشاريع المناسبة لك.',
-'hero_explore_categories' => 'تصفح الأقسام',
-'hero_explore_services' => 'استكشف الخدمات',
+    'hero_title_1' => 'منصة',
+    'hero_title_2' => '— حيث يلتقي',
+    'hero_title_3' => 'الطلب',
+    'hero_title_4' => 'بالعَرض.',
+    'hero_description' => 'اكتشف الخدمات التي تحتاجها، أو ابدأ رحلتك كمستقل وقدم عروضك على المشاريع المناسبة لك.',
+    'hero_explore_categories' => 'تصفح الأقسام',
+    'hero_explore_services' => 'استكشف الخدمات',
 
-'categories_title' => 'الأقسام الرئيسية',
-'categories_subtitle' => 'اختر من بين مجموعة واسعة من الأقسام',
-
-
-'services_title_guest' => 'الخدمات',
-'services_desc_guest' => 'اكتشف مجموعة متنوعة من الخدمات التي تناسب احتياجاتك.',
-
-'services_title_provider' => 'جميع الخدمات المتاحة',
-'services_desc_provider' => 'اكتشف الخدمات وابدأ بتقديم عروضك المميزة على المشاريع المناسبة لك.',
-
-'services_title_client' => 'خدماتي المطلوبة',
-'services_desc_client' => 'تابع خدماتك المطلوبة وتفاصيلها بسهولة واحترافية.',
+    'categories_title' => 'الأقسام الرئيسية',
+    'categories_subtitle' => 'اختر من بين مجموعة واسعة من الأقسام',
 
 
-'filter_user_client_title' => 'مرحباً!',
-'filter_user_client_text' => 'أنت تتصفح <span style="color: #00a6a6;">خدماتك المطلوبة فقط</span>.',
-'filter_user_client_btn_categories' => 'تصفح الأقسام',
-'filter_user_client_btn_services' => 'جميع خدماتي',
+    'services_title_guest' => 'الخدمات',
+    'services_desc_guest' => 'اكتشف مجموعة متنوعة من الخدمات التي تناسب احتياجاتك.',
 
-'filter_user_provider_title' => 'مرحباً مزود الخدمة!',
-'filter_user_provider_text' => 'يمكنك تصفح جميع الخدمات المتاحة وتقديم عروضك.',
+    'services_title_provider' => 'جميع الخدمات المتاحة',
+    'services_desc_provider' => 'اكتشف الخدمات وابدأ بتقديم عروضك المميزة على المشاريع المناسبة لك.',
 
-'filter_search_placeholder' => 'ابحث في الخدمات...',
-'filter_category_all' => 'جميع الأقسام',
-'filter_subcategory_all' => 'جميع الأقسام الفرعية',
-'filter_city_all' => 'جميع المدن',
-'filter_btn_search' => 'بحث',
-
-'services_title' => 'خدماتنا',
-'no_services_title' => 'لا توجد خدمات حالياً',
-'no_services_desc' => 'سيتم إضافة خدمات جديدة قريباً.',
-'voice_available' => 'تسجيل صوتي متاح',
-'view_details' => 'عرض التفاصيل',
+    'services_title_client' => 'خدماتي المطلوبة',
+    'services_desc_client' => 'تابع خدماتك المطلوبة وتفاصيلها بسهولة واحترافية.',
 
 
-'login_welcome' => 'أهلًا بعودتك!',
-'no_account' => 'ليس لديك حساب بعد؟',
-'create_new_account' => 'إنشاء حساب جديد',
-'email' => 'البريد الإلكتروني',
-'password' => 'كلمة المرور',
-'remember_me' => 'تذكرني',
-'login' => 'تسجيل الدخول',
-'or' => 'أو',
-'login_with_facebook' => 'تسجيل الدخول عبر فيسبوك',
-'login_with_google' => 'تسجيل الدخول عبر جوجل',
+    'filter_user_client_title' => 'مرحباً!',
+    'filter_user_client_text' => 'أنت تتصفح <span style="color: #00a6a6;">خدماتك المطلوبة فقط</span>.',
+    'filter_user_client_btn_categories' => 'تصفح الأقسام',
+    'filter_user_client_btn_services' => 'جميع خدماتي',
+
+    'filter_user_provider_title' => 'مرحباً مزود الخدمة!',
+    'filter_user_provider_text' => 'يمكنك تصفح جميع الخدمات المتاحة وتقديم عروضك.',
+
+    'filter_search_placeholder' => 'ابحث في الخدمات...',
+    'filter_category_all' => 'جميع الأقسام',
+    'filter_subcategory_all' => 'جميع الأقسام الفرعية',
+    'filter_city_all' => 'جميع المدن',
+    'filter_btn_search' => 'بحث',
+
+    'services_title' => 'خدماتنا',
+    'no_services_title' => 'لا توجد خدمات حالياً',
+    'no_services_desc' => 'سيتم إضافة خدمات جديدة قريباً.',
+    'voice_available' => 'تسجيل صوتي متاح',
+    'view_details' => 'عرض التفاصيل',
 
 
- 'register_welcome' => 'مرحبًا بك في Endak!',
+    'login_welcome' => 'أهلًا بعودتك!',
+    'no_account' => 'ليس لديك حساب بعد؟',
+    'create_new_account' => 'إنشاء حساب جديد',
+    'email' => 'البريد الإلكتروني',
+    'password' => 'كلمة المرور',
+    'remember_me' => 'تذكرني',
+    'login' => 'تسجيل الدخول',
+    'or' => 'أو',
+    'login_with_facebook' => 'تسجيل الدخول عبر فيسبوك',
+    'login_with_google' => 'تسجيل الدخول عبر جوجل',
+
+
+    'register_welcome' => 'مرحبًا بك في Endak!',
     'already_have_account' => 'هل لديك حساب بالفعل؟',
     'login' => 'تسجيل الدخول',
     'full_name' => 'الاسم الكامل',
@@ -279,22 +279,22 @@ return [
     'terms_9_text' => 'لأي استفسارات أو شكاوى يمكنك التواصل معنا عبر البريد الإلكتروني الرسمي للموقع.',
     'terms_agree' => 'باستخدامك للموقع، فإنك تقر بأنك قرأت وفهمت ووافقت على هذه الشروط والأحكام.',
 
-     'my_offer_pending' => 'عرضي في الانتظار',
+    'my_offer_pending' => 'عرضي في الانتظار',
     'my_offer_accepted' => 'عرضي مقبول',
     'you_can_submit_offer' => 'يمكنك تقديم عرض',
 
     'pending_offers_count' => 'عرض في الانتظار',
     'accepted_offer' => 'عرض مقبول',
     'no_offers' => 'لا توجد عروض',
-    'offers'=>'العروض',
+    'offers' => 'العروض',
 
-        'provider_title' => 'لا توجد خدمات متاحة',
+    'provider_title' => 'لا توجد خدمات متاحة',
     'provider_text' => 'لا توجد خدمات متاحة حالياً. تحقق لاحقاً!',
     'client_title' => 'لا توجد خدمات مطلوبة',
     'client_text' => 'لم تطلب أي خدمات بعد. ابدأ بطلب خدمة جديدة!',
     'client_btn' => 'طلب خدمة جديدة',
- 
- 'back_to_categories' => 'العودة للأقسام',
+
+    'back_to_categories' => 'العودة للأقسام',
     'request_service_title' => 'طلب خدمة من هذا القسم',
     'selected_subcategory_label' => 'القسم الفرعي المحدد:',
     'warning_choose_subcategory' => 'تحذير: يجب اختيار قسم فرعي لطلب الخدمة',
@@ -308,11 +308,11 @@ return [
     'image_upload_multiple_note' => 'يمكنك رفع عدة صور مرة واحدة',
     'choose_images' => 'اختيار الصور',
     'add_more_images' => 'إضافة المزيد من الصور',
-    'additional_notes' => 'ملاحظات إضافية',
+    'additional_notes' => 'اكتب ملاحظاتك لشرح طلبك',
     'additional_notes_placeholder' => 'أضف أي ملاحظات إضافية هنا...',
     'submit_request' => 'إرسال الطلب',
-    'add_group'=>'إضافة مجموعة',
-        'del_group'=>'حذف المجموعة',
+    'add_group' => 'إضافة مجموعة',
+    'del_group' => 'حذف المجموعة',
 
 
     'home' => 'الرئيسية',
@@ -323,7 +323,7 @@ return [
     'select_subcategory_warning' => '⚠️ يجب اختيار قسم فرعي لطلب الخدمة',
 
 
-    'voice_recorder_title' => 'تسجيل صوتي',
+    'voice_recorder_title' => 'سجل صوت لشرح طلبك',
     'recorder_start_btn' => 'بدء التسجيل',
     'recorder_stop_btn' => 'إيقاف التسجيل',
     'recorder_play_btn' => 'تشغيل',
@@ -372,7 +372,7 @@ return [
     'delete_confirm' => 'هل أنت متأكد من حذف هذا الإشعار؟',
     'no_notifications_title' => 'لا توجد إشعارات بعد',
     'no_notifications_message' => 'ستظهر هنا الإشعارات الجديدة عند وصولها',
-    'success_session_message' => 'تم بنجاح', 
+    'success_session_message' => 'تم بنجاح',
 
 
     'conversations_title' => 'المحادثات',
@@ -577,5 +577,3 @@ return [
     'related_services_title' => 'خدمات مشابهة',
     'view_button' => 'عرض',
 ];
-
-

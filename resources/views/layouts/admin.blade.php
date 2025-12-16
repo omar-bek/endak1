@@ -411,6 +411,10 @@
                     <i class="fas fa-list"></i>
                     <span>جميع الطلبات</span>
                 </a>
+                <a href="{{ route('admin.messages.index') }}" class="menu-item {{ request()->routeIs('admin.messages.*') ? 'active' : '' }}">
+                    <i class="fas fa-comments"></i>
+                    <span>المحادثات</span>
+                </a>
             </div>
 
             <!-- إدارة النظام -->

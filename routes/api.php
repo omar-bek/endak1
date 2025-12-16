@@ -9,52 +9,52 @@ use App\Http\Controllers\Api\ServiceOfferController as ApiServiceOfferController
 use Illuminate\Support\Facades\Route;
 
 // Backward compatibility routes (without v1 prefix)
-Route::get('login', function () {
-    return response()->json([
-        'success' => true,
-        'message' => 'Login endpoint information',
-        'endpoint' => '/api/login',
-        'method' => 'POST',
-        'headers' => [
-            'Content-Type' => 'application/json',
-            'Accept' => 'application/json'
-        ],
-        'required_fields' => [
-            'email' => 'string (required, valid email format)',
-            'password' => 'string (required)'
-        ],
-        'example_request' => [
-            'email' => 'user@example.com',
-            'password' => 'password123'
-        ],
-        'example_response_success' => [
-            'success' => true,
-            'message' => 'تم تسجيل الدخول بنجاح',
-            'data' => [
-                'token' => 'api_token_here',
-                'user' => [
-                    'id' => 1,
-                    'name' => 'User Name',
-                    'email' => 'user@example.com',
-                    'phone' => '0123456789',
-                    'user_type' => 'customer'
-                ]
-            ]
-        ],
-        'example_response_error' => [
-            'success' => false,
-            'message' => 'Validation failed',
-            'errors' => [
-                'email' => ['بيانات تسجيل الدخول غير صحيحة']
-            ]
-        ],
-        'status_codes' => [
-            '200' => 'Success - Login successful',
-            '422' => 'Validation Error - Invalid credentials or missing fields',
-            '405' => 'Method Not Allowed - Use POST method'
-        ]
-    ]);
-})->name('api.login.info');
+// Route::get('login', function () {
+//     return response()->json([
+//         'success' => true,
+//         'message' => 'Login endpoint information',
+//         'endpoint' => '/api/login',
+//         'method' => 'POST',
+//         'headers' => [
+//             'Content-Type' => 'application/json',
+//             'Accept' => 'application/json'
+//         ],
+//         'required_fields' => [
+//             'email' => 'string (required, valid email format)',
+//             'password' => 'string (required)'
+//         ],
+//         'example_request' => [
+//             'email' => 'user@example.com',
+//             'password' => 'password123'
+//         ],
+//         'example_response_success' => [
+//             'success' => true,
+//             'message' => 'تم تسجيل الدخول بنجاح',
+//             'data' => [
+//                 'token' => 'api_token_here',
+//                 'user' => [
+//                     'id' => 1,
+//                     'name' => 'User Name',
+//                     'email' => 'user@example.com',
+//                     'phone' => '0123456789',
+//                     'user_type' => 'customer'
+//                 ]
+//             ]
+//         ],
+//         'example_response_error' => [
+//             'success' => false,
+//             'message' => 'Validation failed',
+//             'errors' => [
+//                 'email' => ['بيانات تسجيل الدخول غير صحيحة']
+//             ]
+//         ],
+//         'status_codes' => [
+//             '200' => 'Success - Login successful',
+//             '422' => 'Validation Error - Invalid credentials or missing fields',
+//             '405' => 'Method Not Allowed - Use POST method'
+//         ]
+//     ]);
+// })->name('api.login.info');
 
 Route::post('login', [ApiAuthController::class, 'login'])->name('api.login');
 

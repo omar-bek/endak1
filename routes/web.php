@@ -201,6 +201,12 @@ Route::middleware(['auth', 'verified', 'user.type.terms', 'admin'])->prefix('adm
     Route::get('/logs', [App\Http\Controllers\Admin\LogController::class, 'index'])->name('logs.index');
     Route::get('/logs/{filename}', [App\Http\Controllers\Admin\LogController::class, 'show'])->name('logs.show');
     Route::delete('/logs/{filename}', [App\Http\Controllers\Admin\LogController::class, 'destroy'])->name('logs.destroy');
+
+    // إدارة المحادثات
+    Route::get('/messages', [App\Http\Controllers\Admin\MessageController::class, 'index'])->name('messages.index');
+    Route::get('/messages/{conversationId}', [App\Http\Controllers\Admin\MessageController::class, 'show'])->name('messages.show');
+    Route::delete('/messages/{message}', [App\Http\Controllers\Admin\MessageController::class, 'destroy'])->name('messages.destroy');
+    Route::delete('/messages/conversation/{conversationId}', [App\Http\Controllers\Admin\MessageController::class, 'destroyConversation'])->name('messages.destroy-conversation');
 });
 
 // Authentication Routes (moved to top)

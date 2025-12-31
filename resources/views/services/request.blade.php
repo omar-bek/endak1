@@ -554,7 +554,9 @@
                                 </div>
 
                                 @php
-                                    $groupedFields = $category->fields->groupBy('input_group');
+                                    // استثناء الحقول من نوع image لأنها معروضة في قسم منفصل
+                                    $fieldsWithoutImages = $category->fields->where('type', '!=', 'image');
+                                    $groupedFields = $fieldsWithoutImages->groupBy('input_group');
                                 @endphp
 
                                 @foreach ($groupedFields as $group => $fields)
@@ -660,7 +662,7 @@
                                                 @elseif($field->type === 'textarea')
                                                     <textarea name="custom_fields[{{ $field->name }}][0]" id="custom_fields_{{ $field->name }}_0"
                                                         class="form-control" rows="3" {{ $field->is_required ? 'required' : '' }}>{{ old('custom_fields.' . $field->name . '.0') }}</textarea>
-                                                @else
+                                                @elseif($field->type !== 'image')
                                                     <input type="{{ $field->type }}"
                                                         name="custom_fields[{{ $field->name }}][0]"
                                                         id="custom_fields_{{ $field->name }}_0" class="form-control"

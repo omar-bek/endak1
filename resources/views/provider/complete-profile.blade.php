@@ -67,8 +67,7 @@
                                             <div class="alert alert-warning">
                                                 <i class="fas fa-exclamation-triangle me-2"></i>
                                                 يجب إضافة رقم الهاتف أولاً من
-                                                <a href="{{ route('profile.edit') }}" class="alert-link">صفحة الملف
-                                                    الشخصي</a>
+
                                             </div>
                                             <input type="tel" class="form-control is-invalid"
                                                 value="{{ old('phone') }}" name="phone" required>

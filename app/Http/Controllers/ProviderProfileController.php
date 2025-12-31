@@ -169,6 +169,7 @@ class ProviderProfileController extends Controller
 
         $request->validate([
             'bio' => 'required|string|max:1000',
+            'phone' => 'required|string|max:20',
             'address' => 'required|string|max:500',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'categories' => 'required|array|min:1',
@@ -207,12 +208,17 @@ class ProviderProfileController extends Controller
             $user->update(['image' => $imagePath]);
         }
 
+        // تحديث رقم الهاتف في حساب المستخدم
+        if ($request->phone && $request->phone !== $user->phone) {
+            $user->update(['phone' => $request->phone]);
+        }
+
         // إنشاء أو تحديث الملف الشخصي
         $profile = $user->providerProfile()->updateOrCreate(
             ['user_id' => $user->id],
             [
                 'bio' => $request->bio,
-                'phone' => $user->phone, // استخدام رقم الهاتف من المستخدم
+                'phone' => $request->phone,
                 'address' => $request->address,
                 'max_categories' => $maxCategories,
                 'max_cities' => $maxCities,

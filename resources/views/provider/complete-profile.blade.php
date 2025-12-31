@@ -58,26 +58,15 @@
 
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label class="form-label">رقم الهاتف <span class="text-danger">*</span></label>
-                                        @if (Auth::user()->phone)
-                                            <input type="text" class="form-control" value="{{ Auth::user()->phone }}"
-                                                readonly>
-                                            <small class="form-text text-muted">رقم الهاتف المسجل في حسابك</small>
-                                        @else
-                                            <div class="alert alert-warning">
-                                                <i class="fas fa-exclamation-triangle me-2"></i>
-                                                يجب إضافة رقم الهاتف أولاً من
-
-                                            </div>
-                                            <input type="tel" class="form-control is-invalid"
-                                                value="{{ old('phone') }}" name="phone" required>
-                                            <div class="invalid-feedback">
-                                                رقم الهاتف مطلوب لإكمال الملف الشخصي
-                                            </div>
-                                        @endif
+                                        <label for="phone" class="form-label">رقم الهاتف <span
+                                                class="text-danger">*</span></label>
+                                        <input type="tel" class="form-control @error('phone') is-invalid @enderror"
+                                            id="phone" name="phone" value="{{ old('phone', Auth::user()->phone) }}"
+                                            placeholder="أدخل رقم الهاتف" required>
                                         @error('phone')
-                                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                                            <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
+                                        <small class="form-text text-muted">رقم الهاتف مطلوب لإكمال الملف الشخصي</small>
                                     </div>
 
                                     <div class="mb-3">

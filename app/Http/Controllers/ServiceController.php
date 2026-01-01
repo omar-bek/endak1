@@ -22,28 +22,28 @@ class ServiceController extends Controller
         // إذا كان المستخدم مسجل دخول
         if (auth()->check()) {
             // إذا كان مزود خدمة، اعرض جميع الخدمات
-                        if (auth()->user()->isProvider()) {
+            if (auth()->user()->isProvider()) {
                 $query = Service::where('is_active', true)
-                           ->with(['category', 'subCategory', 'user', 'city', 'offers' => function($q) {
-                               $q->where('provider_id', auth()->id());
-                           }]);
+                    ->with(['category', 'subCategory', 'user', 'city', 'offers' => function ($q) {
+                        $q->where('provider_id', auth()->id());
+                    }]);
             } else {
                 // إذا كان مستخدم عادي، اعرض خدماته فقط
                 $query = Service::where('user_id', auth()->id())
-                               ->with(['category', 'subCategory', 'user', 'city']);
+                    ->with(['category', 'subCategory', 'user', 'city']);
             }
         } else {
             // إذا لم يكن مسجل دخول، اعرض جميع الخدمات النشطة
             $query = Service::where('is_active', true)
-                           ->with(['category', 'subCategory', 'user', 'city']);
+                ->with(['category', 'subCategory', 'user', 'city']);
         }
 
         // البحث
         if ($request->has('search') && $request->search) {
-            $query->where(function($q) use ($request) {
+            $query->where(function ($q) use ($request) {
                 $q->where('title', 'like', "%{$request->search}%")
-                  ->orWhere('description', 'like', "%{$request->search}%")
-                  ->orWhere('location', 'like', "%{$request->search}%");
+                    ->orWhere('description', 'like', "%{$request->search}%")
+                    ->orWhere('location', 'like', "%{$request->search}%");
             });
         }
 
@@ -70,8 +70,8 @@ class ServiceController extends Controller
         $subCategories = collect();
         if ($request->has('category') && $request->category) {
             $subCategories = \App\Models\SubCategory::where('category_id', $request->category)
-                                                   ->where('status', true)
-                                                   ->get();
+                ->where('status', true)
+                ->get();
         }
 
         return view('services.index', compact('services', 'categories', 'subCategories', 'cities'));
@@ -83,9 +83,9 @@ class ServiceController extends Controller
     public function show($slug)
     {
         $service = Service::where('slug', $slug)
-                         ->where('is_active', true)
-                         ->with(['category', 'subCategory', 'user', 'city'])
-                         ->firstOrFail();
+            ->where('is_active', true)
+            ->with(['category', 'subCategory', 'user', 'city'])
+            ->firstOrFail();
 
         // التحقق من إمكانية مزود الخدمة تقديم عرض
         $canProviderOffer = false;
@@ -96,17 +96,17 @@ class ServiceController extends Controller
 
             // جلب العرض المقدم من المستخدم الحالي لهذه الخدمة
             $userOffer = ServiceOffer::where('service_id', $service->id)
-                                   ->where('provider_id', auth()->id())
-                                   ->first();
+                ->where('provider_id', auth()->id())
+                ->first();
         }
 
         // الخدمات المشابهة
         $relatedServices = Service::where('category_id', $service->category_id)
-                                 ->where('id', '!=', $service->id)
-                                 ->where('is_active', true)
-                                 ->with(['category', 'subCategory', 'user', 'city'])
-                                 ->limit(6)
-                                 ->get();
+            ->where('id', '!=', $service->id)
+            ->where('is_active', true)
+            ->with(['category', 'subCategory', 'user', 'city'])
+            ->limit(6)
+            ->get();
 
         return view('services.show', compact('service', 'relatedServices', 'canProviderOffer', 'userOffer'));
     }
@@ -124,37 +124,37 @@ class ServiceController extends Controller
 
         // إذا كان المستخدم مسجل دخول
         if (auth()->check()) {
-                    // إذا كان مزود خدمة، ابحث في جميع الخدمات
-        if (auth()->user()->isProvider()) {
+            // إذا كان مزود خدمة، ابحث في جميع الخدمات
+            if (auth()->user()->isProvider()) {
+                $services = Service::where('is_active', true)
+                    ->where(function ($q) use ($query) {
+                        $q->where('title', 'like', "%{$query}%")
+                            ->orWhere('description', 'like', "%{$query}%");
+                    })
+                    ->with(['category', 'user', 'city'])
+                    ->latest()
+                    ->paginate(12);
+            } else {
+                // إذا كان مستخدم عادي، ابحث في خدماته فقط
+                $services = Service::where('user_id', auth()->id())
+                    ->where(function ($q) use ($query) {
+                        $q->where('title', 'like', "%{$query}%")
+                            ->orWhere('description', 'like', "%{$query}%");
+                    })
+                    ->with(['category', 'user', 'city'])
+                    ->latest()
+                    ->paginate(12);
+            }
+        } else {
+            // إذا لم يكن مسجل دخول، ابحث في جميع الخدمات النشطة
             $services = Service::where('is_active', true)
-                              ->where(function($q) use ($query) {
-                                  $q->where('title', 'like', "%{$query}%")
-                                    ->orWhere('description', 'like', "%{$query}%");
-                              })
-                              ->with(['category', 'user', 'city'])
-                              ->latest()
-                              ->paginate(12);
-        } else {
-            // إذا كان مستخدم عادي، ابحث في خدماته فقط
-            $services = Service::where('user_id', auth()->id())
-                              ->where(function($q) use ($query) {
-                                  $q->where('title', 'like', "%{$query}%")
-                                    ->orWhere('description', 'like', "%{$query}%");
-                              })
-                              ->with(['category', 'user', 'city'])
-                              ->latest()
-                              ->paginate(12);
-        }
-        } else {
-                    // إذا لم يكن مسجل دخول، ابحث في جميع الخدمات النشطة
-        $services = Service::where('is_active', true)
-                          ->where(function($q) use ($query) {
-                              $q->where('title', 'like', "%{$query}%")
-                                ->orWhere('description', 'like', "%{$query}%");
-                          })
-                          ->with(['category', 'user', 'city'])
-                          ->latest()
-                          ->paginate(12);
+                ->where(function ($q) use ($query) {
+                    $q->where('title', 'like', "%{$query}%")
+                        ->orWhere('description', 'like', "%{$query}%");
+                })
+                ->with(['category', 'user', 'city'])
+                ->latest()
+                ->paginate(12);
         }
 
         $categories = Category::where('is_active', true)->get();
@@ -174,7 +174,7 @@ class ServiceController extends Controller
         }
 
         // تحميل الحقول المخصصة مع القسم مرتبة حسب الترتيب
-        $category->load(['fields' => function($query) {
+        $category->load(['fields' => function ($query) {
             $query->where('is_active', true)->orderBy('sort_order', 'asc');
         }, 'subCategories']);
 
@@ -186,20 +186,20 @@ class ServiceController extends Controller
         // إذا كان القسم يحتوي على أقسام فرعية، يجب اختيار قسم فرعي
         if ($hasSubCategories && !$selectedSubCategoryId) {
             return redirect()->route('categories.show', $category->slug)
-                           ->with('error', 'يرجى اختيار قسم فرعي لطلب الخدمة');
+                ->with('error', 'يرجى اختيار قسم فرعي لطلب الخدمة');
         }
 
         // جلب القسم الفرعي المحدد إذا كان موجوداً
         if ($selectedSubCategoryId) {
             $selectedSubCategory = $category->subCategories()
-                                          ->where('id', $selectedSubCategoryId)
-                                          ->where('status', true)
-                                          ->first();
+                ->where('id', $selectedSubCategoryId)
+                ->where('status', true)
+                ->first();
 
             // التحقق من صحة القسم الفرعي
             if (!$selectedSubCategory) {
                 return redirect()->route('categories.show', $category->slug)
-                               ->with('error', 'القسم الفرعي المحدد غير صحيح');
+                    ->with('error', 'القسم الفرعي المحدد غير صحيح');
             }
         }
 
@@ -260,9 +260,9 @@ class ServiceController extends Controller
         // التحقق من صحة القسم الفرعي إذا كان محدداً
         if ($request->sub_category_id) {
             $subCategory = $category->subCategories()
-                                  ->where('id', $request->sub_category_id)
-                                  ->where('status', true)
-                                  ->first();
+                ->where('id', $request->sub_category_id)
+                ->where('status', true)
+                ->first();
 
             if (!$subCategory) {
                 return back()->withErrors(['sub_category_id' => 'القسم الفرعي المحدد غير صحيح'])->withInput();
@@ -365,7 +365,7 @@ class ServiceController extends Controller
         Log::info('Service creation - custom fields from created service:', ['custom_fields' => $service->custom_fields]);
 
         return redirect()->route('services.show', $service->slug)
-                         ->with('success', 'تم إرسال طلب الخدمة بنجاح');
+            ->with('success', 'تم إرسال طلب الخدمة بنجاح');
     }
 
     /**
@@ -385,15 +385,15 @@ class ServiceController extends Controller
         $subCategories = collect();
         if ($service->category_id) {
             $subCategories = \App\Models\SubCategory::where('category_id', $service->category_id)
-                                                   ->where('status', true)
-                                                   ->get();
+                ->where('status', true)
+                ->get();
         }
 
         // جلب الحقول المخصصة للقسم
         $categoryFields = \App\Models\CategoryField::where('category_id', $service->category_id)
-                                                   ->where('is_active', true)
-                                                   ->orderBy('sort_order')
-                                                   ->get();
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->get();
 
         return view('services.edit', compact('service', 'categories', 'subCategories', 'cities', 'categoryFields'));
     }
@@ -417,11 +417,41 @@ class ServiceController extends Controller
             'custom_fields.*' => 'nullable',
         ]);
 
-        $data = [
+        // التحقق من تغيير القسم أو المدينة لتحديث العنوان والـ slug
+        $categoryChanged = $request->category_id != $service->category_id;
+        $cityChanged = $request->city_id != $service->city_id;
+
+        $data = [];
+
+        if ($categoryChanged || $cityChanged) {
+            // جلب بيانات القسم والمدينة الجديدة
+            $category = Category::find($request->category_id);
+            $city = City::find($request->city_id);
+
+            if ($category && $city) {
+                // تحديث العنوان
+                $title = 'طلب خدمة - ' . $category->name . ' - ' . $city->name_ar;
+                $data['title'] = $title;
+
+                // إنشاء slug فريد جديد
+                $baseSlug = Str::slug($title);
+                $slug = $baseSlug;
+                $counter = 1;
+
+                // التأكد من أن slug فريد (يشمل السجلات المحذوفة ناعماً)
+                while (Service::withTrashed()->where('slug', $slug)->where('id', '!=', $service->id)->exists()) {
+                    $slug = $baseSlug . '-' . $counter;
+                    $counter++;
+                }
+                $data['slug'] = $slug;
+            }
+        }
+
+        $data = array_merge($data, [
             'category_id' => $request->category_id,
             'sub_category_id' => $request->sub_category_id,
             'city_id' => $request->city_id,
-        ];
+        ]);
 
         // معالجة الحقول المخصصة المتكررة
         $customFields = $request->custom_fields ?? [];
@@ -487,7 +517,7 @@ class ServiceController extends Controller
 
                 // إزالة الصور المحذوفة من الحقول المخصصة الموجودة
                 if (isset($existingCustomFields[$fieldName]) && is_array($existingCustomFields[$fieldName])) {
-                    $existingCustomFields[$fieldName] = array_filter($existingCustomFields[$fieldName], function($value) use ($imagePaths) {
+                    $existingCustomFields[$fieldName] = array_filter($existingCustomFields[$fieldName], function ($value) use ($imagePaths) {
                         if (is_array($value)) {
                             return !array_intersect($value, $imagePaths);
                         }
@@ -497,7 +527,7 @@ class ServiceController extends Controller
 
                 // إزالة الصور المحذوفة من الحقول المخصصة الجديدة
                 if (isset($processedFields[$fieldName]) && is_array($processedFields[$fieldName])) {
-                    $processedFields[$fieldName] = array_filter($processedFields[$fieldName], function($value) use ($imagePaths) {
+                    $processedFields[$fieldName] = array_filter($processedFields[$fieldName], function ($value) use ($imagePaths) {
                         if (is_array($value)) {
                             return !array_intersect($value, $imagePaths);
                         }
@@ -511,9 +541,9 @@ class ServiceController extends Controller
         $finalCustomFields = array_merge($existingCustomFields, $processedFields);
 
         // تنظيف الحقول الفارغة
-        $finalCustomFields = array_filter($finalCustomFields, function($value) {
+        $finalCustomFields = array_filter($finalCustomFields, function ($value) {
             if (is_array($value)) {
-                return !empty(array_filter($value, function($item) {
+                return !empty(array_filter($value, function ($item) {
                     if (is_array($item)) {
                         return !empty($item);
                     }
@@ -590,7 +620,7 @@ class ServiceController extends Controller
         Log::info('Service update - custom fields from updated service:', $service->custom_fields);
 
         return redirect()->route('services.show', $service->slug)
-                         ->with('success', 'تم تحديث الخدمة بنجاح');
+            ->with('success', 'تم تحديث الخدمة بنجاح');
     }
 
     /**
@@ -612,7 +642,7 @@ class ServiceController extends Controller
         $service->delete();
 
         return redirect()->route('services.index')
-                         ->with('success', 'تم حذف الخدمة بنجاح');
+            ->with('success', 'تم حذف الخدمة بنجاح');
     }
 
     /**
@@ -627,15 +657,15 @@ class ServiceController extends Controller
         // إذا كان مزود خدمة، اعرض جميع الخدمات
         if (auth()->user()->isProvider()) {
             $services = Service::where('is_active', true)
-                              ->with(['category', 'offers', 'user', 'city'])
-                              ->latest()
-                              ->paginate(10);
+                ->with(['category', 'offers', 'user', 'city'])
+                ->latest()
+                ->paginate(10);
         } else {
             // إذا كان مستخدم عادي، اعرض خدماته فقط
             $services = Service::where('user_id', auth()->id())
-                              ->with(['category', 'offers', 'city'])
-                              ->latest()
-                              ->paginate(10);
+                ->with(['category', 'offers', 'city'])
+                ->latest()
+                ->paginate(10);
         }
 
         return view('services.my-services', compact('services'));

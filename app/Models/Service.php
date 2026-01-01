@@ -87,35 +87,35 @@ class Service extends Model
     public static function getFeaturedServices($limit = 6)
     {
         return self::where('is_active', true)
-                   ->where('is_featured', true)
-                   ->with(['category', 'user'])
-                   ->latest()
-                   ->limit($limit)
-                   ->get();
+            ->where('is_featured', true)
+            ->with(['category', 'user'])
+            ->latest()
+            ->limit($limit)
+            ->get();
     }
 
     // الحصول على الخدمات حسب القسم
     public static function getServicesByCategory($categoryId, $limit = 12)
     {
         return self::where('category_id', $categoryId)
-                   ->where('is_active', true)
-                   ->with(['category', 'user'])
-                   ->latest()
-                   ->paginate($limit);
+            ->where('is_active', true)
+            ->with(['category', 'user'])
+            ->latest()
+            ->paginate($limit);
     }
 
     // البحث في الخدمات
     public static function search($query, $limit = 12)
     {
         return self::where('is_active', true)
-                   ->where(function($q) use ($query) {
-                       $q->where('title', 'like', "%{$query}%")
-                         ->orWhere('description', 'like', "%{$query}%")
-                         ->orWhere('location', 'like', "%{$query}%");
-                   })
-                   ->with(['category', 'user'])
-                   ->latest()
-                   ->paginate($limit);
+            ->where(function ($q) use ($query) {
+                $q->where('title', 'like', "%{$query}%")
+                    ->orWhere('description', 'like', "%{$query}%")
+                    ->orWhere('location', 'like', "%{$query}%");
+            })
+            ->with(['category', 'user'])
+            ->latest()
+            ->paginate($limit);
     }
 
     // إنشاء slug تلقائياً
@@ -123,30 +123,14 @@ class Service extends Model
     {
         parent::boot();
 
-        static::creating(function ($service) {
-            // Debug: Log the service attributes before slug creation
-            \Log::info('Service creating - attributes:', $service->getAttributes());
-
+        static::created(function ($service) {
             if (empty($service->slug)) {
-                $baseSlug = \Illuminate\Support\Str::slug($service->title, '-');
-                $slug = $baseSlug;
-                $counter = 1;
-
-                // التحقق من عدم تكرار الـ slug
-                while (static::where('slug', $slug)->exists()) {
-                    $slug = $baseSlug . '-' . $counter;
-                    $counter++;
-                }
-
-                $service->slug = $slug;
+                $service->slug = Str::slug($service->title) . '-' . $service->id;
+                $service->save();
             }
         });
-
-        static::created(function ($service) {
-            // Debug: Log the final service attributes after creation
-            \Log::info('Service created - final attributes:', $service->getAttributes());
-        });
     }
+
 
     // الحصول على الصورة مع fallback
     public function getImageUrlAttribute()

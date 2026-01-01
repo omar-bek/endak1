@@ -62,8 +62,8 @@ class ServiceController extends Controller
         $slug = $baseSlug;
         $counter = 1;
 
-        // التأكد من أن slug فريد
-        while (Service::where('slug', $slug)->exists()) {
+        // التأكد من أن slug فريد (يشمل السجلات المحذوفة ناعماً)
+        while (Service::withTrashed()->where('slug', $slug)->exists()) {
             $slug = $baseSlug . '-' . $counter;
             $counter++;
         }
@@ -125,8 +125,8 @@ class ServiceController extends Controller
             $slug = $baseSlug;
             $counter = 1;
 
-            // التأكد من أن slug فريد
-            while (Service::where('slug', $slug)->where('id', '!=', $service->id)->exists()) {
+            // التأكد من أن slug فريد (يشمل السجلات المحذوفة ناعماً)
+            while (Service::withTrashed()->where('slug', $slug)->where('id', '!=', $service->id)->exists()) {
                 $slug = $baseSlug . '-' . $counter;
                 $counter++;
             }

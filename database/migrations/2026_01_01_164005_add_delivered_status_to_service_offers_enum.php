@@ -22,6 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         // إرجاع enum إلى القيم الأصلية (بدون 'delivered')
+        // ملاحظة: يجب التأكد من عدم وجود سجلات بحالة 'delivered' قبل التراجع
         DB::statement("ALTER TABLE `service_offers` MODIFY COLUMN `status` ENUM('pending', 'accepted', 'rejected', 'expired') DEFAULT 'pending'");
     }
 };

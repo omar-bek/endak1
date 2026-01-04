@@ -119,27 +119,61 @@
 
                                     <div class="row">
                                         @foreach ($categories as $category)
-                                            <div class="col-md-4 mb-3">
-                                                <div class="form-check">
-                                                    @php
-                                                        $selectedCategories = $profile
-                                                            ? $profile
-                                                                ->activeCategories()
-                                                                ->pluck('category_id')
-                                                                ->toArray()
-                                                            : [];
-                                                    @endphp
-                                                    <input class="form-check-input category-checkbox" type="checkbox"
-                                                        name="categories[]" value="{{ $category->id }}"
-                                                        id="category_{{ $category->id }}"
-                                                        {{ in_array($category->id, old('categories', $selectedCategories)) ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="category_{{ $category->id }}">
-                                                        <i class="{{ $category->icon }} text-primary"></i>
-                                                        {{ $category->name }}
-                                                    </label>
+                                            @php
+                                                $selectedCategories = $profile
+                                                    ? $profile
+                                                        ->activeCategories()
+                                                        ->pluck('category_id')
+                                                        ->toArray()
+                                                    : [];
+                                                $selectedSubCategories = $profile
+                                                    ? $profile
+                                                        ->activeCategories()
+                                                        ->where('category_id', $category->id)
+                                                        ->pluck('sub_category_id')
+                                                        ->filter()
+                                                        ->toArray()
+                                                    : [];
+                                                $subCategories = $category->subCategories()->where('status', true)->get();
+                                                $hasSubCategories = $subCategories->count() > 0;
+                                            @endphp
+                                            <div class="col-md-6 mb-4">
+                                                <div class="card border">
+                                                    <div class="card-body">
+                                                        <div class="form-check mb-2">
+                                                            <input class="form-check-input category-checkbox" type="checkbox"
+                                                                name="categories[]" value="{{ $category->id }}"
+                                                                id="category_{{ $category->id }}"
+                                                                data-category-id="{{ $category->id }}"
+                                                                {{ in_array($category->id, old('categories', $selectedCategories)) ? 'checked' : '' }}>
+                                                            <label class="form-check-label fw-bold" for="category_{{ $category->id }}">
+                                                                <i class="{{ $category->icon }} text-primary"></i>
+                                                                {{ $category->name }}
+                                                            </label>
+                                                        </div>
+
+                                                        @if ($hasSubCategories)
+                                                            <div class="sub-categories-container" id="sub_categories_{{ $category->id }}" 
+                                                                 style="display: {{ in_array($category->id, old('categories', $selectedCategories)) ? 'block' : 'none' }}; margin-top: 10px; padding-right: 20px;">
+                                                                <small class="text-muted d-block mb-2">الأقسام الفرعية:</small>
+                                                                @foreach ($subCategories as $subCategory)
+                                                                    <div class="form-check mb-2">
+                                                                        <input class="form-check-input sub-category-checkbox" 
+                                                                               type="checkbox"
+                                                                               name="sub_categories[{{ $category->id }}][]" 
+                                                                               value="{{ $subCategory->id }}"
+                                                                               id="sub_category_{{ $subCategory->id }}"
+                                                                               data-category-id="{{ $category->id }}"
+                                                                               {{ in_array($subCategory->id, old("sub_categories.{$category->id}", $selectedSubCategories)) ? 'checked' : '' }}>
+                                                                        <label class="form-check-label" for="sub_category_{{ $subCategory->id }}">
+                                                                            {{ $subCategory->name_ar }}
+                                                                        </label>
+                                                                    </div>
+                                                                @endforeach
+                                                            </div>
+                                                        @endif
+                                                    </div>
                                                 </div>
-
-
                                             </div>
                                         @endforeach
                                     </div>
@@ -198,5 +232,70 @@
         </div>
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // إظهار/إخفاء الأقسام الفرعية عند اختيار قسم رئيسي
+            document.querySelectorAll('.category-checkbox').forEach(function(checkbox) {
+                checkbox.addEventListener('change', function() {
+                    const categoryId = this.getAttribute('data-category-id');
+                    const subCategoriesContainer = document.getElementById('sub_categories_' + categoryId);
+                    
+                    if (subCategoriesContainer) {
+                        if (this.checked) {
+                            subCategoriesContainer.style.display = 'block';
+                        } else {
+                            subCategoriesContainer.style.display = 'none';
+                            // إلغاء تحديد جميع الأقسام الفرعية عند إلغاء تحديد القسم الرئيسي
+                            subCategoriesContainer.querySelectorAll('.sub-category-checkbox').forEach(function(subCheckbox) {
+                                subCheckbox.checked = false;
+                            });
+                        }
+                    }
+                });
+            });
+
+            // تحديد القسم الرئيسي تلقائياً عند تحديد قسم فرعي
+            document.querySelectorAll('.sub-category-checkbox').forEach(function(checkbox) {
+                checkbox.addEventListener('change', function() {
+                    const categoryId = this.getAttribute('data-category-id');
+                    const categoryCheckbox = document.getElementById('category_' + categoryId);
+                    
+                    if (this.checked && categoryCheckbox && !categoryCheckbox.checked) {
+                        categoryCheckbox.checked = true;
+                        categoryCheckbox.dispatchEvent(new Event('change'));
+                    }
+                });
+            });
+
+            // التحقق من عدد الأقسام المحددة
+            const maxCategories = {{ $maxCategories }};
+            const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
+            
+            categoryCheckboxes.forEach(function(checkbox) {
+                checkbox.addEventListener('change', function() {
+                    const checkedCount = document.querySelectorAll('.category-checkbox:checked').length;
+                    
+                    if (checkedCount >= maxCategories) {
+                        categoryCheckboxes.forEach(function(cb) {
+                            if (!cb.checked) {
+                                cb.disabled = true;
+                            }
+                        });
+                    } else {
+                        categoryCheckboxes.forEach(function(cb) {
+                            cb.disabled = false;
+                        });
+                    }
+                });
+            });
+
+            // تشغيل التحقق عند تحميل الصفحة
+            categoryCheckboxes.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    checkbox.dispatchEvent(new Event('change'));
+                }
+            });
+        });
+    </script>
 
 @endsection

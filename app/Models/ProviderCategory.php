@@ -12,6 +12,7 @@ class ProviderCategory extends Model
     protected $fillable = [
         'user_id',
         'category_id',
+        'sub_category_id',
         'is_active',
         'description',
         'hourly_rate',
@@ -33,6 +34,12 @@ class ProviderCategory extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    // العلاقة مع القسم الفرعي
+    public function subCategory()
+    {
+        return $this->belongsTo(SubCategory::class);
     }
 
     // الحصول على العروض في هذا القسم

@@ -6,6 +6,7 @@ use App\Models\ProviderProfile;
 use App\Models\ProviderCategory;
 use App\Models\ProviderCity;
 use App\Models\Category;
+use App\Models\SubCategory;
 use App\Models\City;
 use App\Models\SystemSetting;
 use Illuminate\Http\Request;
@@ -136,13 +137,28 @@ class ProviderProfileController extends Controller
         $user->providerCategories()->delete();
         $user->providerCities()->delete();
 
-        // إضافة الأقسام الجديدة
+        // إضافة الأقسام الجديدة مع الأقسام الفرعية
         foreach ($request->categories as $categoryId) {
-            ProviderCategory::create([
-                'user_id' => $user->id,
-                'category_id' => $categoryId,
-                'is_active' => true,
-            ]);
+            // التحقق من وجود أقسام فرعية محددة لهذا القسم
+            if ($request->has("sub_categories.{$categoryId}") && !empty($request->input("sub_categories.{$categoryId}"))) {
+                // إذا تم تحديد أقسام فرعية، نحفظ كل قسم فرعي كسجل منفصل
+                foreach ($request->input("sub_categories.{$categoryId}") as $subCatId) {
+                    ProviderCategory::create([
+                        'user_id' => $user->id,
+                        'category_id' => $categoryId,
+                        'sub_category_id' => $subCatId,
+                        'is_active' => true,
+                    ]);
+                }
+            } else {
+                // إذا لم يتم تحديد أقسام فرعية، نحفظ القسم الرئيسي فقط
+                ProviderCategory::create([
+                    'user_id' => $user->id,
+                    'category_id' => $categoryId,
+                    'sub_category_id' => null,
+                    'is_active' => true,
+                ]);
+            }
         }
 
         // إضافة المدن الجديدة
@@ -231,13 +247,28 @@ class ProviderProfileController extends Controller
         $user->providerCategories()->delete();
         $user->providerCities()->delete();
 
-        // إضافة الأقسام الجديدة
+        // إضافة الأقسام الجديدة مع الأقسام الفرعية
         foreach ($request->categories as $categoryId) {
-            ProviderCategory::create([
-                'user_id' => $user->id,
-                'category_id' => $categoryId,
-                'is_active' => true,
-            ]);
+            // التحقق من وجود أقسام فرعية محددة لهذا القسم
+            if ($request->has("sub_categories.{$categoryId}") && !empty($request->input("sub_categories.{$categoryId}"))) {
+                // إذا تم تحديد أقسام فرعية، نحفظ كل قسم فرعي كسجل منفصل
+                foreach ($request->input("sub_categories.{$categoryId}") as $subCatId) {
+                    ProviderCategory::create([
+                        'user_id' => $user->id,
+                        'category_id' => $categoryId,
+                        'sub_category_id' => $subCatId,
+                        'is_active' => true,
+                    ]);
+                }
+            } else {
+                // إذا لم يتم تحديد أقسام فرعية، نحفظ القسم الرئيسي فقط
+                ProviderCategory::create([
+                    'user_id' => $user->id,
+                    'category_id' => $categoryId,
+                    'sub_category_id' => null,
+                    'is_active' => true,
+                ]);
+            }
         }
 
         // إضافة المدن الجديدة
@@ -269,6 +300,9 @@ class ProviderProfileController extends Controller
             return redirect()->route('provider.complete-profile')->with('error', 'يجب إكمال الملف الشخصي أولاً');
         }
 
+        // تحميل العلاقات مع الأقسام الفرعية
+        $profile->load(['activeCategories.category', 'activeCategories.subCategory', 'activeCities.city']);
+
         return view('provider.profile', compact('profile'));
     }
 
@@ -286,6 +320,7 @@ class ProviderProfileController extends Controller
 
         $request->validate([
             'category_id' => 'required|exists:categories,id',
+            'sub_category_id' => 'nullable|exists:sub_categories,id',
             'description' => 'nullable|string|max:500',
             'hourly_rate' => 'nullable|numeric|min:0',
             'experience_years' => 'nullable|integer|min:0|max:50',
@@ -303,13 +338,24 @@ class ProviderProfileController extends Controller
         }
 
         // التحقق من عدم وجود القسم مسبقاً
-        if ($user->providerCategories()->where('category_id', $request->category_id)->exists()) {
-            return response()->json(['error' => 'هذا القسم مضاف مسبقاً'], 400);
+        $existingQuery = $user->providerCategories()->where('category_id', $request->category_id);
+        
+        // إذا تم تحديد قسم فرعي، تحقق من عدم وجود نفس القسم الفرعي
+        if ($request->sub_category_id) {
+            if ($existingQuery->where('sub_category_id', $request->sub_category_id)->exists()) {
+                return response()->json(['error' => 'هذا القسم الفرعي مضاف مسبقاً'], 400);
+            }
+        } else {
+            // إذا لم يتم تحديد قسم فرعي، تحقق من عدم وجود القسم الرئيسي بدون قسم فرعي
+            if ($existingQuery->whereNull('sub_category_id')->exists()) {
+                return response()->json(['error' => 'هذا القسم مضاف مسبقاً'], 400);
+            }
         }
 
         ProviderCategory::create([
             'user_id' => $user->id,
             'category_id' => $request->category_id,
+            'sub_category_id' => $request->sub_category_id ?? null,
             'description' => $request->description,
             'hourly_rate' => $request->hourly_rate,
             'experience_years' => $request->experience_years,

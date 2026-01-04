@@ -83,31 +83,58 @@
                 </div>
                 <div class="card-body">
                     @if($profile->activeCategories()->count() > 0)
+                        @php
+                            // تجميع الأقسام حسب القسم الرئيسي
+                            $groupedCategories = $profile->activeCategories->groupBy('category_id');
+                        @endphp
                         <div class="row">
-                            @foreach($profile->activeCategories as $providerCategory)
+                            @foreach($groupedCategories as $categoryId => $providerCategories)
+                                @php
+                                    $mainCategory = $providerCategories->first()->category;
+                                    $subCategories = $providerCategories->whereNotNull('sub_category_id');
+                                    $hasSubCategories = $subCategories->count() > 0;
+                                @endphp
                                 <div class="col-md-6 mb-3">
                                     <div class="card border-primary">
                                         <div class="card-body">
                                             <h6 class="card-title">
-                                                <i class="{{ $providerCategory->category->icon }} text-primary"></i>
-                                                {{ $providerCategory->category->name }}
+                                                <i class="{{ $mainCategory->icon }} text-primary"></i>
+                                                {{ $mainCategory->name }}
                                             </h6>
 
-                                            @if($providerCategory->description)
-                                                <p class="card-text small">{{ $providerCategory->description }}</p>
+                                            @if($hasSubCategories)
+                                                <div class="mb-2">
+                                                    <small class="text-muted d-block mb-1">الأقسام الفرعية:</small>
+                                                    <div class="d-flex flex-wrap gap-1">
+                                                        @foreach($subCategories as $subCat)
+                                                            @if($subCat->subCategory)
+                                                                <span class="badge bg-secondary">
+                                                                    {{ $subCat->subCategory->name_ar }}
+                                                                </span>
+                                                            @endif
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @endif
+
+                                            @php
+                                                $firstCategory = $providerCategories->first();
+                                            @endphp
+                                            @if($firstCategory->description)
+                                                <p class="card-text small">{{ $firstCategory->description }}</p>
                                             @endif
 
                                             <div class="row">
-                                                @if($providerCategory->hourly_rate)
+                                                @if($firstCategory->hourly_rate)
                                                     <div class="col-6">
                                                         <small class="text-muted">السعر بالساعة:</small>
-                                                        <br><strong>{{ number_format($providerCategory->hourly_rate, 2) }} ريال</strong>
+                                                        <br><strong>{{ number_format($firstCategory->hourly_rate, 2) }} ريال</strong>
                                                     </div>
                                                 @endif
-                                                @if($providerCategory->experience_years)
+                                                @if($firstCategory->experience_years)
                                                     <div class="col-6">
                                                         <small class="text-muted">سنوات الخبرة:</small>
-                                                        <br><strong>{{ $providerCategory->experience_years }} سنوات</strong>
+                                                        <br><strong>{{ $firstCategory->experience_years }} سنوات</strong>
                                                     </div>
                                                 @endif
                                             </div>
@@ -245,25 +272,22 @@
             <form id="addCategoryForm">
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="category_id" class="form-label">القسم</label>
+                        <label for="category_id" class="form-label">القسم الرئيسي</label>
                         <select name="category_id" id="category_id" class="form-select" required>
                             <option value="">اختر القسم</option>
                             @foreach(\App\Models\Category::where('is_active', true)->get() as $category)
                                 @if(!$profile->activeCategories()->where('category_id', $category->id)->exists())
-                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    <option value="{{ $category->id }}" data-has-sub="{{ $category->subCategories()->where('status', true)->count() > 0 ? '1' : '0' }}">
+                                        {{ $category->name }}
+                                    </option>
                                 @endif
                             @endforeach
                         </select>
                     </div>
-                    <div class="mb-3">
-                        <label for="city_id" class="form-label">المدينة</label>
-                        <select name="city_id" id="city_id" class="form-select" required>
-                            <option value="">اختر المدينة</option>
-                            @foreach(\App\Models\City::getActiveCities() as $city)
-                                @if(!$profile->activeCities()->where('city_id', $city->id)->exists())
-                                    <option value="{{ $city->id }}">{{ $city->name_ar }}</option>
-                                @endif
-                            @endforeach
+                    <div class="mb-3" id="sub_category_container" style="display: none;">
+                        <label for="sub_category_id" class="form-label">القسم الفرعي (اختياري)</label>
+                        <select name="sub_category_id" id="sub_category_id" class="form-select">
+                            <option value="">اختر القسم الفرعي (اختياري)</option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -319,11 +343,59 @@
 
 @push('scripts')
 <script>
+// تحديث الأقسام الفرعية عند اختيار قسم رئيسي
+document.getElementById('category_id').addEventListener('change', function() {
+    const categoryId = this.value;
+    const subCategoryContainer = document.getElementById('sub_category_container');
+    const subCategorySelect = document.getElementById('sub_category_id');
+    const selectedOption = this.options[this.selectedIndex];
+    const hasSub = selectedOption.getAttribute('data-has-sub') === '1';
+
+    // إعادة تعيين القسم الفرعي
+    subCategorySelect.innerHTML = '<option value="">اختر القسم الفرعي (اختياري)</option>';
+
+    if (hasSub && categoryId) {
+        // جلب الأقسام الفرعية
+        fetch(`/api/categories/${categoryId}/subcategories`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data && Array.isArray(data)) {
+                data.forEach(function(subCat) {
+                    const option = document.createElement('option');
+                    option.value = subCat.id;
+                    option.textContent = subCat.name_ar || subCat.name_en;
+                    subCategorySelect.appendChild(option);
+                });
+                subCategoryContainer.style.display = 'block';
+            } else {
+                subCategoryContainer.style.display = 'none';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            subCategoryContainer.style.display = 'none';
+        });
+    } else {
+        subCategoryContainer.style.display = 'none';
+    }
+});
+
 // إضافة قسم جديد
 document.getElementById('addCategoryForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
     const formData = new FormData(this);
+    const data = Object.fromEntries(formData);
+    
+    // إذا لم يتم اختيار قسم فرعي، لا نرسله
+    if (!data.sub_category_id) {
+        delete data.sub_category_id;
+    }
 
     fetch('{{ route("provider.categories.add") }}', {
         method: 'POST',
@@ -331,7 +403,7 @@ document.getElementById('addCategoryForm').addEventListener('submit', function(e
             'X-CSRF-TOKEN': '{{ csrf_token() }}',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(Object.fromEntries(formData))
+        body: JSON.stringify(data)
     })
     .then(response => response.json())
     .then(data => {

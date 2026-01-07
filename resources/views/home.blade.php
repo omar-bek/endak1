@@ -359,91 +359,91 @@
 
     <!-- Features Section -->
     <!-- <section class="features-section py-5">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-md-4 text-center mb-4">
-                                <div class="icon-box mb-3">
-                                    <i class="fas fa-shield-alt"></i>
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-4 text-center mb-4">
+                                    <div class="icon-box mb-3">
+                                        <i class="fas fa-shield-alt"></i>
+                                    </div>
+                                    <h4>خدمات آمنة</h4>
+                                    <p>جميع الخدمات مضمونة وآمنة 100%</p>
                                 </div>
-                                <h4>خدمات آمنة</h4>
-                                <p>جميع الخدمات مضمونة وآمنة 100%</p>
-                            </div>
-                            <div class="col-md-4 text-center mb-4">
-                                <div class="icon-box mb-3">
-                                    <i class="fas fa-clock"></i>
+                                <div class="col-md-4 text-center mb-4">
+                                    <div class="icon-box mb-3">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <h4>خدمة سريعة</h4>
+                                    <p>احصل على الخدمة في أسرع وقت ممكن</p>
                                 </div>
-                                <h4>خدمة سريعة</h4>
-                                <p>احصل على الخدمة في أسرع وقت ممكن</p>
-                            </div>
-                            <div class="col-md-4 text-center mb-4">
-                                <div class="icon-box mb-3">
-                                    <i class="fas fa-star"></i>
+                                <div class="col-md-4 text-center mb-4">
+                                    <div class="icon-box mb-3">
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <h4>جودة عالية</h4>
+                                    <p>نختار لك أفضل مزودي الخدمات</p>
                                 </div>
-                                <h4>جودة عالية</h4>
-                                <p>نختار لك أفضل مزودي الخدمات</p>
                             </div>
                         </div>
-                    </div>
-                </section> -->
+                    </section> -->
 
     <!-- <style>
-                    .features-section {
-                        background: linear-gradient(135deg, #e6eefe, #f1f7ee);
-                        color: #2f5c69;
-                        overflow: hidden;
-                    }
-
-                    .features-section h4 {
-                        color: #2f5c69;
-                        font-weight: 600;
-                        margin-top: 15px;
-                    }
-
-                    .features-section p {
-                        color: #4b6e79;
-                        font-size: 0.95rem;
-                    }
-
-                    .icon-box {
-                        width: 100px;
-                        height: 100px;
-                        margin: 0 auto;
-                        background: rgba(47, 92, 105, 0.1);
-                        border-radius: 50%;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        transition: all 0.4s ease;
-                        animation: floatIcon 3s ease-in-out infinite;
-                    }
-
-                    .icon-box i {
-                        font-size: 2.5rem;
-                        color: #2f5c69;
-                        transition: all 0.4s ease;
-                    }
-
-                    .icon-box:hover {
-                        background: rgba(47, 92, 105, 0.2);
-                        transform: translateY(-8px);
-                    }
-
-                    .icon-box:hover i {
-                        color: #f3a446;
-                        transform: scale(1.1);
-                    }
-
-                    @keyframes floatIcon {
-
-                        0%,
-                        100% {
-                            transform: translateY(0);
+                        .features-section {
+                            background: linear-gradient(135deg, #e6eefe, #f1f7ee);
+                            color: #2f5c69;
+                            overflow: hidden;
                         }
 
-                        50% {
-                            transform: translateY(-10px);
+                        .features-section h4 {
+                            color: #2f5c69;
+                            font-weight: 600;
+                            margin-top: 15px;
                         }
-                    }
-                </style> -->
+
+                        .features-section p {
+                            color: #4b6e79;
+                            font-size: 0.95rem;
+                        }
+
+                        .icon-box {
+                            width: 100px;
+                            height: 100px;
+                            margin: 0 auto;
+                            background: rgba(47, 92, 105, 0.1);
+                            border-radius: 50%;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            transition: all 0.4s ease;
+                            animation: floatIcon 3s ease-in-out infinite;
+                        }
+
+                        .icon-box i {
+                            font-size: 2.5rem;
+                            color: #2f5c69;
+                            transition: all 0.4s ease;
+                        }
+
+                        .icon-box:hover {
+                            background: rgba(47, 92, 105, 0.2);
+                            transform: translateY(-8px);
+                        }
+
+                        .icon-box:hover i {
+                            color: #f3a446;
+                            transform: scale(1.1);
+                        }
+
+                        @keyframes floatIcon {
+
+                            0%,
+                            100% {
+                                transform: translateY(0);
+                            }
+
+                            50% {
+                                transform: translateY(-10px);
+                            }
+                        }
+                    </style> -->
 
 @endsection

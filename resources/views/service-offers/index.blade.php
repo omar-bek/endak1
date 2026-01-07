@@ -117,12 +117,11 @@
                                 @if($offer->status === 'accepted' && auth()->id() === $service->user_id)
                                     <div class="mt-3">
                                         @if(!$offer->delivered_at)
-                                            <form method="POST" action="{{ route('service-offers.deliver', $offer) }}" class="d-inline">
-                                                @csrf
-                                                <button type="submit" class="btn btn-warning btn-sm rounded-pill text-white">
-                                                    <i class="fas fa-check-double"></i> تم تسليم الخدمة
-                                                </button>
-                                            </form>
+                                            <button type="button" class="btn btn-warning btn-sm rounded-pill text-white"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#deliverModal{{ $offer->id }}">
+                                                <i class="fas fa-check-double"></i> تم تسليم الخدمة
+                                            </button>
                                         @else
                                             <span class="badge bg-success mb-2 rounded-pill px-3 py-2">
                                                 <i class="fas fa-check-circle"></i> تم التسليم
@@ -131,19 +130,14 @@
                                     </div>
                                 @endif
 
-                                @if($offer->status === 'delivered' && auth()->id() === $service->user_id && !$offer->rating)
-                                    <div class="mt-3">
-                                        <button type="button" class="btn btn-teal btn-sm rounded-pill"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#reviewModal{{ $offer->id }}">
-                                            <i class="fas fa-star"></i> تقييم المزود
-                                        </button>
-                                    </div>
-                                @elseif($offer->rating && auth()->id() === $service->user_id)
+                                @if($offer->status === 'delivered' && auth()->id() === $service->user_id && $offer->rating)
                                     <div class="mt-3 text-center">
                                         @for($i = 1; $i <= 5; $i++)
                                             <i class="fas fa-star {{ $i <= $offer->rating ? 'text-warning' : 'text-muted' }}"></i>
                                         @endfor
+                                        @if($offer->review)
+                                            <div><small class="text-muted">{{ Str::limit($offer->review, 50) }}</small></div>
+                                        @endif
                                         <div><small class="text-muted">تم التقييم</small></div>
                                     </div>
                                 @endif
@@ -277,37 +271,45 @@
 
 <!-- Modals -->
 @foreach($offers as $offer)
-    @if($offer->status === 'delivered' && auth()->id() === $service->user_id && !$offer->rating)
-        <div class="modal fade" id="reviewModal{{ $offer->id }}" tabindex="-1" aria-hidden="true">
+    @if($offer->status === 'accepted' && auth()->id() === $service->user_id && !$offer->delivered_at)
+        <!-- Modal تسليم الخدمة مع التقييم الإلزامي -->
+        <div class="modal fade" id="deliverModal{{ $offer->id }}" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0 rounded-3 shadow-lg">
-                    <div class="modal-header bg-teal text-white">
-                        <h5 class="modal-title"><i class="fas fa-star me-2"></i> تقييم مزود الخدمة</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <div class="modal-header bg-warning text-dark">
+                        <h5 class="modal-title"><i class="fas fa-check-double me-2"></i> تسليم الخدمة</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <form method="POST" action="{{ route('service-offers.review', $offer) }}">
+                    <form method="POST" action="{{ route('service-offers.deliver', $offer) }}" id="deliverForm{{ $offer->id }}">
                         @csrf
                         <div class="modal-body">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>ملاحظة:</strong> يجب تقييم المزود قبل تسليم الخدمة. هذا التقييم إلزامي.
+                            </div>
                             <div class="mb-3 text-center">
-                                <label class="form-label fw-bold mb-2">التقييم</label>
+                                <label class="form-label fw-bold mb-2">التقييم <span class="text-danger">*</span></label>
                                 <div class="rating-input">
                                     @for($i = 5; $i >= 1; $i--)
-                                        <input type="radio" name="rating" value="{{ $i }}" id="rating{{ $i }}_{{ $offer->id }}" class="rating-radio">
-                                        <label for="rating{{ $i }}_{{ $offer->id }}" class="rating-label">
+                                        <input type="radio" name="rating" value="{{ $i }}" id="deliverRating{{ $i }}_{{ $offer->id }}" class="rating-radio" required>
+                                        <label for="deliverRating{{ $i }}_{{ $offer->id }}" class="rating-label">
                                             <i class="fas fa-star"></i>
                                         </label>
                                     @endfor
                                 </div>
+                                <small class="text-danger d-block mt-2" id="ratingError{{ $offer->id }}" style="display: none;">يجب اختيار التقييم</small>
                             </div>
                             <div class="mb-3">
-                                <label for="review{{ $offer->id }}" class="form-label fw-bold">تعليق (اختياري)</label>
-                                <textarea class="form-control" id="review{{ $offer->id }}" name="review" rows="3"
-                                          placeholder="اكتب تعليقك عن الخدمة..."></textarea>
+                                <label for="deliverReview{{ $offer->id }}" class="form-label fw-bold">تعليق (اختياري)</label>
+                                <textarea class="form-control" id="deliverReview{{ $offer->id }}" name="review" rows="3"
+                                          placeholder="اكتب تعليقك عن الخدمة والمزود..."></textarea>
                             </div>
                         </div>
                         <div class="modal-footer bg-light">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                            <button type="submit" class="btn btn-teal"><i class="fas fa-paper-plane"></i> إرسال التقييم</button>
+                            <button type="submit" class="btn btn-warning text-white">
+                                <i class="fas fa-check-double me-1"></i> تسليم وتقييم
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -315,6 +317,38 @@
         </div>
     @endif
 @endforeach
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // التحقق من التقييم قبل إرسال نموذج التسليم
+    @foreach($offers as $offer)
+        @if($offer->status === 'accepted' && auth()->id() === $service->user_id && !$offer->delivered_at)
+            const deliverForm{{ $offer->id }} = document.getElementById('deliverForm{{ $offer->id }}');
+            if (deliverForm{{ $offer->id }}) {
+                deliverForm{{ $offer->id }}.addEventListener('submit', function(e) {
+                    const rating = deliverForm{{ $offer->id }}.querySelector('input[name="rating"]:checked');
+                    const ratingError{{ $offer->id }} = document.getElementById('ratingError{{ $offer->id }}');
+                    
+                    if (!rating) {
+                        e.preventDefault();
+                        if (ratingError{{ $offer->id }}) {
+                            ratingError{{ $offer->id }}.style.display = 'block';
+                        }
+                        alert('يجب اختيار التقييم قبل تسليم الخدمة');
+                        return false;
+                    } else {
+                        if (ratingError{{ $offer->id }}) {
+                            ratingError{{ $offer->id }}.style.display = 'none';
+                        }
+                    }
+                });
+            }
+        @endif
+    @endforeach
+});
+</script>
+@endpush
 
 @endsection
 

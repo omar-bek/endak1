@@ -31,21 +31,30 @@
                         </div>
                     @endif
 
+                    @php
+                        $displayUser = isset($viewingUser) ? $viewingUser : Auth::user();
+                        $isOwnProfile = !isset($viewingUser) || (Auth::check() && Auth::id() == $viewingUser->id);
+                    @endphp
+
                     <div class="row">
                         <div class="col-md-6">
                             <h6 class="text-primary">المعلومات الأساسية</h6>
-                            <p><strong>الاسم:</strong> {{ Auth::user()->name }}</p>
-                            <p><strong>البريد الإلكتروني:</strong> {{ Auth::user()->email }}</p>
+                            <p><strong>الاسم:</strong> {{ $displayUser->name }}</p>
+                            <p><strong>البريد الإلكتروني:</strong> {{ $displayUser->email }}</p>
                             <p><strong>رقم الهاتف:</strong> {{ $profile->phone }}</p>
                             <p><strong>العنوان:</strong> {{ $profile->address }}</p>
                         </div>
                         <div class="col-md-6">
                             <h6 class="text-primary">الإحصائيات</h6>
                             <p><strong>التقييم:</strong>
-                                @for($i = 1; $i <= 5; $i++)
-                                    <i class="fas fa-star {{ $i <= $profile->rating ? 'text-warning' : 'text-muted' }}"></i>
-                                @endfor
-                                ({{ number_format($profile->rating, 1) }})
+                                @if($profile->rating > 0)
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <i class="fas fa-star {{ $i <= round($profile->rating) ? 'text-warning' : 'text-muted' }}"></i>
+                                    @endfor
+                                    <span class="ms-2">({{ number_format($profile->rating, 1) }})</span>
+                                @else
+                                    <span class="text-muted">لا توجد تقييمات</span>
+                                @endif
                             </p>
                             <p><strong>الخدمات المكتملة:</strong> {{ $profile->completed_services }}</p>
                             <p><strong>الحالة:</strong>
@@ -65,11 +74,19 @@
                         <p>{{ $profile->bio }}</p>
                     </div>
 
+                    @if($isOwnProfile)
                     <div class="text-center">
                         <a href="{{ route('provider.profile.edit') }}" class="btn btn-primary">
                             <i class="fas fa-edit"></i> تعديل الملف الشخصي
                         </a>
                     </div>
+                    @else
+                    <div class="text-center">
+                        <a href="{{ route('messages.show', $viewingUser->id) }}" class="btn btn-primary">
+                            <i class="fas fa-envelope"></i> إرسال رسالة
+                        </a>
+                    </div>
+                    @endif
                 </div>
             </div>
 
@@ -147,7 +164,7 @@
                         <p class="text-muted text-center">لم يتم إضافة أي أقسام بعد</p>
                     @endif
 
-                    @if($profile->canAddCategory())
+                    @if($isOwnProfile && $profile->canAddCategory())
                         <div class="text-center mt-3">
                             <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
                                 <i class="fas fa-plus"></i> إضافة قسم جديد
@@ -171,10 +188,12 @@
                                 <div class="col-md-4 mb-2">
                                     <div class="badge bg-info p-2 d-flex justify-content-between align-items-center">
                                         <span>{{ $providerCity->city->name_ar }}</span>
+                                        @if($isOwnProfile)
                                         <button type="button" class="btn btn-sm btn-outline-light ms-2"
                                                 onclick="removeCity({{ $providerCity->id }})">
                                             <i class="fas fa-times"></i>
                                         </button>
+                                        @endif
                                     </div>
                                     @if($providerCity->notes)
                                         <small class="text-muted d-block">{{ $providerCity->notes }}</small>
@@ -255,6 +274,68 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- التقييمات -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-star"></i> التقييمات
+                        <small class="float-end">({{ $ratings->count() }})</small>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if($ratings->count() > 0)
+                        <div class="mb-3">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <h6 class="mb-0">متوسط التقييم</h6>
+                                <div>
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <i class="fas fa-star {{ $i <= round($profile->rating) ? 'text-warning' : 'text-muted' }}"></i>
+                                    @endfor
+                                    <span class="ms-2 fw-bold">{{ number_format($profile->rating, 1) }}</span>
+                                </div>
+                            </div>
+                            <small class="text-muted">من {{ $ratings->count() }} تقييم</small>
+                        </div>
+                        <hr>
+                        <div class="ratings-list">
+                            @foreach($ratings as $rating)
+                                <div class="rating-item border-bottom pb-3 mb-3">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <h6 class="mb-1">
+                                                @if($rating->service && $rating->service->user)
+                                                    {{ $rating->service->user->name }}
+                                                @else
+                                                    عميل
+                                                @endif
+                                            </h6>
+                                            <small class="text-muted">
+                                                @if($rating->service && $rating->service->category)
+                                                    <i class="fas fa-folder"></i> {{ $rating->service->category->name }}
+                                                @endif
+                                                <span class="ms-2">
+                                                    <i class="fas fa-calendar"></i> {{ $rating->created_at->format('Y-m-d') }}
+                                                </span>
+                                            </small>
+                                        </div>
+                                        <div>
+                                            @for($i = 1; $i <= 5; $i++)
+                                                <i class="fas fa-star {{ $i <= $rating->rating ? 'text-warning' : 'text-muted' }}"></i>
+                                            @endfor
+                                        </div>
+                                    </div>
+                                    @if($rating->review)
+                                        <p class="mb-0 mt-2">{{ $rating->review }}</p>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <p class="text-muted text-center">لا توجد تقييمات بعد</p>
+                    @endif
                 </div>
             </div>
         </div>

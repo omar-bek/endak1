@@ -12,6 +12,8 @@ use App\Models\SystemSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
+use Exception;
 
 class ProviderProfileController extends Controller
 {
@@ -21,11 +23,10 @@ class ProviderProfileController extends Controller
     public function completeProfile()
     {
         // التأكد من أن المستخدم مزود خدمة
-        if (!Auth::user()->isProvider()) {
+        $user = Auth::user();
+        if (!$user || !$user->isProvider()) {
             return redirect()->route('home')->with('error', 'هذه الصفحة متاحة لمزودي الخدمة فقط');
         }
-
-        $user = Auth::user();
         $profile = $user->providerProfile;
 
         // إذا كان الملف الشخصي مكتمل، توجيه إلى صفحة العرض
@@ -51,28 +52,34 @@ class ProviderProfileController extends Controller
      */
     public function edit()
     {
-        // التأكد من أن المستخدم مزود خدمة
-        if (!Auth::user()->isProvider()) {
-            return redirect()->route('home')->with('error', 'هذه الصفحة متاحة لمزودي الخدمة فقط');
+        try {
+            // التأكد من أن المستخدم مزود خدمة
+            $user = Auth::user();
+            if (!$user || !$user->isProvider()) {
+                return redirect()->route('home')->with('error', 'هذه الصفحة متاحة لمزودي الخدمة فقط');
+            }
+            $profile = $user->providerProfile;
+
+            // إذا لم يكن لديه ملف شخصي، توجيه إلى صفحة الإكمال
+            if (!$profile) {
+                return redirect()->route('provider.complete-profile')->with('error', 'يجب إنشاء ملف شخصي أولاً');
+            }
+
+            // تحميل العلاقات للتأكد من عملها
+            $profile->load(['activeCategories', 'activeCities']);
+
+            $categories = Category::where('is_active', true)->get();
+            $cities = City::getActiveCities();
+            $maxCategories = SystemSetting::get('provider_max_categories', 3);
+            $maxCities = SystemSetting::get('provider_max_cities', 10);
+
+            return view('provider.edit-profile', compact('profile', 'categories', 'cities', 'maxCategories', 'maxCities'));
+        } catch (Exception $e) {
+            Log::error('Error in ProviderProfileController@edit: ' . $e->getMessage(), [
+                'exception' => $e
+            ]);
+            return redirect()->route('provider.profile')->with('error', 'حدث خطأ أثناء تحميل الصفحة');
         }
-
-        $user = Auth::user();
-        $profile = $user->providerProfile;
-
-        // إذا لم يكن لديه ملف شخصي، توجيه إلى صفحة الإكمال
-        if (!$profile) {
-            return redirect()->route('provider.complete-profile')->with('error', 'يجب إنشاء ملف شخصي أولاً');
-        }
-
-        // تحميل العلاقات للتأكد من عملها
-        $profile->load(['activeCategories', 'activeCities']);
-
-        $categories = Category::where('is_active', true)->get();
-        $cities = City::getActiveCities();
-        $maxCategories = SystemSetting::get('provider_max_categories', 3);
-        $maxCities = SystemSetting::get('provider_max_cities', 10);
-
-        return view('provider.edit-profile', compact('profile', 'categories', 'cities', 'maxCategories', 'maxCities'));
     }
 
     /**
@@ -80,97 +87,65 @@ class ProviderProfileController extends Controller
      */
     public function update(Request $request)
     {
-        // التأكد من أن المستخدم مزود خدمة
-        if (!Auth::user()->isProvider()) {
-            return redirect()->route('home')->with('error', 'هذه الصفحة متاحة لمزودي الخدمة فقط');
-        }
-
-        $request->validate([
-            'bio' => 'required|string|max:1000',
-            'address' => 'required|string|max:500',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'categories' => 'required|array|min:1',
-            'categories.*' => 'exists:categories,id',
-            'cities' => 'required|array|min:1',
-            'cities.*' => 'exists:cities,id',
-        ]);
-
-        $user = Auth::user();
-        $profile = $user->providerProfile;
-        $maxCategories = SystemSetting::get('provider_max_categories', 3);
-        $maxCities = SystemSetting::get('provider_max_cities', 10);
-
-        // معالجة رفع الصورة الشخصية
-        $imagePath = null;
-        if ($request->hasFile('image')) {
-            // حذف الصورة القديمة إذا كانت موجودة
-            if ($user->image) {
-                Storage::disk('public')->delete($user->image);
+        try {
+            // التحقق من أن المستخدم مزود خدمة
+            $user = Auth::user();
+            if (!$user || !$user->isProvider()) {
+                return redirect()->route('home')->with('error', 'هذه الصفحة متاحة لمزودي الخدمة فقط');
             }
 
-            $imagePath = $request->file('image')->store('users', 'public');
-        }
-
-        // التحقق من عدد الأقسام
-        if (count($request->categories) > $maxCategories) {
-            return back()->withErrors(['categories' => "يمكنك اختيار حد أقصى {$maxCategories} أقسام"]);
-        }
-
-        // التحقق من عدد المدن
-        if (count($request->cities) > $maxCities) {
-            return back()->withErrors(['cities' => "يمكنك اختيار حد أقصى {$maxCities} مدن"]);
-        }
-
-        // تحديث صورة المستخدم إذا تم رفع صورة جديدة
-        if ($imagePath) {
-            $user->update(['image' => $imagePath]);
-        }
-
-        // تحديث الملف الشخصي
-        $profile->update([
-            'bio' => $request->bio,
-            'phone' => $user->phone, // استخدام رقم الهاتف من المستخدم
-            'address' => $request->address,
-        ]);
-
-        // حذف الأقسام والمدن القديمة
-        $user->providerCategories()->delete();
-        $user->providerCities()->delete();
-
-        // إضافة الأقسام الجديدة مع الأقسام الفرعية
-        foreach ($request->categories as $categoryId) {
-            // التحقق من وجود أقسام فرعية محددة لهذا القسم
-            if ($request->has("sub_categories.{$categoryId}") && !empty($request->input("sub_categories.{$categoryId}"))) {
-                // إذا تم تحديد أقسام فرعية، نحفظ كل قسم فرعي كسجل منفصل
-                foreach ($request->input("sub_categories.{$categoryId}") as $subCatId) {
-                    ProviderCategory::create([
-                        'user_id' => $user->id,
-                        'category_id' => $categoryId,
-                        'sub_category_id' => $subCatId,
-                        'is_active' => true,
-                    ]);
-                }
-            } else {
-                // إذا لم يتم تحديد أقسام فرعية، نحفظ القسم الرئيسي فقط
-                ProviderCategory::create([
-                    'user_id' => $user->id,
-                    'category_id' => $categoryId,
-                    'sub_category_id' => null,
-                    'is_active' => true,
-                ]);
-            }
-        }
-
-        // إضافة المدن الجديدة
-        foreach ($request->cities as $cityId) {
-            ProviderCity::create([
-                'user_id' => $user->id,
-                'city_id' => $cityId,
-                'is_active' => true,
+            $validated = $request->validate([
+                'bio' => 'required|string|max:1000',
+                'address' => 'required|string|max:500',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'categories' => 'required|array|min:1',
+                'categories.*' => 'exists:categories,id',
+                'cities' => 'required|array|min:1',
+                'cities.*' => 'exists:cities,id',
             ]);
-        }
 
-        return redirect()->route('provider.profile')->with('success', 'تم تحديث الملف الشخصي بنجاح');
+            $user = Auth::user();
+            $profile = $user->providerProfile;
+            $maxCategories = SystemSetting::get('provider_max_categories', 3);
+            $maxCities = SystemSetting::get('provider_max_cities', 10);
+
+            // التحقق من عدد الأقسام والمدن
+            $this->validateCategoriesAndCities($request, $maxCategories, $maxCities);
+
+            // معالجة الصورة
+            $imagePath = $this->handleImageUpload($request, $user);
+
+            // تحديث بيانات المستخدم
+            if ($imagePath) {
+                $user->update(['image' => $imagePath]);
+            }
+
+            // تحديث الملف الشخصي
+            $profile->update([
+                'bio' => $request->bio,
+                'phone' => $user->phone,
+                'address' => $request->address,
+            ]);
+
+            // حفظ الأقسام والمدن
+            $this->saveCategoriesAndCities($user, $request);
+
+            Log::info('Provider profile updated', [
+                'user_id' => $user->id,
+                'profile_id' => $profile->id
+            ]);
+
+            return redirect()->route('provider.profile')->with('success', 'تم تحديث الملف الشخصي بنجاح');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->errors())->withInput();
+        } catch (Exception $e) {
+            Log::error('Error in ProviderProfileController@update: ' . $e->getMessage(), [
+                'exception' => $e,
+                'request' => $request->except(['image']),
+                'user_id' => Auth::id()
+            ]);
+            return back()->with('error', 'حدث خطأ أثناء تحديث الملف الشخصي')->withInput();
+        }
     }
 
     /**
@@ -178,59 +153,116 @@ class ProviderProfileController extends Controller
      */
     public function store(Request $request)
     {
-        // التأكد من أن المستخدم مزود خدمة
-        if (!Auth::user()->isProvider()) {
-            return redirect()->route('home')->with('error', 'هذه الصفحة متاحة لمزودي الخدمة فقط');
-        }
-
-        $request->validate([
-            'bio' => 'required|string|max:1000',
-            'phone' => 'required|string|max:20',
-            'address' => 'required|string|max:500',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'categories' => 'required|array|min:1',
-            'categories.*' => 'exists:categories,id',
-            'cities' => 'required|array|min:1',
-            'cities.*' => 'exists:cities,id',
-        ]);
-
-        $user = Auth::user();
-        $maxCategories = SystemSetting::get('provider_max_categories', 3);
-        $maxCities = SystemSetting::get('provider_max_cities', 10);
-
-        // معالجة رفع الصورة الشخصية
-        $imagePath = null;
-        if ($request->hasFile('image')) {
-            // حذف الصورة القديمة إذا كانت موجودة
-            if ($user->image) {
-                \Storage::disk('public')->delete($user->image);
+        try {
+            // التحقق من أن المستخدم مزود خدمة
+            if (!Auth::user()->isProvider()) {
+                return redirect()->route('home')->with('error', 'هذه الصفحة متاحة لمزودي الخدمة فقط');
             }
 
-            $imagePath = $request->file('image')->store('users', 'public');
-        }
+            $validated = $request->validate([
+                'bio' => 'required|string|max:1000',
+                'phone' => 'required|string|max:20',
+                'address' => 'required|string|max:500',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'categories' => 'required|array|min:1',
+                'categories.*' => 'exists:categories,id',
+                'cities' => 'required|array|min:1',
+                'cities.*' => 'exists:cities,id',
+            ]);
 
-        // التحقق من عدد الأقسام
+            $user = Auth::user();
+            $maxCategories = SystemSetting::get('provider_max_categories', 3);
+            $maxCities = SystemSetting::get('provider_max_cities', 10);
+
+            // التحقق من عدد الأقسام والمدن
+            $this->validateCategoriesAndCities($request, $maxCategories, $maxCities);
+
+            // معالجة الصورة
+            $imagePath = $this->handleImageUpload($request, $user);
+
+            // تحديث بيانات المستخدم
+            $this->updateUserData($user, $request, $imagePath);
+
+            // إنشاء أو تحديث الملف الشخصي
+            $profile = $this->createOrUpdateProfile($user, $request, $maxCategories, $maxCities);
+
+            // حفظ الأقسام والمدن
+            $this->saveCategoriesAndCities($user, $request);
+
+            Log::info('Provider profile created/updated', [
+                'user_id' => $user->id,
+                'profile_id' => $profile->id
+            ]);
+
+            return redirect()->route('provider.profile')->with('success', 'تم حفظ الملف الشخصي بنجاح');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->errors())->withInput();
+        } catch (Exception $e) {
+            Log::error('Error in ProviderProfileController@store: ' . $e->getMessage(), [
+                'exception' => $e,
+                'request' => $request->except(['image']),
+                'user_id' => Auth::id()
+            ]);
+            return back()->with('error', 'حدث خطأ أثناء حفظ الملف الشخصي')->withInput();
+        }
+    }
+
+    /**
+     * التحقق من عدد الأقسام والمدن
+     */
+    private function validateCategoriesAndCities(Request $request, int $maxCategories, int $maxCities): void
+    {
         if (count($request->categories) > $maxCategories) {
-            return back()->withErrors(['categories' => "يمكنك اختيار حد أقصى {$maxCategories} أقسام"]);
+            throw new \Exception("يمكنك اختيار حد أقصى {$maxCategories} أقسام");
         }
 
-        // التحقق من عدد المدن
         if (count($request->cities) > $maxCities) {
-            return back()->withErrors(['cities' => "يمكنك اختيار حد أقصى {$maxCities} مدن"]);
+            throw new \Exception("يمكنك اختيار حد أقصى {$maxCities} مدن");
+        }
+    }
+
+    /**
+     * معالجة رفع الصورة
+     */
+    private function handleImageUpload(Request $request, $user): ?string
+    {
+        if (!$request->hasFile('image')) {
+            return null;
         }
 
-        // تحديث صورة المستخدم إذا تم رفع صورة جديدة
+        if ($user->image) {
+            Storage::disk('public')->delete($user->image);
+        }
+
+        return $request->file('image')->store('users', 'public');
+    }
+
+    /**
+     * تحديث بيانات المستخدم
+     */
+    private function updateUserData($user, Request $request, ?string $imagePath): void
+    {
+        $updateData = [];
+
         if ($imagePath) {
-            $user->update(['image' => $imagePath]);
+            $updateData['image'] = $imagePath;
         }
 
-        // تحديث رقم الهاتف في حساب المستخدم
         if ($request->phone && $request->phone !== $user->phone) {
-            $user->update(['phone' => $request->phone]);
+            $updateData['phone'] = $request->phone;
         }
 
-        // إنشاء أو تحديث الملف الشخصي
-        $profile = $user->providerProfile()->updateOrCreate(
+        if (!empty($updateData)) {
+            $user->update($updateData);
+        }
+    }
+
+    /**
+     * إنشاء أو تحديث الملف الشخصي
+     */
+    private function createOrUpdateProfile($user, Request $request, int $maxCategories, int $maxCities): ProviderProfile
+    {
+        return $user->providerProfile()->updateOrCreate(
             ['user_id' => $user->id],
             [
                 'bio' => $request->bio,
@@ -242,16 +274,20 @@ class ProviderProfileController extends Controller
                 'is_active' => SystemSetting::get('provider_auto_approve', false),
             ]
         );
+    }
 
-        // حذف الأقسام والمدن القديمة
+    /**
+     * حفظ الأقسام والمدن
+     */
+    private function saveCategoriesAndCities($user, Request $request): void
+    {
+        // حذف القديمة
         $user->providerCategories()->delete();
         $user->providerCities()->delete();
 
         // إضافة الأقسام الجديدة مع الأقسام الفرعية
         foreach ($request->categories as $categoryId) {
-            // التحقق من وجود أقسام فرعية محددة لهذا القسم
             if ($request->has("sub_categories.{$categoryId}") && !empty($request->input("sub_categories.{$categoryId}"))) {
-                // إذا تم تحديد أقسام فرعية، نحفظ كل قسم فرعي كسجل منفصل
                 foreach ($request->input("sub_categories.{$categoryId}") as $subCatId) {
                     ProviderCategory::create([
                         'user_id' => $user->id,
@@ -261,7 +297,6 @@ class ProviderProfileController extends Controller
                     ]);
                 }
             } else {
-                // إذا لم يتم تحديد أقسام فرعية، نحفظ القسم الرئيسي فقط
                 ProviderCategory::create([
                     'user_id' => $user->id,
                     'category_id' => $categoryId,
@@ -279,31 +314,96 @@ class ProviderProfileController extends Controller
                 'is_active' => true,
             ]);
         }
+    }
 
-        return redirect()->route('provider.profile')->with('success', 'تم حفظ الملف الشخصي بنجاح');
+    /**
+     * عرض الملف الشخصي للعامة
+     */
+    public function showPublic($userId)
+    {
+        try {
+            $viewingUser = \App\Models\User::findOrFail($userId);
+            if (!$viewingUser->isProvider()) {
+                return redirect()->back()->with('error', 'المستخدم المحدد ليس مزود خدمة');
+            }
+            $profile = $viewingUser->providerProfile;
+
+            if (!$profile) {
+                return redirect()->back()->with('error', 'المزود لم يكمل ملفه الشخصي بعد');
+            }
+
+            // تحميل العلاقات
+            $profile->load(['activeCategories.category', 'activeCategories.subCategory', 'activeCities.city']);
+
+            // جلب التقييمات
+            $ratings = $profile->getRatings();
+
+            return view('provider.profile', compact('profile', 'ratings', 'viewingUser'));
+        } catch (Exception $e) {
+            Log::error('Error in ProviderProfileController@showPublic: ' . $e->getMessage(), [
+                'exception' => $e,
+                'user_id' => $userId
+            ]);
+            return redirect()->back()->with('error', 'حدث خطأ أثناء تحميل الملف الشخصي');
+        }
     }
 
     /**
      * عرض الملف الشخصي
      */
-    public function show()
+    public function show(Request $request)
     {
-        // التأكد من أن المستخدم مزود خدمة
-        if (!Auth::user()->isProvider()) {
-            return redirect()->route('home')->with('error', 'هذه الصفحة متاحة لمزودي الخدمة فقط');
+        try {
+            $user = Auth::user();
+            $viewingUserId = $request->get('user_id');
+
+            // إذا كان هناك user_id في الطلب، عرض ملف ذلك المستخدم (للعرض العام)
+            if ($viewingUserId) {
+                $viewingUser = \App\Models\User::findOrFail($viewingUserId);
+                if (!$viewingUser->isProvider()) {
+                    return redirect()->back()->with('error', 'المستخدم المحدد ليس مزود خدمة');
+                }
+                $profile = $viewingUser->providerProfile;
+
+                if (!$profile) {
+                    return redirect()->back()->with('error', 'المزود لم يكمل ملفه الشخصي بعد');
+                }
+
+                // تحميل العلاقات
+                $profile->load(['activeCategories.category', 'activeCategories.subCategory', 'activeCities.city']);
+
+                // جلب التقييمات
+                $ratings = $profile->getRatings();
+
+                return view('provider.profile', compact('profile', 'ratings', 'viewingUser'));
+            }
+
+            // إذا لم يكن هناك user_id، عرض ملف المستخدم الحالي (للمزود نفسه)
+            if (!$user || !$user->isProvider()) {
+                return redirect()->route('home')->with('error', 'هذه الصفحة متاحة لمزودي الخدمة فقط');
+            }
+            $profile = $user->providerProfile;
+
+            if (!$profile) {
+                return redirect()->route('provider.complete-profile')->with('error', 'يجب إكمال الملف الشخصي أولاً');
+            }
+
+            // تحميل العلاقات مع الأقسام الفرعية
+            $profile->load(['activeCategories.category', 'activeCategories.subCategory', 'activeCities.city']);
+
+            // جلب جميع التقييمات للمزود
+            $ratings = $profile->getRatings();
+
+            // تحديث التقييم في الملف الشخصي
+            $profile->updateRating();
+
+            return view('provider.profile', compact('profile', 'ratings'));
+        } catch (Exception $e) {
+            Log::error('Error in ProviderProfileController@show: ' . $e->getMessage(), [
+                'exception' => $e
+            ]);
+            return redirect()->route('home')->with('error', 'حدث خطأ أثناء تحميل الملف الشخصي');
         }
-
-        $user = Auth::user();
-        $profile = $user->providerProfile;
-
-        if (!$profile) {
-            return redirect()->route('provider.complete-profile')->with('error', 'يجب إكمال الملف الشخصي أولاً');
-        }
-
-        // تحميل العلاقات مع الأقسام الفرعية
-        $profile->load(['activeCategories.category', 'activeCategories.subCategory', 'activeCities.city']);
-
-        return view('provider.profile', compact('profile'));
     }
 
 
@@ -313,56 +413,70 @@ class ProviderProfileController extends Controller
      */
     public function addCategory(Request $request)
     {
-        // التأكد من أن المستخدم مزود خدمة
-        if (!Auth::user()->isProvider()) {
-            return response()->json(['error' => 'غير مصرح'], 403);
-        }
-
-        $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'sub_category_id' => 'nullable|exists:sub_categories,id',
-            'description' => 'nullable|string|max:500',
-            'hourly_rate' => 'nullable|numeric|min:0',
-            'experience_years' => 'nullable|integer|min:0|max:50',
-        ]);
-
-        $user = Auth::user();
-        $profile = $user->providerProfile;
-
-        if (!$profile) {
-            return response()->json(['error' => 'يجب إكمال الملف الشخصي أولاً'], 400);
-        }
-
-        if (!$profile->canAddCategory()) {
-            return response()->json(['error' => 'لا يمكن إضافة المزيد من الأقسام'], 400);
-        }
-
-        // التحقق من عدم وجود القسم مسبقاً
-        $existingQuery = $user->providerCategories()->where('category_id', $request->category_id);
-        
-        // إذا تم تحديد قسم فرعي، تحقق من عدم وجود نفس القسم الفرعي
-        if ($request->sub_category_id) {
-            if ($existingQuery->where('sub_category_id', $request->sub_category_id)->exists()) {
-                return response()->json(['error' => 'هذا القسم الفرعي مضاف مسبقاً'], 400);
+        try {
+            // التأكد من أن المستخدم مزود خدمة
+            $user = Auth::user();
+            if (!$user || !$user->isProvider()) {
+                return $this->errorResponse('غير مصرح', 403);
             }
-        } else {
-            // إذا لم يتم تحديد قسم فرعي، تحقق من عدم وجود القسم الرئيسي بدون قسم فرعي
-            if ($existingQuery->whereNull('sub_category_id')->exists()) {
-                return response()->json(['error' => 'هذا القسم مضاف مسبقاً'], 400);
+
+            $validated = $request->validate([
+                'category_id' => 'required|exists:categories,id',
+                'sub_category_id' => 'nullable|exists:sub_categories,id',
+                'description' => 'nullable|string|max:500',
+                'hourly_rate' => 'nullable|numeric|min:0',
+                'experience_years' => 'nullable|integer|min:0|max:50',
+            ]);
+
+            $user = Auth::user();
+            $profile = $user->providerProfile;
+
+            if (!$profile) {
+                return $this->errorResponse('يجب إكمال الملف الشخصي أولاً', 400);
             }
+
+            if (!$profile->canAddCategory()) {
+                return $this->errorResponse('لا يمكن إضافة المزيد من الأقسام', 400);
+            }
+
+            // التحقق من عدم وجود القسم مسبقاً
+            $existingQuery = $user->providerCategories()->where('category_id', $validated['category_id']);
+
+            if ($validated['sub_category_id'] ?? null) {
+                if ($existingQuery->where('sub_category_id', $validated['sub_category_id'])->exists()) {
+                    return $this->errorResponse('هذا القسم الفرعي مضاف مسبقاً', 400);
+                }
+            } else {
+                if ($existingQuery->whereNull('sub_category_id')->exists()) {
+                    return $this->errorResponse('هذا القسم مضاف مسبقاً', 400);
+                }
+            }
+
+            ProviderCategory::create([
+                'user_id' => $user->id,
+                'category_id' => $validated['category_id'],
+                'sub_category_id' => $validated['sub_category_id'] ?? null,
+                'description' => $validated['description'] ?? null,
+                'hourly_rate' => $validated['hourly_rate'] ?? null,
+                'experience_years' => $validated['experience_years'] ?? null,
+                'is_active' => true,
+            ]);
+
+            Log::info('Provider category added', [
+                'user_id' => $user->id,
+                'category_id' => $validated['category_id']
+            ]);
+
+            return $this->successResponse(null, 'تم إضافة القسم بنجاح');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return $this->errorResponse('بيانات غير صحيحة', 422, $e->errors());
+        } catch (Exception $e) {
+            Log::error('Error in ProviderProfileController@addCategory: ' . $e->getMessage(), [
+                'exception' => $e,
+                'request' => $request->all()
+            ]);
+            return $this->errorResponse('حدث خطأ أثناء إضافة القسم', 500);
         }
-
-        ProviderCategory::create([
-            'user_id' => $user->id,
-            'category_id' => $request->category_id,
-            'sub_category_id' => $request->sub_category_id ?? null,
-            'description' => $request->description,
-            'hourly_rate' => $request->hourly_rate,
-            'experience_years' => $request->experience_years,
-            'is_active' => true,
-        ]);
-
-        return response()->json(['success' => 'تم إضافة القسم بنجاح']);
     }
 
     /**
@@ -370,40 +484,56 @@ class ProviderProfileController extends Controller
      */
     public function addCity(Request $request)
     {
-        // التأكد من أن المستخدم مزود خدمة
-        if (!Auth::user()->isProvider()) {
-            return response()->json(['error' => 'غير مصرح'], 403);
+        try {
+            // التأكد من أن المستخدم مزود خدمة
+            $user = Auth::user();
+            if (!$user || !$user->isProvider()) {
+                return $this->errorResponse('غير مصرح', 403);
+            }
+
+            $validated = $request->validate([
+                'city_id' => 'required|exists:cities,id',
+                'notes' => 'nullable|string|max:500',
+            ]);
+
+            $user = Auth::user();
+            $profile = $user->providerProfile;
+
+            if (!$profile) {
+                return $this->errorResponse('يجب إكمال الملف الشخصي أولاً', 400);
+            }
+
+            if (!$profile->canAddCity()) {
+                return $this->errorResponse('لا يمكن إضافة المزيد من المدن', 400);
+            }
+
+            // التحقق من عدم وجود المدينة مسبقاً
+            if ($user->providerCities()->where('city_id', $validated['city_id'])->exists()) {
+                return $this->errorResponse('هذه المدينة مضافة مسبقاً', 400);
+            }
+
+            ProviderCity::create([
+                'user_id' => $user->id,
+                'city_id' => $validated['city_id'],
+                'notes' => $validated['notes'] ?? null,
+                'is_active' => true,
+            ]);
+
+            Log::info('Provider city added', [
+                'user_id' => $user->id,
+                'city_id' => $validated['city_id']
+            ]);
+
+            return $this->successResponse(null, 'تم إضافة المدينة بنجاح');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return $this->errorResponse('بيانات غير صحيحة', 422, $e->errors());
+        } catch (Exception $e) {
+            Log::error('Error in ProviderProfileController@addCity: ' . $e->getMessage(), [
+                'exception' => $e,
+                'request' => $request->all()
+            ]);
+            return $this->errorResponse('حدث خطأ أثناء إضافة المدينة', 500);
         }
-
-        $request->validate([
-            'city_id' => 'required|exists:cities,id',
-            'notes' => 'nullable|string|max:500',
-        ]);
-
-        $user = Auth::user();
-        $profile = $user->providerProfile;
-
-        if (!$profile) {
-            return response()->json(['error' => 'يجب إكمال الملف الشخصي أولاً'], 400);
-        }
-
-        if (!$profile->canAddCity()) {
-            return response()->json(['error' => 'لا يمكن إضافة المزيد من المدن'], 400);
-        }
-
-        // التحقق من عدم وجود المدينة مسبقاً
-        if ($user->providerCities()->where('city_id', $request->city_id)->exists()) {
-            return response()->json(['error' => 'هذه المدينة مضافة مسبقاً'], 400);
-        }
-
-        ProviderCity::create([
-            'user_id' => $user->id,
-            'city_id' => $request->city_id,
-            'notes' => $request->notes,
-            'is_active' => true,
-        ]);
-
-        return response()->json(['success' => 'تم إضافة المدينة بنجاح']);
     }
 
     /**
@@ -411,22 +541,36 @@ class ProviderProfileController extends Controller
      */
     public function removeCategory($id)
     {
-        // التأكد من أن المستخدم مزود خدمة
-        if (!Auth::user()->isProvider()) {
-            return response()->json(['error' => 'غير مصرح'], 403);
+        try {
+            // التأكد من أن المستخدم مزود خدمة
+            $user = Auth::user();
+            if (!$user || !$user->isProvider()) {
+                return $this->errorResponse('غير مصرح', 403);
+            }
+
+            $category = ProviderCategory::where('id', $id)
+                ->where('user_id', $user->id)
+                ->first();
+
+            if (!$category) {
+                return $this->errorResponse('القسم غير موجود', 404);
+            }
+
+            $category->delete();
+
+            Log::info('Provider category removed', [
+                'category_id' => $id,
+                'user_id' => Auth::id()
+            ]);
+
+            return $this->successResponse(null, 'تم حذف القسم بنجاح');
+        } catch (Exception $e) {
+            Log::error('Error in ProviderProfileController@removeCategory: ' . $e->getMessage(), [
+                'exception' => $e,
+                'category_id' => $id
+            ]);
+            return $this->errorResponse('حدث خطأ أثناء حذف القسم', 500);
         }
-
-        $category = ProviderCategory::where('id', $id)
-                                   ->where('user_id', Auth::id())
-                                   ->first();
-
-        if (!$category) {
-            return response()->json(['error' => 'القسم غير موجود'], 404);
-        }
-
-        $category->delete();
-
-        return response()->json(['success' => 'تم حذف القسم بنجاح']);
     }
 
     /**
@@ -434,21 +578,35 @@ class ProviderProfileController extends Controller
      */
     public function removeCity($id)
     {
-        // التأكد من أن المستخدم مزود خدمة
-        if (!Auth::user()->isProvider()) {
-            return response()->json(['error' => 'غير مصرح'], 403);
+        try {
+            // التأكد من أن المستخدم مزود خدمة
+            $user = Auth::user();
+            if (!$user || !$user->isProvider()) {
+                return $this->errorResponse('غير مصرح', 403);
+            }
+
+            $city = ProviderCity::where('id', $id)
+                ->where('user_id', $user->id)
+                ->first();
+
+            if (!$city) {
+                return $this->errorResponse('المدينة غير موجودة', 404);
+            }
+
+            $city->delete();
+
+            Log::info('Provider city removed', [
+                'city_id' => $id,
+                'user_id' => Auth::id()
+            ]);
+
+            return $this->successResponse(null, 'تم حذف المدينة بنجاح');
+        } catch (Exception $e) {
+            Log::error('Error in ProviderProfileController@removeCity: ' . $e->getMessage(), [
+                'exception' => $e,
+                'city_id' => $id
+            ]);
+            return $this->errorResponse('حدث خطأ أثناء حذف المدينة', 500);
         }
-
-        $city = ProviderCity::where('id', $id)
-                           ->where('user_id', Auth::id())
-                           ->first();
-
-        if (!$city) {
-            return response()->json(['error' => 'المدينة غير موجودة'], 404);
-        }
-
-        $city->delete();
-
-        return response()->json(['success' => 'تم حذف المدينة بنجاح']);
     }
 }

@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Exception;
 
 class ServiceController extends Controller
 {
@@ -19,62 +20,93 @@ class ServiceController extends Controller
      */
     public function index(Request $request)
     {
-        // إذا كان المستخدم مسجل دخول
-        if (auth()->check()) {
-            // إذا كان مزود خدمة، اعرض جميع الخدمات
-            if (auth()->user()->isProvider()) {
-                $query = Service::where('is_active', true)
-                    ->with(['category', 'subCategory', 'user', 'city', 'offers' => function ($q) {
-                        $q->where('provider_id', auth()->id());
-                    }]);
-            } else {
-                // إذا كان مستخدم عادي، اعرض خدماته فقط
-                $query = Service::where('user_id', auth()->id())
-                    ->with(['category', 'subCategory', 'user', 'city']);
-            }
-        } else {
-            // إذا لم يكن مسجل دخول، اعرض جميع الخدمات النشطة
-            $query = Service::where('is_active', true)
+        try {
+            // بناء الاستعلام حسب نوع المستخدم
+            $query = $this->buildServiceQuery($request);
+
+            // تطبيق الفلاتر
+            $this->applyFilters($query, $request);
+
+            // جلب البيانات
+            $services = $query->latest()->paginate(12);
+            $categories = Category::where('is_active', true)->get();
+            $cities = City::getActiveCities();
+            $subCategories = $this->getSubCategories($request);
+
+            return view('services.index', compact('services', 'categories', 'subCategories', 'cities'));
+        } catch (Exception $e) {
+            Log::error('Error in ServiceController@index: ' . $e->getMessage(), [
+                'exception' => $e,
+                'request' => $request->all()
+            ]);
+            return redirect()->route('home')->with('error', 'حدث خطأ أثناء تحميل الخدمات');
+        }
+    }
+
+    /**
+     * بناء استعلام الخدمات حسب نوع المستخدم
+     */
+    private function buildServiceQuery(Request $request)
+    {
+        if (!auth()->check()) {
+            return Service::where('is_active', true)
                 ->with(['category', 'subCategory', 'user', 'city']);
         }
 
+        if (auth()->user()->isProvider()) {
+            return Service::where('is_active', true)
+                ->with(['category', 'subCategory', 'user', 'city', 'offers' => function ($q) {
+                    $q->where('provider_id', auth()->id());
+                }]);
+        }
+
+        return Service::where('user_id', auth()->id())
+            ->with(['category', 'subCategory', 'user', 'city']);
+    }
+
+    /**
+     * تطبيق الفلاتر على الاستعلام
+     */
+    private function applyFilters($query, Request $request): void
+    {
         // البحث
-        if ($request->has('search') && $request->search) {
-            $query->where(function ($q) use ($request) {
-                $q->where('title', 'like', "%{$request->search}%")
-                    ->orWhere('description', 'like', "%{$request->search}%")
-                    ->orWhere('location', 'like', "%{$request->search}%");
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('title', 'like', "%{$searchTerm}%")
+                    ->orWhere('description', 'like', "%{$searchTerm}%")
+                    ->orWhere('location', 'like', "%{$searchTerm}%");
             });
         }
 
         // تصفية حسب القسم
-        if ($request->has('category') && $request->category) {
+        if ($request->filled('category')) {
             $query->where('category_id', $request->category);
         }
 
         // تصفية حسب القسم الفرعي
-        if ($request->has('sub_category') && $request->sub_category) {
+        if ($request->filled('sub_category')) {
             $query->where('sub_category_id', $request->sub_category);
         }
 
         // تصفية حسب المدينة
-        if ($request->has('city') && $request->city) {
+        if ($request->filled('city')) {
             $query->where('city_id', $request->city);
         }
+    }
 
-        $services = $query->latest()->paginate(12);
-        $categories = Category::where('is_active', true)->get();
-        $cities = City::getActiveCities();
-
-        // جلب الأقسام الفرعية إذا تم اختيار قسم رئيسي
-        $subCategories = collect();
-        if ($request->has('category') && $request->category) {
-            $subCategories = \App\Models\SubCategory::where('category_id', $request->category)
-                ->where('status', true)
-                ->get();
+    /**
+     * جلب الأقسام الفرعية
+     */
+    private function getSubCategories(Request $request)
+    {
+        if (!$request->filled('category')) {
+            return collect();
         }
 
-        return view('services.index', compact('services', 'categories', 'subCategories', 'cities'));
+        return \App\Models\SubCategory::where('category_id', $request->category)
+            ->where('status', true)
+            ->get();
     }
 
     /**
@@ -166,11 +198,18 @@ class ServiceController extends Controller
     /**
      * عرض صفحة طلب الخدمة
      */
-    public function request(Category $category)
+    public function request($category)
     {
         // التأكد من أن المستخدم مسجل دخول
         if (!auth()->check()) {
             return redirect()->route('login')->with('error', 'يجب تسجيل الدخول لطلب الخدمة');
+        }
+
+        // جلب القسم بناءً على slug أو id
+        if (is_numeric($category)) {
+            $category = Category::where('id', $category)->where('is_active', true)->firstOrFail();
+        } else {
+            $category = Category::where('slug', $category)->where('is_active', true)->firstOrFail();
         }
 
         // تحميل الحقول المخصصة مع القسم مرتبة حسب الترتيب
@@ -214,50 +253,83 @@ class ServiceController extends Controller
      */
     public function store(Request $request)
     {
-        // التأكد من أن المستخدم مسجل دخول
-        if (!auth()->check()) {
-            return redirect()->route('login')->with('error', 'يجب تسجيل الدخول لطلب الخدمة');
+        try {
+            // التحقق من تسجيل الدخول
+            if (!auth()->check()) {
+                return redirect()->route('login')->with('error', 'يجب تسجيل الدخول لطلب الخدمة');
+            }
+
+            $user = auth()->user();
+            if (!$user || !$user->id) {
+                return redirect()->route('login')->with('error', 'خطأ في بيانات المستخدم، يرجى تسجيل الدخول مرة أخرى');
+            }
+
+            // التحقق من صحة البيانات
+            $validated = $request->validate([
+                'category_id' => 'required|exists:categories,id',
+                'sub_category_id' => 'nullable|exists:sub_categories,id',
+                'city_id' => 'required|exists:cities,id',
+                'notes' => 'required|string|max:1000',
+                'voice_note' => 'nullable|string|max:16777215',
+                'custom_fields.*' => 'required',
+            ]);
+
+            // التحقق من صحة القسم والمدينة
+            $validationResult = $this->validateCategoryAndCity($request);
+            if ($validationResult !== true) {
+                return $validationResult;
+            }
+
+            // التحقق من الحقول المخصصة المطلوبة
+            $category = Category::findOrFail($request->category_id);
+            $customFieldsValidation = $this->validateCustomFields($request, $category);
+            if ($customFieldsValidation !== true) {
+                return $customFieldsValidation;
+            }
+
+            // معالجة الحقول المخصصة
+            $processedFields = $this->processCustomFields($request->custom_fields ?? []);
+
+            // إنشاء الخدمة
+            $service = $this->createService($validated, $user, $processedFields);
+
+            Log::info('Service created successfully', [
+                'service_id' => $service->id,
+                'user_id' => $user->id
+            ]);
+
+            return redirect()->route('services.show', $service->slug)
+                ->with('success', 'تم إرسال طلب الخدمة بنجاح');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->errors())->withInput();
+        } catch (Exception $e) {
+            Log::error('Error in ServiceController@store: ' . $e->getMessage(), [
+                'exception' => $e,
+                'request' => $request->except(['custom_fields', 'voice_note']),
+                'user_id' => auth()->id()
+            ]);
+            return back()->with('error', 'حدث خطأ أثناء إنشاء الخدمة. يرجى المحاولة مرة أخرى')->withInput();
         }
+    }
 
-        // التأكد من أن المستخدم موجود في قاعدة البيانات
-        $user = auth()->user();
-        if (!$user || !$user->id) {
-            return redirect()->route('login')->with('error', 'خطأ في بيانات المستخدم، يرجى تسجيل الدخول مرة أخرى');
-        }
-
-        // Debug: Log user information
-        \Log::info('Service creation - User info:', [
-            'user_id' => $user->id,
-            'user_phone' => $user->phone,
-            'user_name' => $user->name
-        ]);
-
-        $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'sub_category_id' => 'nullable|exists:sub_categories,id',
-            'city_id' => 'required|exists:cities,id',
-            'notes' => 'nullable|string|max:1000',
-            'voice_note' => 'nullable|string|max:16777215', // longText max size
-            'custom_fields.*' => 'nullable',
-        ]);
-
-        // التحقق من أن المدينة متاحة في هذا القسم
-        $category = Category::find($request->category_id);
+    /**
+     * التحقق من صحة القسم والمدينة
+     */
+    private function validateCategoryAndCity(Request $request)
+    {
+        $category = Category::findOrFail($request->category_id);
         $availableCityIds = $category->activeCities()->pluck('cities.id')->toArray();
 
         if (!in_array($request->city_id, $availableCityIds)) {
             return back()->withErrors(['city_id' => 'المدينة المختارة غير متاحة لهذا القسم'])->withInput();
         }
 
-        // التحقق من وجود أقسام فرعية
         $hasSubCategories = $category->subCategories && $category->subCategories->count() > 0;
 
-        // إذا كان القسم يحتوي على أقسام فرعية، يجب اختيار قسم فرعي
         if ($hasSubCategories && !$request->sub_category_id) {
             return back()->withErrors(['sub_category_id' => 'يرجى اختيار قسم فرعي لطلب الخدمة'])->withInput();
         }
 
-        // التحقق من صحة القسم الفرعي إذا كان محدداً
         if ($request->sub_category_id) {
             $subCategory = $category->subCategories()
                 ->where('id', $request->sub_category_id)
@@ -269,17 +341,136 @@ class ServiceController extends Controller
             }
         }
 
-        $city = City::find($request->city_id);
+        return true;
+    }
 
-        // معالجة الحقول المخصصة المتكررة
+    /**
+     * التحقق من الحقول المخصصة المطلوبة
+     */
+    private function validateCustomFields(Request $request, Category $category)
+    {
+        // جلب جميع الحقول المخصصة النشطة (الآن جميع الحقول مطلوبة)
+        $requiredFields = CategoryField::where('category_id', $category->id)
+            ->where('is_active', true)
+            ->get();
+
+        $errors = [];
         $customFields = $request->custom_fields ?? [];
+
+        foreach ($requiredFields as $field) {
+            $fieldName = $field->name;
+            $fieldValue = $customFields[$fieldName] ?? null;
+
+            // التحقق من وجود القيمة
+            if ($fieldValue === null || $fieldValue === '') {
+                $fieldLabel = app()->getLocale() == 'ar' ? $field->name_ar : $field->name_en;
+                $errors["custom_fields.{$fieldName}"] = "حقل '{$fieldLabel}' مطلوب";
+                continue;
+            }
+
+            // التحقق حسب نوع الحقل
+            switch ($field->type) {
+                case 'image':
+                    // للصور، يجب التحقق من وجود ملفات
+                    if (is_array($fieldValue)) {
+                        $hasFiles = false;
+                        foreach ($fieldValue as $value) {
+                            if (is_array($value)) {
+                                // ملفات متعددة في repeatable groups
+                                foreach ($value as $file) {
+                                    if ($file && (is_object($file) && method_exists($file, 'isValid') && $file->isValid())) {
+                                        $hasFiles = true;
+                                        break 2;
+                                    }
+                                }
+                            } elseif ($value !== null && $value !== '') {
+                                $hasFiles = true;
+                                break;
+                            }
+                        }
+                        if (!$hasFiles) {
+                            $fieldLabel = app()->getLocale() == 'ar' ? $field->name_ar : $field->name_en;
+                            $errors["custom_fields.{$fieldName}"] = "يجب رفع صورة واحدة على الأقل لحقل '{$fieldLabel}'";
+                        }
+                    } else {
+                        $fieldLabel = app()->getLocale() == 'ar' ? $field->name_ar : $field->name_en;
+                        $errors["custom_fields.{$fieldName}"] = "حقل '{$fieldLabel}' مطلوب (يجب رفع صورة)";
+                    }
+                    break;
+
+                case 'select':
+                    // للقوائم المنسدلة، يجب التحقق من أن القيمة موجودة في الخيارات
+                    if (is_array($fieldValue)) {
+                        // للحقول القابلة للتكرار
+                        foreach ($fieldValue as $value) {
+                            if ($value === null || $value === '') {
+                                $fieldLabel = app()->getLocale() == 'ar' ? $field->name_ar : $field->name_en;
+                                $errors["custom_fields.{$fieldName}"] = "حقل '{$fieldLabel}' مطلوب";
+                                break;
+                            }
+                            if ($field->options && is_array($field->options) && !in_array($value, $field->options)) {
+                                $fieldLabel = app()->getLocale() == 'ar' ? $field->name_ar : $field->name_en;
+                                $errors["custom_fields.{$fieldName}"] = "القيمة المحددة لحقل '{$fieldLabel}' غير صحيحة";
+                                break;
+                            }
+                        }
+                    } else {
+                        if ($field->options && is_array($field->options) && !in_array($fieldValue, $field->options)) {
+                            $fieldLabel = app()->getLocale() == 'ar' ? $field->name_ar : $field->name_en;
+                            $errors["custom_fields.{$fieldName}"] = "القيمة المحددة لحقل '{$fieldLabel}' غير صحيحة";
+                        }
+                    }
+                    break;
+
+                case 'number':
+                    // للرقم، يجب التحقق من أنه رقم صحيح
+                    if (is_array($fieldValue)) {
+                        foreach ($fieldValue as $value) {
+                            if ($value !== null && $value !== '' && !is_numeric($value)) {
+                                $fieldLabel = app()->getLocale() == 'ar' ? $field->name_ar : $field->name_en;
+                                $errors["custom_fields.{$fieldName}"] = "حقل '{$fieldLabel}' يجب أن يكون رقماً";
+                                break;
+                            }
+                        }
+                    } elseif (!is_numeric($fieldValue) && $fieldValue !== null && $fieldValue !== '') {
+                        $fieldLabel = app()->getLocale() == 'ar' ? $field->name_ar : $field->name_en;
+                        $errors["custom_fields.{$fieldName}"] = "حقل '{$fieldLabel}' يجب أن يكون رقماً";
+                    }
+                    break;
+
+                case 'checkbox':
+                    // Checkbox يمكن أن يكون null أو 1 - لا حاجة للتحقق الإضافي
+                    break;
+
+                case 'date':
+                case 'time':
+                    // للتاريخ والوقت، التحقق الأساسي كافٍ
+                    break;
+
+                default:
+                    // للحقول النصية، التحقق الأساسي كافٍ
+                    break;
+            }
+        }
+
+        if (!empty($errors)) {
+            return back()->withErrors($errors)->withInput();
+        }
+
+        return true;
+    }
+
+    /**
+     * معالجة الحقول المخصصة
+     */
+    private function processCustomFields(array $customFields): array
+    {
         $processedFields = [];
 
         foreach ($customFields as $fieldName => $fieldValues) {
             if (is_array($fieldValues)) {
-                // حقل متكرر
                 $processedValues = [];
-                foreach ($fieldValues as $index => $value) {
+                foreach ($fieldValues as $value) {
                     if (is_array($value)) {
                         // معالجة الصور المتعددة
                         $imagePaths = [];
@@ -287,7 +478,6 @@ class ServiceController extends Controller
                             if ($file && $file->isValid()) {
                                 $path = $file->store('custom_fields/' . $fieldName, 'public');
                                 $imagePaths[] = $path;
-                                Log::info('Service creation - uploaded image:', ['path' => $path]);
                             }
                         }
                         if (!empty($imagePaths)) {
@@ -300,72 +490,55 @@ class ServiceController extends Controller
                 if (!empty($processedValues)) {
                     $processedFields[$fieldName] = $processedValues;
                 }
-            } else {
-                // حقل عادي
-                if ($fieldValues !== null && $fieldValues !== '') {
-                    $processedFields[$fieldName] = $fieldValues;
-                }
+            } elseif ($fieldValues !== null && $fieldValues !== '') {
+                $processedFields[$fieldName] = $fieldValues;
             }
         }
 
-        // Debug: Log the processed fields
-        Log::info('Service creation - processed fields:', ['processed_fields' => $processedFields]);
+        return $processedFields;
+    }
 
-        // Debug: Log the sub_category_id
-        Log::info('Service creation - sub_category_id:', [
-            'sub_category_id' => $request->sub_category_id,
-            'request_all' => $request->all()
-        ]);
+    /**
+     * إنشاء الخدمة
+     */
+    private function createService(array $validated, $user, array $processedFields): Service
+    {
+        $category = Category::findOrFail($validated['category_id']);
+        $city = City::findOrFail($validated['city_id']);
 
-        // Debug: Log the custom fields from request
-        Log::info('Service creation - custom fields from request:', ['custom_fields' => $request->custom_fields]);
-
-        // إنشاء slug فريد
         $title = 'طلب خدمة - ' . $category->name . ' - ' . $city->name_ar;
+        $slug = $this->generateUniqueSlug($title);
+
+        return Service::create([
+            'category_id' => $validated['category_id'],
+            'sub_category_id' => $validated['sub_category_id'] ?? null,
+            'city_id' => $validated['city_id'],
+            'user_id' => $user->id,
+            'title' => $title,
+            'description' => $validated['notes'] ?? '',
+            'price' => 0,
+            'is_active' => true,
+            'custom_fields' => $processedFields,
+            'voice_note' => $validated['voice_note'] ?? null,
+            'slug' => $slug,
+        ]);
+    }
+
+    /**
+     * إنشاء slug فريد
+     */
+    private function generateUniqueSlug(string $title): string
+    {
         $baseSlug = Str::slug($title);
         $slug = $baseSlug;
         $counter = 1;
 
-        // التأكد من أن slug فريد (يشمل السجلات المحذوفة ناعماً)
         while (Service::withTrashed()->where('slug', $slug)->exists()) {
             $slug = $baseSlug . '-' . $counter;
             $counter++;
         }
 
-        $data = [
-            'category_id' => $request->category_id,
-            'sub_category_id' => $request->sub_category_id,
-            'city_id' => $request->city_id,
-            'user_id' => $user->id,
-            'title' => $title,
-            'description' => $request->notes ?? '',
-            'price' => 0, // سيتم تحديده لاحقاً
-            'is_active' => true,
-            'custom_fields' => $processedFields,
-            'voice_note' => $request->voice_note,
-            'slug' => $slug,
-        ];
-
-        // Debug: Log the data array
-        Log::info('Service creation - data array:', ['data' => $data]);
-
-        // Debug: Log the custom fields in data
-        Log::info('Service creation - custom fields in data:', ['custom_fields' => $data['custom_fields'] ?? []]);
-
-        // إنشاء الخدمة
-        $service = Service::create($data);
-
-        // Debug: Log the created service
-        Log::info('Service created successfully:', [
-            'service_id' => $service->id,
-            'custom_fields' => $service->custom_fields
-        ]);
-
-        // Debug: Log the custom fields from the created service
-        Log::info('Service creation - custom fields from created service:', ['custom_fields' => $service->custom_fields]);
-
-        return redirect()->route('services.show', $service->slug)
-            ->with('success', 'تم إرسال طلب الخدمة بنجاح');
+        return $slug;
     }
 
     /**
@@ -373,29 +546,54 @@ class ServiceController extends Controller
      */
     public function edit(Service $service)
     {
-        // التحقق من أن المستخدم هو صاحب الخدمة
-        if (auth()->id() !== $service->user_id) {
-            abort(403, 'غير مصرح لك بتعديل هذه الخدمة');
+        try {
+            // التحقق من أن المستخدم هو صاحب الخدمة
+            if (auth()->id() !== $service->user_id) {
+                abort(403, 'غير مصرح لك بتعديل هذه الخدمة');
+            }
+
+            $categories = Category::where('is_active', true)->get();
+            $cities = City::getActiveCities();
+            $subCategories = $this->getSubCategoriesForCategory($service->category_id);
+            $categoryFields = $this->getCategoryFields($service->category_id);
+
+            return view('services.edit', compact('service', 'categories', 'subCategories', 'cities', 'categoryFields'));
+        } catch (Exception $e) {
+            Log::error('Error in ServiceController@edit: ' . $e->getMessage(), [
+                'exception' => $e,
+                'service_id' => $service->id ?? null
+            ]);
+            return redirect()->route('services.index')->with('error', 'حدث خطأ أثناء تحميل صفحة التعديل');
+        }
+    }
+
+    /**
+     * جلب الأقسام الفرعية للقسم
+     */
+    private function getSubCategoriesForCategory(?int $categoryId)
+    {
+        if (!$categoryId) {
+            return collect();
         }
 
-        $categories = Category::where('is_active', true)->get();
-        $cities = City::getActiveCities();
+        return \App\Models\SubCategory::where('category_id', $categoryId)
+            ->where('status', true)
+            ->get();
+    }
 
-        // جلب الأقسام الفرعية للقسم المختار
-        $subCategories = collect();
-        if ($service->category_id) {
-            $subCategories = \App\Models\SubCategory::where('category_id', $service->category_id)
-                ->where('status', true)
-                ->get();
+    /**
+     * جلب الحقول المخصصة للقسم
+     */
+    private function getCategoryFields(?int $categoryId)
+    {
+        if (!$categoryId) {
+            return collect();
         }
 
-        // جلب الحقول المخصصة للقسم
-        $categoryFields = \App\Models\CategoryField::where('category_id', $service->category_id)
+        return \App\Models\CategoryField::where('category_id', $categoryId)
             ->where('is_active', true)
             ->orderBy('sort_order')
             ->get();
-
-        return view('services.edit', compact('service', 'categories', 'subCategories', 'cities', 'categoryFields'));
     }
 
     /**
@@ -403,145 +601,161 @@ class ServiceController extends Controller
      */
     public function update(Request $request, Service $service)
     {
-        // التحقق من أن المستخدم هو صاحب الخدمة
-        if (auth()->id() !== $service->user_id) {
-            abort(403, 'غير مصرح لك بتعديل هذه الخدمة');
-        }
-
-        $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'sub_category_id' => 'nullable|exists:sub_categories,id',
-            'city_id' => 'required|exists:cities,id',
-            'notes' => 'nullable|string|max:1000',
-            'voice_note' => 'nullable|string|max:16777215', // longText max size
-            'custom_fields.*' => 'nullable',
-        ]);
-
-        // التحقق من تغيير القسم أو المدينة لتحديث العنوان والـ slug
-        $categoryChanged = $request->category_id != $service->category_id;
-        $cityChanged = $request->city_id != $service->city_id;
-
-        $data = [];
-
-        if ($categoryChanged || $cityChanged) {
-            // جلب بيانات القسم والمدينة الجديدة
-            $category = Category::find($request->category_id);
-            $city = City::find($request->city_id);
-
-            if ($category && $city) {
-                // تحديث العنوان
-                $title = 'طلب خدمة - ' . $category->name . ' - ' . $city->name_ar;
-                $data['title'] = $title;
-
-                // إنشاء slug فريد جديد
-                $baseSlug = Str::slug($title);
-                $slug = $baseSlug;
-                $counter = 1;
-
-                // التأكد من أن slug فريد (يشمل السجلات المحذوفة ناعماً)
-                while (Service::withTrashed()->where('slug', $slug)->where('id', '!=', $service->id)->exists()) {
-                    $slug = $baseSlug . '-' . $counter;
-                    $counter++;
-                }
-                $data['slug'] = $slug;
+        try {
+            // التحقق من أن المستخدم هو صاحب الخدمة
+            if (auth()->id() !== $service->user_id) {
+                abort(403, 'غير مصرح لك بتعديل هذه الخدمة');
             }
-        }
 
-        $data = array_merge($data, [
+            $validated = $request->validate([
+                'category_id' => 'required|exists:categories,id',
+                'sub_category_id' => 'nullable|exists:sub_categories,id',
+                'city_id' => 'required|exists:cities,id',
+                'notes' => 'nullable|string|max:1000',
+                'voice_note' => 'nullable|string|max:16777215',
+                'custom_fields.*' => 'nullable',
+            ]);
+
+            // تحديث العنوان والـ slug إذا تغير القسم أو المدينة
+            $data = $this->prepareUpdateData($request, $service);
+
+            // معالجة الحقول المخصصة
+            $finalCustomFields = $this->processUpdateCustomFields($request, $service);
+            $data['custom_fields'] = $finalCustomFields;
+
+            // معالجة التسجيل الصوتي والملاحظات
+            if ($request->has('voice_note') && $request->voice_note) {
+                $data['voice_note'] = $request->voice_note;
+            }
+            if ($request->has('notes')) {
+                $data['description'] = $request->notes;
+            }
+
+            $service->update($data);
+
+            Log::info('Service updated successfully', [
+                'service_id' => $service->id,
+                'user_id' => auth()->id()
+            ]);
+
+            return redirect()->route('services.show', $service->slug)
+                ->with('success', 'تم تحديث الخدمة بنجاح');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->errors())->withInput();
+        } catch (Exception $e) {
+            Log::error('Error in ServiceController@update: ' . $e->getMessage(), [
+                'exception' => $e,
+                'service_id' => $service->id ?? null,
+                'request' => $request->except(['custom_fields', 'voice_note'])
+            ]);
+            return back()->with('error', 'حدث خطأ أثناء تحديث الخدمة')->withInput();
+        }
+    }
+
+    /**
+     * إعداد بيانات التحديث
+     */
+    private function prepareUpdateData(Request $request, Service $service): array
+    {
+        $data = [
             'category_id' => $request->category_id,
             'sub_category_id' => $request->sub_category_id,
             'city_id' => $request->city_id,
-        ]);
+        ];
 
-        // معالجة الحقول المخصصة المتكررة
+        $categoryChanged = $request->category_id != $service->category_id;
+        $cityChanged = $request->city_id != $service->city_id;
+
+        if ($categoryChanged || $cityChanged) {
+            $category = Category::findOrFail($request->category_id);
+            $city = City::findOrFail($request->city_id);
+
+            $title = 'طلب خدمة - ' . $category->name . ' - ' . $city->name_ar;
+            $data['title'] = $title;
+            $data['slug'] = $this->generateUniqueSlugForUpdate($title, $service->id);
+        }
+
+        return $data;
+    }
+
+    /**
+     * إنشاء slug فريد للتحديث
+     */
+    private function generateUniqueSlugForUpdate(string $title, int $serviceId): string
+    {
+        $baseSlug = Str::slug($title);
+        $slug = $baseSlug;
+        $counter = 1;
+
+        while (Service::withTrashed()->where('slug', $slug)->where('id', '!=', $serviceId)->exists()) {
+            $slug = $baseSlug . '-' . $counter;
+            $counter++;
+        }
+
+        return $slug;
+    }
+
+    /**
+     * معالجة الحقول المخصصة في التحديث
+     */
+    private function processUpdateCustomFields(Request $request, Service $service): array
+    {
         $customFields = $request->custom_fields ?? [];
-        $processedFields = [];
-
-        // البدء بالحقول الموجودة
         $existingCustomFields = $service->custom_fields ?? [];
+        $processedFields = $this->processCustomFields($customFields);
 
-        foreach ($customFields as $fieldName => $fieldValues) {
-            if (is_array($fieldValues)) {
-                // حقل متكرر
-                $processedValues = [];
-                $existingValues = $existingCustomFields[$fieldName] ?? [];
-
-                foreach ($fieldValues as $index => $value) {
-                    if (is_array($value)) {
-                        // معالجة الصور المتعددة
-                        $imagePaths = [];
-                        foreach ($value as $file) {
-                            if ($file && $file->isValid()) {
-                                $path = $file->store('custom_fields/' . $fieldName, 'public');
-                                $imagePaths[] = $path;
-                                Log::info('Service update - uploaded new image:', ['path' => $path]);
-                            }
-                        }
-                        if (!empty($imagePaths)) {
-                            $processedValues[] = $imagePaths;
-                        }
-                    } elseif ($value !== null && $value !== '') {
-                        $processedValues[] = $value;
-                    }
-                }
-
-                // دمج القيم الموجودة مع الجديدة
-                if (!empty($processedValues)) {
-                    $processedFields[$fieldName] = $processedValues;
-                } elseif (isset($existingValues)) {
-                    $processedFields[$fieldName] = $existingValues;
-                }
-            } else {
-                // حقل عادي
-                if ($fieldValues !== null && $fieldValues !== '') {
-                    $processedFields[$fieldName] = $fieldValues;
-                } elseif (isset($existingCustomFields[$fieldName])) {
-                    $processedFields[$fieldName] = $existingCustomFields[$fieldName];
-                }
-            }
-        }
-
-        // Debug: Log the processed fields
-        Log::info('Service update - processed fields:', ['processed_fields' => $processedFields]);
-
-        // معالجة حذف الصور الموجودة
+        // معالجة حذف الصور
         if ($request->has('delete_images')) {
-            $deleteImages = $request->delete_images;
-            foreach ($deleteImages as $fieldName => $imagePaths) {
-                foreach ($imagePaths as $imagePath) {
-                    if (Storage::disk('public')->exists($imagePath)) {
-                        Storage::disk('public')->delete($imagePath);
-                        Log::info('Service update - deleted image:', ['path' => $imagePath]);
-                    }
-                }
-
-                // إزالة الصور المحذوفة من الحقول المخصصة الموجودة
-                if (isset($existingCustomFields[$fieldName]) && is_array($existingCustomFields[$fieldName])) {
-                    $existingCustomFields[$fieldName] = array_filter($existingCustomFields[$fieldName], function ($value) use ($imagePaths) {
-                        if (is_array($value)) {
-                            return !array_intersect($value, $imagePaths);
-                        }
-                        return !in_array($value, $imagePaths);
-                    });
-                }
-
-                // إزالة الصور المحذوفة من الحقول المخصصة الجديدة
-                if (isset($processedFields[$fieldName]) && is_array($processedFields[$fieldName])) {
-                    $processedFields[$fieldName] = array_filter($processedFields[$fieldName], function ($value) use ($imagePaths) {
-                        if (is_array($value)) {
-                            return !array_intersect($value, $imagePaths);
-                        }
-                        return !in_array($value, $imagePaths);
-                    });
-                }
-            }
+            $this->handleImageDeletion($request->delete_images, $existingCustomFields, $processedFields);
         }
 
-        // دمج الحقول المخصصة الموجودة مع الجديدة
+        // دمج الحقول
         $finalCustomFields = array_merge($existingCustomFields, $processedFields);
 
         // تنظيف الحقول الفارغة
-        $finalCustomFields = array_filter($finalCustomFields, function ($value) {
+        return $this->cleanEmptyFields($finalCustomFields);
+    }
+
+    /**
+     * معالجة حذف الصور
+     */
+    private function handleImageDeletion(array $deleteImages, array &$existingCustomFields, array &$processedFields): void
+    {
+        foreach ($deleteImages as $fieldName => $imagePaths) {
+            foreach ($imagePaths as $imagePath) {
+                if (Storage::disk('public')->exists($imagePath)) {
+                    Storage::disk('public')->delete($imagePath);
+                }
+            }
+
+            // إزالة من الحقول الموجودة
+            if (isset($existingCustomFields[$fieldName]) && is_array($existingCustomFields[$fieldName])) {
+                $existingCustomFields[$fieldName] = array_filter($existingCustomFields[$fieldName], function ($value) use ($imagePaths) {
+                    if (is_array($value)) {
+                        return !array_intersect($value, $imagePaths);
+                    }
+                    return !in_array($value, $imagePaths);
+                });
+            }
+
+            // إزالة من الحقول الجديدة
+            if (isset($processedFields[$fieldName]) && is_array($processedFields[$fieldName])) {
+                $processedFields[$fieldName] = array_filter($processedFields[$fieldName], function ($value) use ($imagePaths) {
+                    if (is_array($value)) {
+                        return !array_intersect($value, $imagePaths);
+                    }
+                    return !in_array($value, $imagePaths);
+                });
+            }
+        }
+    }
+
+    /**
+     * تنظيف الحقول الفارغة
+     */
+    private function cleanEmptyFields(array $fields): array
+    {
+        return array_filter($fields, function ($value) {
             if (is_array($value)) {
                 return !empty(array_filter($value, function ($item) {
                     if (is_array($item)) {
@@ -552,75 +766,6 @@ class ServiceController extends Controller
             }
             return $value !== null && $value !== '';
         });
-
-        $data['custom_fields'] = $finalCustomFields;
-
-        // Debug: Log the data being saved
-        Log::info('Service update - data being saved:', ['data' => $data]);
-
-        // Debug: Log the custom fields in data
-        Log::info('Service update - custom fields in data:', ['custom_fields' => $data['custom_fields'] ?? []]);
-
-        // Debug: Log the data array
-        Log::info('Service update - data array:', ['data' => $data]);
-
-        // Debug: Log the request data
-        Log::info('Service update - request data:', ['request_data' => $request->all()]);
-
-        // Debug: Log the request files
-        Log::info('Service update - request files:', ['request_files' => $request->allFiles()]);
-
-        // Debug: Log the request custom fields
-        Log::info('Service update - request custom fields:', ['custom_fields' => $request->custom_fields]);
-
-        // Debug: Log the request delete images
-        Log::info('Service update - request delete images:', ['delete_images' => $request->delete_images ?? []]);
-
-        // Debug: Log the request has delete images
-        Log::info('Service update - request has delete images:', ['has_delete_images' => $request->has('delete_images')]);
-
-        // Debug: Log the request has custom fields
-        Log::info('Service update - request has custom fields:', ['has_custom_fields' => $request->has('custom_fields')]);
-
-        // Debug: Log the final custom fields
-        Log::info('Service update - final custom fields:', ['final_custom_fields' => $finalCustomFields]);
-        Log::info('Service update - existing custom fields:', $existingCustomFields);
-        Log::info('Service update - processed fields:', ['processed_fields' => $processedFields]);
-        Log::info('Service update - request custom fields:', ['custom_fields' => $request->custom_fields]);
-
-        // Debug: Log the existing custom fields
-        Log::info('Service update - existing custom fields:', $existingCustomFields);
-
-        // Debug: Log the processed fields
-        Log::info('Service update - processed fields:', ['processed_fields' => $processedFields]);
-
-        // Debug: Log the final custom fields
-        Log::info('Service update - final custom fields:', ['final_custom_fields' => $finalCustomFields]);
-
-        // معالجة التسجيل الصوتي
-        if ($request->has('voice_note') && $request->voice_note) {
-            $data['voice_note'] = $request->voice_note;
-        }
-
-        // معالجة الملاحظات
-        if ($request->has('notes')) {
-            $data['notes'] = $request->notes;
-        }
-
-
-        $service->update($data);
-
-        // Debug: Log the updated service
-        Log::info('Service updated successfully:', [
-            'service_id' => $service->id,
-            'custom_fields' => $service->custom_fields
-        ]);
-
-        // Debug: Log the custom fields from the updated service
-        Log::info('Service update - custom fields from updated service:', $service->custom_fields);
-
-        return redirect()->route('services.show', $service->slug)
-            ->with('success', 'تم تحديث الخدمة بنجاح');
     }
 
     /**
@@ -628,21 +773,70 @@ class ServiceController extends Controller
      */
     public function destroy(Service $service)
     {
-        // التحقق من أن المستخدم هو صاحب الخدمة
-        if (auth()->id() !== $service->user_id) {
-            abort(403, 'غير مصرح لك بحذف هذه الخدمة');
+        try {
+            // التحقق من أن المستخدم هو صاحب الخدمة
+            if (auth()->id() !== $service->user_id) {
+                abort(403, 'غير مصرح لك بحذف هذه الخدمة');
+            }
+
+            // جلب جميع العروض المقبولة أو المعلقة على هذه الخدمة
+            $acceptedOffers = $service->offers()
+                ->whereIn('status', ['accepted', 'pending'])
+                ->with('provider')
+                ->get();
+
+            // حفظ معلومات الخدمة قبل الحذف
+            $serviceTitle = $service->title;
+            $serviceId = $service->id;
+
+            // حذف الصورة إذا كانت موجودة
+            if ($service->image && Storage::disk('public')->exists($service->image)) {
+                Storage::disk('public')->delete($service->image);
+            }
+
+            // حذف الخدمة
+            $service->delete();
+
+            // إرسال إشعارات لجميع المزودين الذين قدموا عروضاً مقبولة أو معلقة
+            foreach ($acceptedOffers as $offer) {
+                try {
+                    \App\Models\Notification::createNotification(
+                        $offer->provider_id,
+                        'service_deleted',
+                        'تم حذف الخدمة',
+                        'تم حذف الخدمة "' . $serviceTitle . '" التي كان لديك عرض ' . ($offer->status === 'accepted' ? 'مقبول' : 'معلق') . ' عليها',
+                        [
+                            'service_id' => $serviceId,
+                            'offer_id' => $offer->id,
+                            'service_title' => $serviceTitle,
+                            'offer_status' => $offer->status,
+                        ]
+                    );
+                } catch (Exception $e) {
+                    Log::warning('Failed to create notification for deleted service', [
+                        'offer_id' => $offer->id,
+                        'provider_id' => $offer->provider_id,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
+
+            Log::info('Service deleted', [
+                'service_id' => $serviceId,
+                'user_id' => auth()->id(),
+                'notifications_sent' => $acceptedOffers->count()
+            ]);
+
+            return redirect()->route('services.index')
+                ->with('success', 'تم حذف الخدمة بنجاح');
+        } catch (Exception $e) {
+            Log::error('Error in ServiceController@destroy: ' . $e->getMessage(), [
+                'exception' => $e,
+                'service_id' => $service->id ?? null
+            ]);
+            return redirect()->route('services.index')
+                ->with('error', 'حدث خطأ أثناء حذف الخدمة');
         }
-
-        // حذف الصورة إذا كانت موجودة
-        if ($service->image && Storage::disk('public')->exists($service->image)) {
-            Storage::disk('public')->delete($service->image);
-        }
-
-        // حذف الخدمة (سيتم حذف العروض المرتبطة تلقائياً بسبب foreign key constraints)
-        $service->delete();
-
-        return redirect()->route('services.index')
-            ->with('success', 'تم حذف الخدمة بنجاح');
     }
 
     /**
@@ -650,25 +844,28 @@ class ServiceController extends Controller
      */
     public function myServices()
     {
-        if (!auth()->check()) {
-            return redirect()->route('login')->with('error', 'يجب تسجيل الدخول');
-        }
+        try {
+            if (!auth()->check()) {
+                return redirect()->route('login')->with('error', 'يجب تسجيل الدخول');
+            }
 
-        // إذا كان مزود خدمة، اعرض جميع الخدمات
-        if (auth()->user()->isProvider()) {
-            $services = Service::where('is_active', true)
+            $services = auth()->user()->isProvider()
+                ? Service::where('is_active', true)
                 ->with(['category', 'offers', 'user', 'city'])
                 ->latest()
-                ->paginate(10);
-        } else {
-            // إذا كان مستخدم عادي، اعرض خدماته فقط
-            $services = Service::where('user_id', auth()->id())
+                ->paginate(10)
+                : Service::where('user_id', auth()->id())
                 ->with(['category', 'offers', 'city'])
                 ->latest()
                 ->paginate(10);
-        }
 
-        return view('services.my-services', compact('services'));
+            return view('services.my-services', compact('services'));
+        } catch (Exception $e) {
+            Log::error('Error in ServiceController@myServices: ' . $e->getMessage(), [
+                'exception' => $e
+            ]);
+            return redirect()->route('home')->with('error', 'حدث خطأ أثناء تحميل الخدمات');
+        }
     }
 
     /**

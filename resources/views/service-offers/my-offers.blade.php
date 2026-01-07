@@ -9,9 +9,14 @@
             <h2 class="text-primary fw-bold d-flex align-items-center gap-2">
                 <i class="fas fa-handshake text-gold"></i> عروضي المقدمة
             </h2>
-            <a href="{{ route('services.index') }}" class="btn btn-gold btn-lg shadow-sm">
-                <i class="fas fa-search"></i> البحث عن خدمات
-            </a>
+            <div class="d-flex gap-2">
+                <a href="{{ route('service-offers.completed-services') }}" class="btn btn-success btn-lg shadow-sm">
+                    <i class="fas fa-check-circle"></i> الخدمات المكتملة
+                </a>
+                <a href="{{ route('services.index') }}" class="btn btn-gold btn-lg shadow-sm">
+                    <i class="fas fa-search"></i> البحث عن خدمات
+                </a>
+            </div>
         </div>
 
         @if(session('success'))

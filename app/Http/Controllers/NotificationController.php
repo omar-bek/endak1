@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Notification as CustomNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Exception;
 
 class NotificationController extends Controller
 {
@@ -13,12 +15,18 @@ class NotificationController extends Controller
      */
     public function index()
     {
-        // استخدام custom notifications
-        $notifications = CustomNotification::where('user_id', Auth::id())
-                                         ->orderBy('created_at', 'desc')
-                                         ->paginate(20);
+        try {
+            $notifications = CustomNotification::where('user_id', Auth::id())
+                                             ->orderBy('created_at', 'desc')
+                                             ->paginate(20);
 
-        return view('notifications.index', compact('notifications'));
+            return view('notifications.index', compact('notifications'));
+        } catch (Exception $e) {
+            Log::error('Error in NotificationController@index: ' . $e->getMessage(), [
+                'exception' => $e
+            ]);
+            return redirect()->route('home')->with('error', 'حدث خطأ أثناء تحميل الإشعارات');
+        }
     }
 
     /**
@@ -26,11 +34,21 @@ class NotificationController extends Controller
      */
     public function markAsRead($id)
     {
-        $notification = CustomNotification::where('user_id', Auth::id())
-                                        ->findOrFail($id);
-        $notification->markAsRead();
+        try {
+            $notification = CustomNotification::where('user_id', Auth::id())
+                                            ->findOrFail($id);
+            $notification->markAsRead();
 
-        return response()->json(['success' => true]);
+            return response()->json(['success' => true]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['success' => false, 'message' => 'الإشعار غير موجود'], 404);
+        } catch (Exception $e) {
+            Log::error('Error in NotificationController@markAsRead: ' . $e->getMessage(), [
+                'exception' => $e,
+                'notification_id' => $id
+            ]);
+            return response()->json(['success' => false, 'message' => 'حدث خطأ'], 500);
+        }
     }
 
     /**
@@ -38,11 +56,18 @@ class NotificationController extends Controller
      */
     public function markAllAsRead()
     {
-        CustomNotification::where('user_id', Auth::id())
-                        ->whereNull('read_at')
-                        ->update(['read_at' => now()]);
+        try {
+            CustomNotification::where('user_id', Auth::id())
+                            ->whereNull('read_at')
+                            ->update(['read_at' => now()]);
 
-        return response()->json(['success' => true]);
+            return response()->json(['success' => true]);
+        } catch (Exception $e) {
+            Log::error('Error in NotificationController@markAllAsRead: ' . $e->getMessage(), [
+                'exception' => $e
+            ]);
+            return response()->json(['success' => false, 'message' => 'حدث خطأ'], 500);
+        }
     }
 
 
@@ -51,11 +76,21 @@ class NotificationController extends Controller
      */
     public function destroy($id)
     {
-        $notification = CustomNotification::where('user_id', Auth::id())
-                                        ->findOrFail($id);
-        $notification->delete();
+        try {
+            $notification = CustomNotification::where('user_id', Auth::id())
+                                            ->findOrFail($id);
+            $notification->delete();
 
-        return redirect()->back()->with('success', 'تم حذف الإشعار بنجاح');
+            return redirect()->back()->with('success', 'تم حذف الإشعار بنجاح');
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->back()->with('error', 'الإشعار غير موجود');
+        } catch (Exception $e) {
+            Log::error('Error in NotificationController@destroy: ' . $e->getMessage(), [
+                'exception' => $e,
+                'notification_id' => $id
+            ]);
+            return redirect()->back()->with('error', 'حدث خطأ أثناء حذف الإشعار');
+        }
     }
 
     /**
@@ -63,12 +98,24 @@ class NotificationController extends Controller
      */
     public function getUnread()
     {
-        $notifications = Auth::user()->unread_notifications;
-        $count = Auth::user()->unread_notifications_count;
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                return response()->json(['notifications' => [], 'count' => 0]);
+            }
 
-        return response()->json([
-            'notifications' => $notifications,
-            'count' => $count
-        ]);
+            $notifications = $user->unread_notifications;
+            $count = $user->unread_notifications_count;
+
+            return response()->json([
+                'notifications' => $notifications,
+                'count' => $count
+            ]);
+        } catch (Exception $e) {
+            Log::error('Error in NotificationController@getUnread: ' . $e->getMessage(), [
+                'exception' => $e
+            ]);
+            return response()->json(['notifications' => [], 'count' => 0]);
+        }
     }
 }

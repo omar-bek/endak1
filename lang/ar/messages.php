@@ -313,6 +313,12 @@ return [
     'submit_request' => 'إرسال الطلب',
     'add_group' => 'إضافة مجموعة',
     'del_group' => 'حذف المجموعة',
+    
+    // Validation Messages
+    'validation_required_field' => 'هذا الحقل مطلوب',
+    'validation_complete_required_fields' => 'يرجى إكمال جميع الحقول المطلوبة قبل الإرسال',
+    'validation_image_required' => 'هذا الحقل مطلوب (يجب رفع صورة واحدة على الأقل)',
+    'validation_field_required' => 'هذا الحقل مطلوب',
 
 
     'home' => 'الرئيسية',

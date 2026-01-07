@@ -219,6 +219,15 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Message::class, 'receiver_id');
     }
 
+    // الحصول على عدد الرسائل غير المقروءة
+    public function getUnreadMessagesCountAttribute()
+    {
+        return $this->receivedMessages()
+            ->where('is_read', false)
+            ->where('is_deleted', false)
+            ->count();
+    }
+
     // البحث بالهاتف
     public function findForPassport($phone)
     {

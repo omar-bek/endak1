@@ -57,6 +57,8 @@ class Notification extends Model
             'service_requested' => 'fas fa-concierge-bell text-primary',
             'payment_received' => 'fas fa-money-bill-wave text-success',
             'service_completed' => 'fas fa-flag-checkered text-success',
+            'message_received' => 'fas fa-comments text-primary',
+            'service_deleted' => 'fas fa-trash text-danger',
             'system' => 'fas fa-info-circle text-info',
         ];
 
@@ -73,6 +75,8 @@ class Notification extends Model
             'service_requested' => 'primary',
             'payment_received' => 'success',
             'service_completed' => 'success',
+            'message_received' => 'primary',
+            'service_deleted' => 'danger',
             'system' => 'info',
         ];
 

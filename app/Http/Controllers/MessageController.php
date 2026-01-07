@@ -6,11 +6,14 @@ use App\Models\Message;
 use App\Models\User;
 use App\Models\Service;
 use App\Models\ServiceOffer;
+use App\Events\MessageSent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\JsonResponse;
+use Exception;
 
 class MessageController extends Controller
 {
@@ -19,23 +22,34 @@ class MessageController extends Controller
      */
     public function index()
     {
-        $user = Auth::user();
+        try {
+            $user = Auth::user();
 
-        // الحصول على جميع المحادثات للمستخدم
-        $conversations = Message::where(function ($query) use ($user) {
-            $query->where('sender_id', $user->id)
-                  ->orWhere('receiver_id', $user->id);
-        })
-        ->where('is_deleted', false)
-        ->with(['sender', 'receiver', 'service'])
-        ->orderBy('created_at', 'desc')
-        ->get()
-        ->groupBy('conversation_id')
-        ->map(function ($messages) {
-            return $messages->first();
-        });
+            if (!$user) {
+                return redirect()->route('login')->with('error', 'يجب تسجيل الدخول');
+            }
 
-        return view('messages.new_design', compact('conversations'));
+            // الحصول على جميع المحادثات للمستخدم
+            $conversations = Message::where(function ($query) use ($user) {
+                $query->where('sender_id', $user->id)
+                    ->orWhere('receiver_id', $user->id);
+            })
+                ->where('is_deleted', false)
+                ->with(['sender', 'receiver', 'service'])
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->groupBy('conversation_id')
+                ->map(function ($messages) {
+                    return $messages->first();
+                });
+
+            return view('messages.new_design', compact('conversations'));
+        } catch (Exception $e) {
+            Log::error('Error in MessageController@index: ' . $e->getMessage(), [
+                'exception' => $e
+            ]);
+            return redirect()->route('home')->with('error', 'حدث خطأ أثناء تحميل المحادثات');
+        }
     }
 
     /**
@@ -48,16 +62,16 @@ class MessageController extends Controller
         // الحصول على جميع المحادثات للمستخدم
         $conversations = Message::where(function ($query) use ($user) {
             $query->where('sender_id', $user->id)
-                  ->orWhere('receiver_id', $user->id);
+                ->orWhere('receiver_id', $user->id);
         })
-        ->where('is_deleted', false)
-        ->with(['sender', 'receiver', 'service'])
-        ->orderBy('created_at', 'desc')
-        ->get()
-        ->groupBy('conversation_id')
-        ->map(function ($messages) {
-            return $messages->first();
-        });
+            ->where('is_deleted', false)
+            ->with(['sender', 'receiver', 'service'])
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->groupBy('conversation_id')
+            ->map(function ($messages) {
+                return $messages->first();
+            });
 
         return view('messages.new_design', compact('conversations'));
     }
@@ -67,44 +81,59 @@ class MessageController extends Controller
      */
     public function show($userId)
     {
-        $user = Auth::user();
-        $otherUser = User::findOrFail($userId);
+        try {
+            $user = Auth::user();
 
-        // التحقق من أن المستخدم لا يمكنه محادثة نفسه
-        if ($user->id === $otherUser->id) {
-            return redirect()->back()->with('error', 'لا يمكنك محادثة نفسك');
+            if (!$user) {
+                return redirect()->route('login')->with('error', 'يجب تسجيل الدخول');
+            }
+
+            $otherUser = User::findOrFail($userId);
+
+            // التحقق من أن المستخدم لا يمكنه محادثة نفسه
+            if ($user->id === $otherUser->id) {
+                return redirect()->back()->with('error', 'لا يمكنك محادثة نفسك');
+            }
+
+            // إنشاء معرف المحادثة
+            $conversationId = Message::generateConversationId($user->id, $otherUser->id);
+
+            // الحصول على الرسائل بين المستخدمين
+            $messages = Message::where('conversation_id', $conversationId)
+                ->where('is_deleted', false)
+                ->with(['sender', 'receiver', 'service', 'serviceOffer', 'replyTo'])
+                ->orderBy('created_at', 'asc')
+                ->get();
+
+            // تحديد الرسائل كمقروءة
+            $messages->where('receiver_id', $user->id)->each(function ($message) {
+                $message->markAsRead();
+            });
+
+            // الحصول على جميع المحادثات للمستخدم (للعرض في الشريط الجانبي)
+            $conversations = Message::where(function ($query) use ($user) {
+                $query->where('sender_id', $user->id)
+                    ->orWhere('receiver_id', $user->id);
+            })
+                ->where('is_deleted', false)
+                ->with(['sender', 'receiver', 'service'])
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->groupBy('conversation_id')
+                ->map(function ($messages) {
+                    return $messages->first();
+                });
+
+            return view('messages.show', compact('messages', 'otherUser', 'conversationId', 'conversations'));
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->back()->with('error', 'المستخدم غير موجود');
+        } catch (Exception $e) {
+            Log::error('Error in MessageController@show: ' . $e->getMessage(), [
+                'exception' => $e,
+                'user_id' => $userId
+            ]);
+            return redirect()->back()->with('error', 'حدث خطأ أثناء تحميل المحادثة');
         }
-
-        // إنشاء معرف المحادثة
-        $conversationId = Message::generateConversationId($user->id, $otherUser->id);
-
-        // الحصول على الرسائل بين المستخدمين
-        $messages = Message::where('conversation_id', $conversationId)
-            ->where('is_deleted', false)
-            ->with(['sender', 'receiver', 'service', 'serviceOffer', 'replyTo'])
-            ->orderBy('created_at', 'asc')
-            ->get();
-
-        // تحديد الرسائل كمقروءة
-        $messages->where('receiver_id', $user->id)->each(function ($message) {
-            $message->markAsRead();
-        });
-
-        // الحصول على جميع المحادثات للمستخدم (للعرض في الشريط الجانبي)
-        $conversations = Message::where(function ($query) use ($user) {
-            $query->where('sender_id', $user->id)
-                  ->orWhere('receiver_id', $user->id);
-        })
-        ->where('is_deleted', false)
-        ->with(['sender', 'receiver', 'service'])
-        ->orderBy('created_at', 'desc')
-        ->get()
-        ->groupBy('conversation_id')
-        ->map(function ($messages) {
-            return $messages->first();
-        });
-
-        return view('messages.show', compact('messages', 'otherUser', 'conversationId', 'conversations'));
     }
 
     /**
@@ -112,153 +141,234 @@ class MessageController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'receiver_id' => 'required|exists:users,id',
-            'content' => 'nullable|string|max:2000',
-            'media' => 'nullable|file|mimes:jpg,jpeg,png,gif,pdf,doc,docx,xls,xlsx,zip,rar|max:10240',
-            'voice_note' => 'nullable|file|mimes:mp3,wav,m4a,ogg|max:10240',
-            'location' => 'nullable|array',
-            'contact' => 'nullable|array',
-            'reply_to_message_id' => 'nullable|exists:messages,id',
-            'service_id' => 'nullable|exists:services,id',
-            'service_offer_id' => 'nullable|exists:service_offers,id',
-        ]);
+        try {
+            $validator = Validator::make($request->all(), [
+                'receiver_id' => 'required|exists:users,id',
+                'content' => 'nullable|string|max:2000',
+                'media' => 'nullable|file|mimes:jpg,jpeg,png,gif,pdf,doc,docx,xls,xlsx,zip,rar|max:10240',
+                'voice_note' => 'nullable|file|mimes:mp3,wav,m4a,ogg|max:10240',
+                'location' => 'nullable|array',
+                'contact' => 'nullable|array',
+                'reply_to_message_id' => 'nullable|exists:messages,id',
+                'service_id' => 'nullable|exists:services,id',
+                'service_offer_id' => 'nullable|exists:service_offers,id',
+            ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422);
-        }
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $validator->errors()
+                ], 422);
+            }
 
-        $user = Auth::user();
+            $user = Auth::user();
 
-        // التحقق من أن المستخدم لا يرسل لنفسه
-        if ($user->id === $request->receiver_id) {
-            return response()->json([
-                'success' => false,
-                'message' => 'لا يمكنك إرسال رسالة لنفسك'
-            ], 400);
-        }
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'يجب تسجيل الدخول'
+                ], 401);
+            }
 
-        $messageData = [
-            'sender_id' => $user->id,
-            'receiver_id' => $request->receiver_id,
-            'reply_to_message_id' => $request->reply_to_message_id,
-            'service_id' => $request->service_id ?: null,
-            'service_offer_id' => $request->service_offer_id ?: null,
-        ];
+            // التحقق من أن المستخدم لا يرسل لنفسه
+            if ($user->id === $request->receiver_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'لا يمكنك إرسال رسالة لنفسك'
+                ], 400);
+            }
 
-        // تحديد نوع الرسالة والمحتوى
-        if ($request->hasFile('media')) {
-            $file = $request->file('media');
-            $path = $file->store('messages/media', 'public');
-            $messageData['media_path'] = $path;
-            $messageData['message_type'] = $this->getFileType($file->getMimeType());
-            $messageData['file_name'] = $file->getClientOriginalName();
-            $messageData['file_size'] = $file->getSize();
-
-            // إضافة metadata للملف
-            $messageData['metadata'] = [
-                'file_size' => $file->getSize(),
-                'file_name' => $file->getClientOriginalName(),
-                'mime_type' => $file->getMimeType()
+            $messageData = [
+                'sender_id' => $user->id,
+                'receiver_id' => $request->receiver_id,
+                'reply_to_message_id' => $request->reply_to_message_id,
+                'service_id' => $request->service_id ?: null,
+                'service_offer_id' => $request->service_offer_id ?: null,
             ];
-        } elseif ($request->hasFile('voice_note')) {
-            $file = $request->file('voice_note');
-            $path = $file->store('messages/voice', 'public');
-            $messageData['voice_note_path'] = $path;
-            $messageData['message_type'] = 'voice';
-            $messageData['file_name'] = $file->getClientOriginalName();
-            $messageData['file_size'] = $file->getSize();
 
-            // إضافة metadata للرسالة الصوتية
-            $messageData['metadata'] = [
-                'file_size' => $file->getSize(),
-                'file_name' => $file->getClientOriginalName(),
-                'duration' => $request->duration ?? 0
-            ];
-        } elseif ($request->has('voice_note_data') && !empty($request->voice_note_data)) {
-            // معالجة الرسالة الصوتية من base64
-            $voiceData = $request->voice_note_data;
-            if (strpos($voiceData, 'data:audio') === 0) {
-                $voiceData = substr($voiceData, strpos($voiceData, ',') + 1);
-                $voiceData = base64_decode($voiceData);
+            // تحديد نوع الرسالة والمحتوى
+            if ($request->hasFile('media')) {
+                $file = $request->file('media');
+                $path = $file->store('messages/media', 'public');
+                $messageData['media_path'] = $path;
+                $messageData['message_type'] = $this->getFileType($file->getMimeType());
+                $messageData['file_name'] = $file->getClientOriginalName();
+                $messageData['file_size'] = $file->getSize();
 
-                $fileName = 'voice_' . time() . '.wav';
-                $path = 'messages/voice/' . $fileName;
-
-                Storage::disk('public')->put($path, $voiceData);
-
+                // إضافة metadata للملف
+                $messageData['metadata'] = [
+                    'file_size' => $file->getSize(),
+                    'file_name' => $file->getClientOriginalName(),
+                    'mime_type' => $file->getMimeType()
+                ];
+            } elseif ($request->hasFile('voice_note')) {
+                $file = $request->file('voice_note');
+                $path = $file->store('messages/voice', 'public');
                 $messageData['voice_note_path'] = $path;
                 $messageData['message_type'] = 'voice';
-                $messageData['file_name'] = $fileName;
-                $messageData['file_size'] = strlen($voiceData);
+                $messageData['file_name'] = $file->getClientOriginalName();
+                $messageData['file_size'] = $file->getSize();
 
                 // إضافة metadata للرسالة الصوتية
                 $messageData['metadata'] = [
-                    'file_size' => strlen($voiceData),
-                    'file_name' => $fileName,
+                    'file_size' => $file->getSize(),
+                    'file_name' => $file->getClientOriginalName(),
                     'duration' => $request->duration ?? 0
                 ];
+            } elseif ($request->has('voice_note_data') && !empty($request->voice_note_data)) {
+                // معالجة الرسالة الصوتية من base64
+                $voiceData = $request->voice_note_data;
+                if (strpos($voiceData, 'data:audio') === 0) {
+                    $voiceData = substr($voiceData, strpos($voiceData, ',') + 1);
+                    $voiceData = base64_decode($voiceData);
+
+                    $fileName = 'voice_' . time() . '.wav';
+                    $path = 'messages/voice/' . $fileName;
+
+                    Storage::disk('public')->put($path, $voiceData);
+
+                    $messageData['voice_note_path'] = $path;
+                    $messageData['message_type'] = 'voice';
+                    $messageData['file_name'] = $fileName;
+                    $messageData['file_size'] = strlen($voiceData);
+
+                    // إضافة metadata للرسالة الصوتية
+                    $messageData['metadata'] = [
+                        'file_size' => strlen($voiceData),
+                        'file_name' => $fileName,
+                        'duration' => $request->duration ?? 0
+                    ];
+                }
+            } elseif ($request->has('location')) {
+                $messageData['message_type'] = 'location';
+                $messageData['metadata'] = [
+                    'location' => $request->location
+                ];
+            } elseif ($request->has('contact')) {
+                $messageData['message_type'] = 'contact';
+                $messageData['metadata'] = [
+                    'contact' => $request->contact
+                ];
+            } else {
+                $messageData['content'] = $request->input('content');
+                $messageData['message_type'] = 'text';
             }
-        } elseif ($request->has('location')) {
-            $messageData['message_type'] = 'location';
-            $messageData['metadata'] = [
-                'location' => $request->location
-            ];
-        } elseif ($request->has('contact')) {
-            $messageData['message_type'] = 'contact';
-            $messageData['metadata'] = [
-                'contact' => $request->contact
-            ];
-        } else {
-            $messageData['content'] = $request->content;
-            $messageData['message_type'] = 'text';
+
+            $message = Message::create($messageData);
+            $message->load(['sender', 'receiver', 'service', 'serviceOffer', 'replyTo']);
+
+            // بث الحدث للـ real-time
+            try {
+                broadcast(new MessageSent($message))->toOthers();
+            } catch (Exception $e) {
+                Log::warning('Failed to broadcast message', [
+                    'message_id' => $message->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
+
+            // إنشاء إشعار للمستقبل
+            try {
+                \App\Models\Notification::createNotification(
+                    $request->receiver_id,
+                    'message_received',
+                    'رسالة جديدة',
+                    'لديك رسالة جديدة من ' . $user->name,
+                    [
+                        'message_id' => $message->id,
+                        'sender_id' => $user->id,
+                        'conversation_id' => $message->conversation_id,
+                    ]
+                );
+            } catch (Exception $e) {
+                Log::warning('Failed to create notification for message', [
+                    'message_id' => $message->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
+
+            Log::info('Message sent', [
+                'message_id' => $message->id,
+                'sender_id' => $user->id,
+                'receiver_id' => $request->receiver_id
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'html' => view('messages.partials.message', compact('message'))->render()
+            ]);
+        } catch (Exception $e) {
+            Log::error('Error in MessageController@store: ' . $e->getMessage(), [
+                'exception' => $e,
+                'request' => $request->except(['media', 'voice_note'])
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'حدث خطأ أثناء إرسال الرسالة'
+            ], 500);
         }
-
-        $message = Message::create($messageData);
-        $message->load(['sender', 'receiver', 'service', 'serviceOffer', 'replyTo']);
-
-        return response()->json([
-            'success' => true,
-            'message' => $message,
-            'html' => view('messages.partials.message', compact('message'))->render()
-        ]);
     }
 
-    /**
-     * الحصول على الرسائل الجديدة (للتحديث المباشر)
-     */
+
     public function getNewMessages(Request $request): JsonResponse
     {
-        $user = Auth::user();
-        $conversationId = $request->conversation_id;
-        $lastMessageId = $request->last_message_id ?? 0;
+        try {
+            $user = Auth::user();
+            $conversationId = $request->input('conversation_id') ?? $request->conversation_id;
+            $lastMessageId = $request->input('last_message_id') ?? $request->last_message_id ?? 0;
 
-        $messages = Message::where('conversation_id', $conversationId)
-            ->where('id', '>', $lastMessageId)
-            ->where('is_deleted', false)
-            ->with(['sender', 'receiver', 'service', 'serviceOffer', 'replyTo'])
-            ->orderBy('created_at', 'asc')
-            ->get();
+            if (!$conversationId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'conversation_id is required'
+                ], 400);
+            }
 
-        // تحديد الرسائل كمقروءة
-        $messages->where('receiver_id', $user->id)->each(function ($message) {
-            $message->markAsRead();
-        });
+            $messages = Message::where('conversation_id', $conversationId)
+                ->where('id', '>', $lastMessageId)
+                ->where('is_deleted', false)
+                ->with(['sender', 'receiver', 'service', 'serviceOffer', 'replyTo'])
+                ->orderBy('created_at', 'asc')
+                ->get();
 
-        $html = '';
-        foreach ($messages as $message) {
-            $html .= view('messages.partials.message', compact('message'))->render();
+            // تحديد الرسائل كمقروءة
+            $messages->where('receiver_id', $user->id)->each(function ($message) {
+                if (!$message->is_read) {
+                    $message->markAsRead();
+                }
+            });
+
+            $html = '';
+            foreach ($messages as $message) {
+                $html .= view('messages.partials.message', compact('message'))->render();
+            }
+
+            return response()->json([
+                'success' => true,
+                'messages' => $messages->map(function ($message) {
+                    return [
+                        'id' => $message->id,
+                        'sender_id' => $message->sender_id,
+                        'receiver_id' => $message->receiver_id,
+                        'content' => $message->content,
+                        'message_type' => $message->message_type,
+                        'created_at' => $message->created_at->toDateTimeString(),
+                        'formatted_time' => $message->formatted_time,
+                    ];
+                }),
+                'html' => $html,
+                'last_message_id' => $messages->max('id') ?? $lastMessageId
+            ]);
+        } catch (Exception $e) {
+            Log::error('Error in MessageController@getNewMessages: ' . $e->getMessage(), [
+                'exception' => $e
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'حدث خطأ أثناء جلب الرسائل'
+            ], 500);
         }
-
-        return response()->json([
-            'success' => true,
-            'messages' => $messages,
-            'html' => $html,
-            'last_message_id' => $messages->max('id') ?? $lastMessageId
-        ]);
     }
 
     /**
@@ -382,21 +492,21 @@ class MessageController extends Controller
 
         $messages = Message::where(function ($q) use ($user) {
             $q->where('sender_id', $user->id)
-              ->orWhere('receiver_id', $user->id);
+                ->orWhere('receiver_id', $user->id);
         })
-        ->where('is_deleted', false)
-        ->where(function ($q) use ($query) {
-            $q->where('content', 'like', "%{$query}%")
-              ->orWhereHas('sender', function ($senderQuery) use ($query) {
-                  $senderQuery->where('name', 'like', "%{$query}%");
-              })
-              ->orWhereHas('receiver', function ($receiverQuery) use ($query) {
-                  $receiverQuery->where('name', 'like', "%{$query}%");
-              });
-        })
-        ->with(['sender', 'receiver'])
-        ->orderBy('created_at', 'desc')
-        ->paginate(20);
+            ->where('is_deleted', false)
+            ->where(function ($q) use ($query) {
+                $q->where('content', 'like', "%{$query}%")
+                    ->orWhereHas('sender', function ($senderQuery) use ($query) {
+                        $senderQuery->where('name', 'like', "%{$query}%");
+                    })
+                    ->orWhereHas('receiver', function ($receiverQuery) use ($query) {
+                        $receiverQuery->where('name', 'like', "%{$query}%");
+                    });
+            })
+            ->with(['sender', 'receiver'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
 
         return view('messages.search', compact('messages', 'query'));
     }
@@ -404,7 +514,7 @@ class MessageController extends Controller
     /**
      * تحديد نوع الملف
      */
-    private function getFileType($mimeType): string
+    protected function getFileType($mimeType): string
     {
         if (str_starts_with($mimeType, 'image/')) {
             return 'image';

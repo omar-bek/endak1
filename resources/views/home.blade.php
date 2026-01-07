@@ -5,142 +5,168 @@
 
 @section('content')
     <!-- Hero Section -->
-<section class="hero-area position-relative text-white overflow-hidden">
-    <div class="hero-bg-small bg-info"></div>
+    <section class="hero-area position-relative text-white overflow-hidden">
+        <div class="hero-bg-small bg-info"></div>
 
-    <div class="container py-5 d-flex align-items-center">
-        <div class="row align-items-center w-100 flex-column-reverse flex-lg-row">
-            <div class="col-lg-6 text-center text-lg-start mb-4 mb-lg-0">
+        <div class="container py-5 d-flex align-items-center">
+            <div class="row align-items-center w-100 flex-column-reverse flex-lg-row">
+                <div class="col-lg-6 text-center text-lg-start mb-4 mb-lg-0">
 
-                <div class="d-flex justify-content-center justify-content-lg-start align-items-center mb-3">
-                    <i class="fas fa-star text-warning fs-4 mx-1"></i>
-                    <i class="fas fa-star text-warning fs-4 mx-1"></i>
-                    <i class="fas fa-star text-warning fs-4 mx-1"></i>
-                    <i class="fas fa-star text-warning fs-4 mx-1"></i>
-                    <i class="fas fa-star text-warning fs-4 mx-1"></i>
-                    <span class="ms-2 small">{{ __('messages.hero_rating') }}</span>
+                    <div class="d-flex justify-content-center justify-content-lg-start align-items-center mb-3">
+                        <i class="fas fa-star text-warning fs-4 mx-1"></i>
+                        <i class="fas fa-star text-warning fs-4 mx-1"></i>
+                        <i class="fas fa-star text-warning fs-4 mx-1"></i>
+                        <i class="fas fa-star text-warning fs-4 mx-1"></i>
+                        <i class="fas fa-star text-warning fs-4 mx-1"></i>
+                        <span class="ms-2 small">{{ __('messages.hero_rating') }}</span>
+                    </div>
+
+                    <h1 class="display-5 fw-bold mb-3 text-white">
+                        {{ __('messages.hero_title_1') }} <span style="color: #f3a446;">Endak</span>
+                        {{ __('messages.hero_title_2') }} <span class="text-info">{{ __('messages.hero_title_3') }}</span>
+                        {{ __('messages.hero_title_4') }}
+                    </h1>
+
+                    <p class="lead mb-4 border-start border-3 ps-3 text-white">
+                        {{ __('messages.hero_description') }}
+                    </p>
+
+                    <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3 mb-5"
+                        style="position: relative; z-index: 10;">
+                        <a href="{{ route('categories.index') }}" class="btn btn-lg px-4 rounded-pill shadow"
+                            style="background-color:#f3a446;color:#fff;border:none;position: relative; z-index: 10;">{{ __('messages.hero_explore_categories') }}</a>
+
+                        <a href="{{ route('services.index') }}" class="btn btn-outline-light btn-lg px-4 rounded-pill"
+                            style="position: relative; z-index: 10;">{{ __('messages.hero_explore_services') }}</a>
+                    </div>
                 </div>
 
-                <h1 class="display-5 fw-bold mb-3 text-white">
-                    {{ __('messages.hero_title_1') }} <span style="color: #f3a446;">Endak</span>
-                    {{ __('messages.hero_title_2') }} <span class="text-info">{{ __('messages.hero_title_3') }}</span>
-                    {{ __('messages.hero_title_4') }}
-                </h1>
-
-                <p class="lead mb-4 border-start border-3 ps-3 text-white">
-                    {{ __('messages.hero_description') }}
-                </p>
-
-                <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3 mb-5">
-                    <a href="{{ route('categories.index') }}" class="btn btn-lg px-4 rounded-pill shadow"
-                        style="background-color:#f3a446;color:#fff;border:none;">{{ __('messages.hero_explore_categories') }}</a>
-
-                    <a href="{{ route('services.index') }}"
-                        class="btn btn-outline-light btn-lg px-4 rounded-pill">{{ __('messages.hero_explore_services') }}</a>
+                <div class="col-lg-6 text-center position-relative mb-4 mb-lg-0">
+                    <img src="{{ asset(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}"
+                        alt="{{ \App\Models\SystemSetting::get('site_name_ar', 'إنداك') }}" class="img-fluid hero-img">
                 </div>
-            </div>
-
-            <div class="col-lg-6 text-center position-relative mb-4 mb-lg-0">
-                <img src="{{ asset(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}"
-                    alt="{{ \App\Models\SystemSetting::get('site_name_ar', 'إنداك') }}" class="img-fluid hero-img">
             </div>
         </div>
-    </div>
 
-    <svg viewBox="0 0 1440 200" preserveAspectRatio="none" class="position-absolute bottom-0 start-0 w-100 hero-wave">
-        <defs>
-            <linearGradient id="waveGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#2f5c69" />
-                <stop offset="100%" stop-color="#f1f7ff" />
-            </linearGradient>
+        <svg viewBox="0 0 1440 200" preserveAspectRatio="none" class="position-absolute bottom-0 start-0 w-100 hero-wave">
+            <defs>
+                <linearGradient id="waveGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#2f5c69" />
+                    <stop offset="100%" stop-color="#f1f7ff" />
+                </linearGradient>
 
-            <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-                <feDropShadow dx="0" dy="-2" stdDeviation="4" flood-color="#1c3944" flood-opacity="0.5" />
-            </filter>
-        </defs>
+                <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+                    <feDropShadow dx="0" dy="-2" stdDeviation="4" flood-color="#1c3944"
+                        flood-opacity="0.5" />
+                </filter>
+            </defs>
 
-        <path id="wavePath" d="M0,120 Q360,70 720,120 T1440,120 L1440,200 L0,200 Z" fill="url(#waveGradient)"
-            filter="url(#shadow)" opacity="0.95">
-            <animate attributeName="d" dur="6s" repeatCount="indefinite"
-                values="
+            <path id="wavePath" d="M0,120 Q360,70 720,120 T1440,120 L1440,200 L0,200 Z" fill="url(#waveGradient)"
+                filter="url(#shadow)" opacity="0.95">
+                <animate attributeName="d" dur="6s" repeatCount="indefinite"
+                    values="
                 M0,120 Q360,70 720,120 T1440,120 L1440,200 L0,200 Z;
                 M0,125 Q360,80 720,125 T1440,125 L1440,200 L0,200 Z;
                 M0,120 Q360,70 720,120 T1440,120 L1440,200 L0,200 Z" />
-        </path>
-    </svg>
+            </path>
+        </svg>
 
-    <style>
-        .hero-area {
-            background: linear-gradient(135deg, #2f5c69, #3c6f7d, #2f5c69);
-            min-height: auto;
-            position: relative;
-            display: flex;
-            align-items: center;
-            overflow: hidden;
-            padding: 0;
-            margin-top: 40px
-        }
-
-        .hero-img {
-            max-width: 80%;
-            z-index: 2;
-            position: relative;
-            animation: floatMove 4s ease-in-out infinite;
-        }
-
-        @keyframes floatMove {
-            0% { transform: rotate(0deg) translateX(0); }
-            25% { transform: rotate(1.5deg) translateX(8px); }
-            50% { transform: rotate(0deg) translateX(0); }
-            75% { transform: rotate(-1.5deg) translateX(-8px); }
-            100% { transform: rotate(0deg) translateX(0); }
-        }
-
-        .hero-wave {
-            z-index: 3;
-            bottom: 0;
-        }
-
-        @media (max-width: 768px) {
+        <style>
             .hero-area {
-                padding: 0 !important;
-                text-align: center;
-                margin-top: 0px
+                background: linear-gradient(135deg, #2f5c69, #3c6f7d, #2f5c69);
+                min-height: auto;
+                position: relative;
+                display: flex;
+                align-items: center;
+                overflow: hidden;
+                padding: 0;
+                margin-top: 40px
             }
-            .hero-img {
-                width: 80%;
-                margin: 0 auto;
-            }
-            .col-lg-6 {
-                padding: 0 !important;
-            }
-            .hero-area .container {
-                padding: 0 !important;
-            }
-            .hero-area h1 {
-                font-size: 1.6rem;
-            }
-            .hero-area p {
-                font-size: 1rem;
-                margin-bottom: 1rem;
-            }
-        }
-    </style>
-</section>
 
-    
+            .hero-img {
+                max-width: 80%;
+                z-index: 2;
+                position: relative;
+                animation: floatMove 4s ease-in-out infinite;
+            }
+
+            @keyframes floatMove {
+                0% {
+                    transform: rotate(0deg) translateX(0);
+                }
+
+                25% {
+                    transform: rotate(1.5deg) translateX(8px);
+                }
+
+                50% {
+                    transform: rotate(0deg) translateX(0);
+                }
+
+                75% {
+                    transform: rotate(-1.5deg) translateX(-8px);
+                }
+
+                100% {
+                    transform: rotate(0deg) translateX(0);
+                }
+            }
+
+            .hero-wave {
+                z-index: 1;
+                bottom: 0;
+            }
+
+            .hero-area .container {
+                position: relative;
+                z-index: 2;
+            }
+
+            @media (max-width: 768px) {
+                .hero-area {
+                    padding: 0 !important;
+                    text-align: center;
+                    margin-top: 0px
+                }
+
+                .hero-img {
+                    width: 80%;
+                    margin: 0 auto;
+                }
+
+                .col-lg-6 {
+                    padding: 0 !important;
+                }
+
+                .hero-area .container {
+                    padding: 0 !important;
+                }
+
+                .hero-area h1 {
+                    font-size: 1.6rem;
+                }
+
+                .hero-area p {
+                    font-size: 1rem;
+                    margin-bottom: 1rem;
+                }
+            }
+        </style>
+    </section>
+
+
 
     <section class="categories-section py-5 text-center">
         <div class="container">
             <div class="text-center mb-5">
-<h2 class="fw-bold text-black">{{ __('messages.categories_title') }}</h2>
-<p class="text-light-50">{{ __('messages.categories_subtitle') }}</p>
+                <h2 class="fw-bold text-black">{{ __('messages.categories_title') }}</h2>
+                <p class="text-light-50">{{ __('messages.categories_subtitle') }}</p>
             </div>
 
             <div class="row justify-content-center">
                 @forelse($categories as $category)
                     <div class="col-6 col-md-6 col-lg-3 mb-4 fade-card">
-                        <a href="{{ $category->hasChildren() ? route('categories.subcategories', $category->slug) : route('services.request', $category->id) }}"
+                        <a href="{{ $category->hasChildren() ? route('categories.subcategories', $category->slug) : route('services.request', $category->slug) }}"
                             class="card-link">
                             <div class="card category-card h-100">
                                 <div class="category-image-container">
@@ -329,95 +355,95 @@
     </section>
 
     <!-- Latest Services Section -->
-   
+
 
     <!-- Features Section -->
     <!-- <section class="features-section py-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4 text-center mb-4">
-                    <div class="icon-box mb-3">
-                        <i class="fas fa-shield-alt"></i>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-4 text-center mb-4">
+                                <div class="icon-box mb-3">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <h4>خدمات آمنة</h4>
+                                <p>جميع الخدمات مضمونة وآمنة 100%</p>
+                            </div>
+                            <div class="col-md-4 text-center mb-4">
+                                <div class="icon-box mb-3">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <h4>خدمة سريعة</h4>
+                                <p>احصل على الخدمة في أسرع وقت ممكن</p>
+                            </div>
+                            <div class="col-md-4 text-center mb-4">
+                                <div class="icon-box mb-3">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <h4>جودة عالية</h4>
+                                <p>نختار لك أفضل مزودي الخدمات</p>
+                            </div>
+                        </div>
                     </div>
-                    <h4>خدمات آمنة</h4>
-                    <p>جميع الخدمات مضمونة وآمنة 100%</p>
-                </div>
-                <div class="col-md-4 text-center mb-4">
-                    <div class="icon-box mb-3">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <h4>خدمة سريعة</h4>
-                    <p>احصل على الخدمة في أسرع وقت ممكن</p>
-                </div>
-                <div class="col-md-4 text-center mb-4">
-                    <div class="icon-box mb-3">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <h4>جودة عالية</h4>
-                    <p>نختار لك أفضل مزودي الخدمات</p>
-                </div>
-            </div>
-        </div>
-    </section> -->
+                </section> -->
 
     <!-- <style>
-        .features-section {
-            background: linear-gradient(135deg, #e6eefe, #f1f7ee);
-            color: #2f5c69;
-            overflow: hidden;
-        }
+                    .features-section {
+                        background: linear-gradient(135deg, #e6eefe, #f1f7ee);
+                        color: #2f5c69;
+                        overflow: hidden;
+                    }
 
-        .features-section h4 {
-            color: #2f5c69;
-            font-weight: 600;
-            margin-top: 15px;
-        }
+                    .features-section h4 {
+                        color: #2f5c69;
+                        font-weight: 600;
+                        margin-top: 15px;
+                    }
 
-        .features-section p {
-            color: #4b6e79;
-            font-size: 0.95rem;
-        }
+                    .features-section p {
+                        color: #4b6e79;
+                        font-size: 0.95rem;
+                    }
 
-        .icon-box {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto;
-            background: rgba(47, 92, 105, 0.1);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.4s ease;
-            animation: floatIcon 3s ease-in-out infinite;
-        }
+                    .icon-box {
+                        width: 100px;
+                        height: 100px;
+                        margin: 0 auto;
+                        background: rgba(47, 92, 105, 0.1);
+                        border-radius: 50%;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        transition: all 0.4s ease;
+                        animation: floatIcon 3s ease-in-out infinite;
+                    }
 
-        .icon-box i {
-            font-size: 2.5rem;
-            color: #2f5c69;
-            transition: all 0.4s ease;
-        }
+                    .icon-box i {
+                        font-size: 2.5rem;
+                        color: #2f5c69;
+                        transition: all 0.4s ease;
+                    }
 
-        .icon-box:hover {
-            background: rgba(47, 92, 105, 0.2);
-            transform: translateY(-8px);
-        }
+                    .icon-box:hover {
+                        background: rgba(47, 92, 105, 0.2);
+                        transform: translateY(-8px);
+                    }
 
-        .icon-box:hover i {
-            color: #f3a446;
-            transform: scale(1.1);
-        }
+                    .icon-box:hover i {
+                        color: #f3a446;
+                        transform: scale(1.1);
+                    }
 
-        @keyframes floatIcon {
+                    @keyframes floatIcon {
 
-            0%,
-            100% {
-                transform: translateY(0);
-            }
+                        0%,
+                        100% {
+                            transform: translateY(0);
+                        }
 
-            50% {
-                transform: translateY(-10px);
-            }
-        }
-    </style> -->
+                        50% {
+                            transform: translateY(-10px);
+                        }
+                    }
+                </style> -->
 
 @endsection

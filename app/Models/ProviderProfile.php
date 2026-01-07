@@ -78,6 +78,47 @@ class ProviderProfile extends Model
         return $this->max_categories - $this->activeCategories()->count();
     }
 
+    // الحصول على جميع التقييمات للمزود
+    public function getRatings()
+    {
+        return \App\Models\ServiceOffer::where('provider_id', $this->user_id)
+            ->whereNotNull('rating')
+            ->where('status', 'delivered')
+            ->with(['service.user', 'service.category'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+    }
+
+    // حساب متوسط التقييمات
+    public function calculateAverageRating()
+    {
+        $ratings = \App\Models\ServiceOffer::where('provider_id', $this->user_id)
+            ->whereNotNull('rating')
+            ->where('status', 'delivered')
+            ->pluck('rating');
+
+        if ($ratings->count() > 0) {
+            return round($ratings->avg(), 2);
+        }
+
+        return 0;
+    }
+
+    // تحديث التقييم تلقائياً
+    public function updateRating()
+    {
+        $averageRating = $this->calculateAverageRating();
+        $completedServices = \App\Models\ServiceOffer::where('provider_id', $this->user_id)
+            ->whereNotNull('rating')
+            ->where('status', 'delivered')
+            ->count();
+
+        $this->update([
+            'rating' => $averageRating,
+            'completed_services' => $completedServices
+        ]);
+    }
+
     // الحصول على عدد المدن المتبقية
     public function getRemainingCitiesAttribute()
     {

@@ -107,6 +107,129 @@
                         </div>
                     </div>
 
+                    <!-- معلومات العميل (للمزود) -->
+                    @if(Auth::id() == $offer->provider_id && $customer)
+                    <div class="card border-0 shadow-sm mb-4 rounded-3 customer-info">
+                        <div class="card-header bg-light border-0 py-3 d-flex align-items-center">
+                            <i class="fas fa-user text-primary fs-5 me-2"></i>
+                            <h5 class="mb-0 text-primary fw-bold">معلومات العميل</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row align-items-center mb-3">
+                                <div class="col-md-2 text-center">
+                                    <img src="{{ $customer->avatar_url }}" alt="{{ $customer->name }}" 
+                                         class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">
+                                </div>
+                                <div class="col-md-7">
+                                    <h5 class="fw-bold text-dark mb-1">{{ $customer->name }}</h5>
+                                    <p class="text-muted small mb-0">
+                                        <i class="fas fa-envelope me-1"></i>{{ $customer->email }}
+                                    </p>
+                                </div>
+                                <div class="col-md-3 text-md-end">
+                                    <div class="d-flex flex-column gap-2">
+                                        <a href="{{ route('messages.show', $customer->id) }}" 
+                                           class="btn btn-primary btn-sm rounded-pill">
+                                            <i class="fas fa-envelope me-1"></i> إرسال رسالة
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    <!-- معلومات مزود الخدمة -->
+                    @if(Auth::id() == $offer->service->user_id && $provider)
+                    <div class="card border-0 shadow-sm mb-4 rounded-3 provider-info">
+                        <div class="card-header bg-light border-0 py-3 d-flex align-items-center">
+                            <i class="fas fa-user-tie text-info fs-5 me-2"></i>
+                            <h5 class="mb-0 text-info fw-bold">معلومات مزود الخدمة</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row align-items-center mb-3">
+                                <div class="col-md-2 text-center">
+                                    <img src="{{ $provider->avatar_url }}" alt="{{ $provider->name }}" 
+                                         class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">
+                                </div>
+                                <div class="col-md-7">
+                                    <h5 class="fw-bold text-dark mb-1">{{ $provider->name }}</h5>
+                                    @if($providerProfile)
+                                        @if($providerProfile->rating)
+                                            <div class="d-flex align-items-center mb-2">
+                                                <div class="text-warning me-2">
+                                                    @for($i = 1; $i <= 5; $i++)
+                                                        <i class="fas fa-star{{ $i <= round($providerProfile->rating) ? '' : '-o' }}"></i>
+                                                    @endfor
+                                                </div>
+                                                <span class="text-muted">({{ number_format($providerProfile->rating, 1) }})</span>
+                                                @if($providerProfile->completed_services)
+                                                    <span class="text-muted ms-2">• {{ $providerProfile->completed_services }} خدمة مكتملة</span>
+                                                @endif
+                                            </div>
+                                        @endif
+                                        @if($providerProfile->bio)
+                                            <p class="text-muted small mb-0">{{ Str::limit($providerProfile->bio, 150) }}</p>
+                                        @endif
+                                    @endif
+                                </div>
+                                <div class="col-md-3 text-md-end">
+                                    <div class="d-flex flex-column gap-2">
+                                        <a href="{{ route('messages.show', $provider->id) }}" 
+                                           class="btn btn-primary btn-sm rounded-pill">
+                                            <i class="fas fa-envelope me-1"></i> إرسال رسالة
+                                        </a>
+                                        @if($providerProfile && $providerProfile->isProfileComplete())
+                                            <a href="{{ route('provider.profile.public', $provider->id) }}" 
+                                               class="btn btn-outline-info btn-sm rounded-pill">
+                                                <i class="fas fa-user-circle me-1"></i> عرض الملف الشخصي
+                                            </a>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- التقييمات -->
+                    @if($ratings && $ratings->count() > 0)
+                    <div class="card border-0 shadow-sm mb-4 rounded-3 ratings-section">
+                        <div class="card-header bg-light border-0 py-3 d-flex align-items-center">
+                            <i class="fas fa-star text-warning fs-5 me-2"></i>
+                            <h5 class="mb-0 text-warning fw-bold">تقييمات مزود الخدمة ({{ $ratings->count() }})</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                @foreach($ratings as $rating)
+                                <div class="col-md-6 mb-3">
+                                    <div class="rating-item p-3 bg-light rounded">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <div>
+                                                <h6 class="mb-1 fw-bold">{{ $rating->service->user->name ?? 'مستخدم' }}</h6>
+                                                <small class="text-muted">{{ $rating->service->title }}</small>
+                                            </div>
+                                            <div class="text-warning">
+                                                @for($i = 1; $i <= 5; $i++)
+                                                    <i class="fas fa-star{{ $i <= $rating->rating ? '' : '-o' }}"></i>
+                                                @endfor
+                                            </div>
+                                        </div>
+                                        @if($rating->review)
+                                            <p class="text-muted small mb-0">{{ $rating->review }}</p>
+                                        @endif
+                                        <small class="text-muted d-block mt-2">
+                                            <i class="fas fa-calendar me-1"></i>
+                                            {{ $rating->created_at->format('Y-m-d') }}
+                                        </small>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                    @endif
+
                     <div class="d-flex flex-wrap justify-content-center gap-2 mt-4">
     <a href="{{ route('services.index') }}" class="btn btn-secondary rounded-pill px-4 py-2">
         <i class="fas fa-arrow-left"></i> العودة للخدمات

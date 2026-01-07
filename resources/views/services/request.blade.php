@@ -206,6 +206,36 @@
             }
         }
 
+        /* Validation Styles */
+        .is-invalid {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+        }
+
+        .is-valid {
+            border-color: #28a745 !important;
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25) !important;
+        }
+
+        .invalid-feedback {
+            display: block;
+            width: 100%;
+            margin-top: 0.25rem;
+            font-size: 0.875rem;
+            color: #dc3545;
+        }
+
+        .field-error {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .required-field-marker {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
         .image-preview-container {
             min-height: 50px;
         }
@@ -400,7 +430,8 @@
                         </div>
 
                         <div class="card-body p-4">
-                            <form action="{{ route('services.store') }}" method="POST" enctype="multipart/form-data">
+                            <form action="{{ route('services.store') }}" method="POST" enctype="multipart/form-data"
+                                id="serviceRequestForm" onsubmit="return validateServiceForm(event);">
                                 @csrf
                                 <input type="hidden" name="category_id" value="{{ $category->id }}">
                                 @if ($selectedSubCategoryId)
@@ -444,9 +475,10 @@
                                 <div class="mb-3">
                                     <label for="notes" class="form-label">
                                         <i class="fas fa-sticky-note"></i> {{ __('messages.additional_notes') }}
+                                        <span class="text-danger">*</span>
                                     </label>
                                     <textarea name="notes" id="notes" class="form-control" rows="4"
-                                        placeholder="{{ __('messages.additional_notes_placeholder') }}   ">{{ old('notes') }}</textarea>
+                                        placeholder="{{ __('messages.additional_notes_placeholder') }}   " required>{{ old('notes') }}</textarea>
                                 </div>
 
                                 @php
@@ -471,9 +503,7 @@
                                                     <label for="custom_fields_{{ $field->name }}_0" class="form-label">
                                                         <i class="fas fa-image"></i>
                                                         {{ $fieldName }}
-                                                        @if ($field->is_required)
-                                                            <span class="text-danger">*</span>
-                                                        @endif
+                                                        <span class="text-danger">*</span>
                                                     </label>
 
                                                     {{-- ✅ نفس image upload container --}}
@@ -495,7 +525,7 @@
                                                                     name="custom_fields[{{ $field->name }}][0][]"
                                                                     id="custom_fields_{{ $field->name }}_0"
                                                                     class="form-control d-none" accept="image/*" multiple
-                                                                    {{ $field->is_required ? 'required' : '' }}>
+                                                                    required>
 
                                                                 <button type="button"
                                                                     class="btn btn-outline-primary btn-sm"
@@ -529,6 +559,7 @@
                                     <label for="city_id" class="form-label">
                                         <i class="fas fa-map-marker-alt text-success"></i>
                                         {{ __('messages.choose_city') }}
+                                        <span class="text-danger">*</span>
                                         @if ($cities->count() > 0)
                                             <small class="text-muted">({{ $cities->count() }}
                                                 {{ __('messages.available_cities_count') }} )</small>
@@ -621,16 +652,14 @@
                                                     <label for="custom_fields_{{ $field->name }}_0" class="form-label">
                                                         <i class="fas fa-{{ $field->getTypeIconAttribute() }}"></i>
                                                         {{ $fieldName }}
-                                                        @if ($field->is_required)
-                                                            <span class="text-danger">*</span>
-                                                        @endif
+                                                        <span class="text-danger">*</span>
                                                     </label>
                                                 @endif
 
                                                 @if ($field->type === 'select' && is_array($field->options))
                                                     <select name="custom_fields[{{ $field->name }}][0]"
                                                         id="custom_fields_{{ $field->name }}_0" class="form-control"
-                                                        {{ $field->is_required ? 'required' : '' }}>
+                                                        required>
                                                         <option value="" disabled selected>
                                                             {{ __('messages.custom_fields_select_placeholder') }}</option>
                                                         @foreach ($field->options as $option)
@@ -644,7 +673,7 @@
                                                         <input type="checkbox"
                                                             name="custom_fields[{{ $field->name }}][0]"
                                                             id="custom_fields_{{ $field->name }}_0" value="1"
-                                                            class="form-check-input"
+                                                            class="form-check-input" required
                                                             {{ old('custom_fields.' . $field->name . '.0') == '1' ? 'checked' : '' }}>
                                                         <label class="form-check-label"
                                                             for="custom_fields_{{ $field->name }}_0">{{ $fieldName }}</label>
@@ -653,21 +682,21 @@
                                                     <input type="date" name="custom_fields[{{ $field->name }}][0]"
                                                         id="custom_fields_{{ $field->name }}_0" class="form-control"
                                                         value="{{ old('custom_fields.' . $field->name . '.0') }}"
-                                                        {{ $field->is_required ? 'required' : '' }}>
+                                                        required>
                                                 @elseif($field->type === 'time')
                                                     <input type="time" name="custom_fields[{{ $field->name }}][0]"
                                                         id="custom_fields_{{ $field->name }}_0" class="form-control"
                                                         value="{{ old('custom_fields.' . $field->name . '.0') }}"
-                                                        {{ $field->is_required ? 'required' : '' }}>
+                                                        required>
                                                 @elseif($field->type === 'textarea')
                                                     <textarea name="custom_fields[{{ $field->name }}][0]" id="custom_fields_{{ $field->name }}_0"
-                                                        class="form-control" rows="3" {{ $field->is_required ? 'required' : '' }}>{{ old('custom_fields.' . $field->name . '.0') }}</textarea>
+                                                        class="form-control" rows="3" required>{{ old('custom_fields.' . $field->name . '.0') }}</textarea>
                                                 @elseif($field->type !== 'image')
                                                     <input type="{{ $field->type }}"
                                                         name="custom_fields[{{ $field->name }}][0]"
                                                         id="custom_fields_{{ $field->name }}_0" class="form-control"
                                                         value="{{ old('custom_fields.' . $field->name . '.0') }}"
-                                                        {{ $field->is_required ? 'required' : '' }}>
+                                                        required>
                                                 @endif
                                             </div>
                                         @endif
@@ -683,10 +712,17 @@
 
 
 
-            <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm">
+            <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm" id="submitBtn">
                 <i class="fas fa-paper-plane me-1"></i> {{ __('messages.submit_request') }}
             </button>
             </form>
+
+            <!-- Validation Error Alert -->
+            <div id="validationAlert" class="alert alert-danger mt-3" style="display: none;">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong id="validationMessage"></strong>
+                <ul id="validationErrors" class="mb-0 mt-2"></ul>
+            </div>
         </div>
     </div>
     </div>
@@ -1332,78 +1368,721 @@
 
             // تشغيل الاختبار بعد تحميل الصفحة
             setTimeout(testImageUpload, 1000);
+        });
 
-            // إضافة event listener مباشر للعناصر الموجودة
-            setTimeout(function() {
-                console.log('Adding direct event listeners...');
+        // Pass required fields data from backend to frontend
+        @php
+            $requiredFieldsData = [];
+            foreach ($category->fields->where('is_active', true)->where('is_required', true) as $field) {
+                $requiredFieldsData[] = [
+                    'name' => $field->name,
+                    'type' => $field->type,
+                    'name_ar' => $field->name_ar,
+                    'name_en' => $field->name_en,
+                    'is_repeatable' => $field->is_repeatable ?? false,
+                    'input_group' => $field->input_group,
+                ];
+            }
+        @endphp
 
-                // البحث عن جميع حقول الصور وإضافة event listeners مباشرة
-                const allFileInputs = document.querySelectorAll('input[type="file"]');
-                console.log('Found', allFileInputs.length, 'total file inputs');
+        const requiredCustomFields = @json($requiredFieldsData);
+        console.log('Required custom fields from backend:', requiredCustomFields);
 
-                allFileInputs.forEach(function(input) {
-                    console.log('Adding direct listener to:', input.id, input.name);
+        // Define validation function globally before DOMContentLoaded
+        window.validateServiceForm = function(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
 
-                    // إزالة event listeners السابقة
-                    input.removeEventListener('change', handleImageUpload);
+            const form = document.getElementById('serviceRequestForm');
+            if (!form) {
+                console.error('Form not found');
+                alert('خطأ: لم يتم العثور على النموذج');
+                return false;
+            }
 
-                    // إضافة event listener جديد
-                    input.addEventListener('change', function(e) {
-                        console.log('Direct listener triggered for:', input.id);
-                        handleImageUpload(e.target);
+            console.log('Form submit intercepted - preventing default');
+
+            // Clear previous validation
+            if (typeof clearValidation === 'function') {
+                clearValidation();
+            }
+
+            // Validate form
+            if (typeof validateForm === 'function') {
+                const errors = validateForm();
+                console.log('Validation errors:', errors.length);
+
+                if (errors.length > 0) {
+                    console.log('Showing validation errors - preventing submission');
+
+                    // Show alert message with all errors
+                    const errorMessages = errors.map((err, index) => (index + 1) + '. ' + err.message).join('\n');
+                    const currentLang = '{{ app()->getLocale() }}';
+                    const alertMessage = currentLang === 'ar' ?
+                        'تحذير:\n\nيرجى إكمال الحقول التالية:\n\n' + errorMessages +
+                        '\n\nيرجى إكمال جميع الحقول المطلوبة قبل الإرسال' :
+                        'Warning:\n\nPlease complete the following fields:\n\n' + errorMessages +
+                        '\n\nPlease complete all required fields before submitting';
+
+                    alert(alertMessage);
+
+                    // Show validation errors in the form
+                    if (typeof showValidationErrors === 'function') {
+                        showValidationErrors(errors);
+                    }
+
+                    // Scroll to first error
+                    setTimeout(() => {
+                        const firstErrorField = document.querySelector('.is-invalid');
+                        if (firstErrorField) {
+                            firstErrorField.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'center'
+                            });
+                            firstErrorField.focus();
+                        }
+                    }, 200);
+                    return false;
+                }
+            } else {
+                // Fallback validation if validateForm is not available
+                const requiredFields = form.querySelectorAll('[required]');
+                const missingFields = [];
+
+                requiredFields.forEach(field => {
+                    if (field.type === 'file') {
+                        const fieldName = field.getAttribute('name');
+                        if (fieldName) {
+                            const nameMatch = fieldName.match(/custom_fields\[([^\]]+)\]/);
+                            if (nameMatch) {
+                                const fieldNameOnly = nameMatch[1];
+                                const instanceMatch = fieldName.match(/\[(\d+)\]/);
+                                const instanceNum = instanceMatch ? instanceMatch[1] : '0';
+                                const previewContainer = document.getElementById('preview_' + fieldNameOnly +
+                                    '_' + instanceNum);
+                                const hasFiles = field.files && field.files.length > 0;
+                                const hasPreviews = previewContainer && previewContainer.children.length > 0;
+
+                                if (!hasFiles && !hasPreviews) {
+                                    const label = getFieldLabel(field);
+                                    missingFields.push(label);
+                                }
+                            }
+                        }
+                    } else if (field.type === 'checkbox') {
+                        if (!field.checked) {
+                            const label = getFieldLabel(field);
+                            missingFields.push(label);
+                        }
+                    } else if (field.tagName === 'SELECT') {
+                        if (!field.value || field.value === '' || field.value === null) {
+                            const label = getFieldLabel(field);
+                            missingFields.push(label);
+                        }
+                    } else {
+                        if (!field.value || field.value.trim() === '') {
+                            const label = getFieldLabel(field);
+                            missingFields.push(label);
+                        }
+                    }
+                });
+
+                if (missingFields.length > 0) {
+                    const currentLang = '{{ app()->getLocale() }}';
+                    const alertMessage = currentLang === 'ar' ?
+                        'يرجى إكمال جميع الحقول المطلوبة:\n\n' + missingFields.join('\n') :
+                        'Please complete all required fields:\n\n' + missingFields.join('\n');
+
+                    alert(alertMessage);
+                    return false;
+                }
+            }
+
+            console.log('All validations passed, submitting form');
+            // Remove onsubmit to allow submission
+            form.onsubmit = null;
+            // All validations passed, submit form
+            form.submit();
+            return false;
+        };
+
+        // Helper function to get field label
+        function getFieldLabel(field) {
+            const label = field.closest('.col-12, .mb-3, .form-group')?.querySelector('label');
+            if (label) {
+                let labelText = label.textContent.trim();
+                labelText = labelText.replace(/\*/g, '').replace(/\[.*?\]/g, '').trim();
+                return labelText || field.name || field.id;
+            }
+            if (field.placeholder) {
+                return field.placeholder;
+            }
+            return field.name || field.id || 'حقل مطلوب';
+        }
+
+        // Pass required fields data from backend to frontend
+        @php
+            $requiredFieldsData = [];
+            foreach ($category->fields->where('is_active', true)->where('is_required', true) as $field) {
+                $requiredFieldsData[] = [
+                    'name' => $field->name,
+                    'type' => $field->type,
+                    'name_ar' => $field->name_ar,
+                    'name_en' => $field->name_en,
+                    'is_repeatable' => $field->is_repeatable ?? false,
+                    'input_group' => $field->input_group,
+                ];
+            }
+        @endphp
+
+        const requiredCustomFields = @json($requiredFieldsData);
+        console.log('Required custom fields:', requiredCustomFields);
+
+        // Form Validation - Must be in separate DOMContentLoaded to ensure form exists
+        document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM Content Loaded - Initializing form validation');
+
+        // Form Validation
+        const form = document.getElementById('serviceRequestForm');
+        const validationAlert = document.getElementById('validationAlert');
+        const validationMessage = document.getElementById('validationMessage');
+        const validationErrors = document.getElementById('validationErrors');
+
+        // Validation messages in both languages
+        const validationMessages = {
+            ar: {
+                requiredField: 'هذا الحقل مطلوب',
+                completeRequiredFields: 'يرجى إكمال جميع الحقول المطلوبة قبل الإرسال',
+                imageRequired: 'هذا الحقل مطلوب (يجب رفع صورة واحدة على الأقل)',
+                fieldRequired: 'هذا الحقل مطلوب',
+                error: 'تحذير',
+                pleaseComplete: 'يرجى إكمال الحقول التالية:'
+            },
+            en: {
+                requiredField: 'This field is required',
+                completeRequiredFields: 'Please complete all required fields before submitting',
+                imageRequired: 'This field is required (at least one image must be uploaded)',
+                fieldRequired: 'This field is required',
+                error: 'Warning',
+                pleaseComplete: 'Please complete the following fields:'
+            }
+        };
+
+        // Get current language
+        const currentLang = '{{ app()->getLocale() }}';
+        const messages = validationMessages[currentLang] || validationMessages.ar;
+
+        if (!form) {
+            console.error('Form not found: serviceRequestForm');
+            return;
+        }
+
+        if (!validationAlert || !validationMessage || !validationErrors) {
+            console.error('Validation elements not found');
+            return;
+        }
+
+        console.log('Form validation initialized');
+
+        // Update the global validation function with access to local functions
+        window.validateServiceForm = function(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            console.log('Form submit intercepted - preventing default');
+
+            // Clear previous validation
+            clearValidation();
+
+            // Validate form
+            const errors = validateForm();
+            console.log('Validation errors:', errors.length);
+
+            if (errors.length > 0) {
+                console.log('Showing validation errors - preventing submission');
+
+                // Show alert message with all errors
+                const errorMessages = errors.map((err, index) => (index + 1) + '. ' + err.message).join(
+                    '\n');
+                const alertMessage = messages.error + ':\n\n' + messages.pleaseComplete + '\n\n' +
+                    errorMessages + '\n\n' + messages.completeRequiredFields;
+                alert(alertMessage);
+
+                // Show validation errors in the form
+                showValidationErrors(errors);
+
+                // Scroll to first error
+                setTimeout(() => {
+                    const firstErrorField = document.querySelector('.is-invalid');
+                    if (firstErrorField) {
+                        firstErrorField.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                        firstErrorField.focus();
+                    }
+                }, 200);
+                return false;
+            } else {
+                console.log('All validations passed, submitting form');
+                // Remove onsubmit to allow submission
+                form.onsubmit = null;
+                // All validations passed, submit form
+                form.submit();
+                return false;
+            }
+        };
+
+        // Also add event listener as backup
+        form.addEventListener('submit', function(e) {
+            return window.validateServiceForm(e);
+        });
+
+        // Real-time validation on field change
+        form.addEventListener('input', function(e) {
+            if (e.target.hasAttribute('required') || e.target.closest('[data-required]')) {
+                validateField(e.target);
+            }
+        });
+
+        form.addEventListener('change', function(e) {
+            if (e.target.hasAttribute('required') || e.target.closest('[data-required]')) {
+                validateField(e.target);
+            }
+        });
+
+        // Validation functions
+        function validateForm() {
+            const errors = [];
+            const formElement = document.getElementById('serviceRequestForm');
+            const currentLangForValidation = '{{ app()->getLocale() }}';
+
+            if (!formElement) {
+                console.error('Form not found in validateForm');
+                return errors;
+            }
+
+            // Validate city selection (always required if select exists)
+            const citySelect = formElement.querySelector('#city_id');
+            if (citySelect) {
+                if (!citySelect.value || citySelect.value === '' || citySelect.value === null) {
+                    const cityLabel = '{{ __('messages.choose_city') }}';
+                    errors.push({
+                        field: citySelect,
+                        message: cityLabel + ' - ' + messages.requiredField
                     });
-                });
+                }
+            }
 
-                // إضافة event listeners للأزرار
-                const addMoreButtons = document.querySelectorAll('[onclick*="showUploadArea"]');
-                console.log('Found', addMoreButtons.length, 'add more buttons');
+            // Validate all required text inputs (including in repeatable groups)
+            const requiredInputs = formElement.querySelectorAll(
+                'input[required]:not([type="file"]):not([type="hidden"]):not([type="checkbox"])');
+            requiredInputs.forEach(input => {
+                if (!input.value || input.value.trim() === '') {
+                    const fieldName = getFieldLabel(input);
+                    errors.push({
+                        field: input,
+                        message: fieldName + ' - ' + messages.requiredField
+                    });
+                }
+            });
 
-                addMoreButtons.forEach(function(button) {
-                    console.log('Add more button found:', button);
-                    // إزالة onclick attribute وإضافة event listener
-                    const onclickAttr = button.getAttribute('onclick');
-                    if (onclickAttr) {
-                        const fieldNameMatch = onclickAttr.match(/showUploadArea\('([^']+)'\)/);
-                        if (fieldNameMatch) {
-                            const fieldName = fieldNameMatch[1];
-                            button.removeAttribute('onclick');
-                            button.addEventListener('click', function(e) {
-                                e.preventDefault();
-                                console.log('Add more button clicked for field:',
-                                    fieldName);
-                                showUploadArea(fieldName);
-                            });
-                            console.log('Event listener added to add more button for field:',
-                                fieldName);
+            // Validate all required select fields (including in repeatable groups)
+            const requiredSelects = formElement.querySelectorAll('select[required]');
+            requiredSelects.forEach(select => {
+                if (!select.value || select.value === '' || select.value === null || select.value ===
+                    '0') {
+                    const fieldName = getFieldLabel(select);
+                    errors.push({
+                        field: select,
+                        message: fieldName + ' - ' + messages.requiredField
+                    });
+                }
+            });
+
+            // Validate all required textareas (including in repeatable groups)
+            const requiredTextareas = formElement.querySelectorAll('textarea[required]');
+            requiredTextareas.forEach(textarea => {
+                if (!textarea.value || textarea.value.trim() === '') {
+                    const fieldName = getFieldLabel(textarea);
+                    errors.push({
+                        field: textarea,
+                        message: fieldName + ' - ' + messages.requiredField
+                    });
+                }
+            });
+
+            // Validate required file inputs (images) - including all instances in repeatable groups
+            const requiredFileInputs = formElement.querySelectorAll('input[type="file"][required]');
+            requiredFileInputs.forEach(fileInput => {
+                const nameAttr = fileInput.getAttribute('name');
+                if (!nameAttr) return;
+
+                // Extract field name and instance number
+                const nameMatch = nameAttr.match(/custom_fields\[([^\]]+)\]\[(\d+)\]/);
+                if (nameMatch) {
+                    const fieldName = nameMatch[1];
+                    const instanceNum = nameMatch[2];
+
+                    // Check if files are selected
+                    const hasFiles = fileInput.files && fileInput.files.length > 0;
+
+                    // Check if preview exists
+                    const previewContainer = document.getElementById('preview_' + fieldName + '_' +
+                        instanceNum);
+                    const hasPreviews = previewContainer && previewContainer.children.length > 0;
+
+                    if (!hasFiles && !hasPreviews) {
+                        const fieldLabel = getFieldLabel(fileInput);
+                        errors.push({
+                            field: fileInput,
+                            message: fieldLabel + ' - ' + messages.imageRequired
+                        });
+                    }
+                } else {
+                    // Fallback for fields without instance number
+                    const hasFiles = fileInput.files && fileInput.files.length > 0;
+                    if (!hasFiles) {
+                        const fieldLabel = getFieldLabel(fileInput);
+                        errors.push({
+                            field: fileInput,
+                            message: fieldLabel + ' - ' + messages.imageRequired
+                        });
+                    }
+                }
+            });
+
+            // Validate required checkboxes (including in all repeatable group instances)
+            const requiredCheckboxes = formElement.querySelectorAll('input[type="checkbox"][required]');
+            requiredCheckboxes.forEach(checkbox => {
+                if (!checkbox.checked) {
+                    const fieldName = getFieldLabel(checkbox);
+                    errors.push({
+                        field: checkbox,
+                        message: fieldName + ' - ' + messages.requiredField
+                    });
+                }
+            });
+
+            // Validate all required custom fields from backend data
+            if (typeof requiredCustomFields !== 'undefined' && requiredCustomFields.length > 0) {
+                console.log('Validating required custom fields from backend data:', requiredCustomFields
+                    .length);
+
+                const currentLangForValidation = '{{ app()->getLocale() }}';
+
+                requiredCustomFields.forEach(fieldData => {
+                    const fieldName = fieldData.name;
+                    const fieldType = fieldData.type;
+                    const fieldLabel = currentLangForValidation === 'ar' ? fieldData.name_ar : fieldData
+                        .name_en;
+                    const isRepeatable = fieldData.is_repeatable;
+
+                    // Find all instances of this field (including repeatable groups)
+                    const fieldInputs = formElement.querySelectorAll(
+                        `input[name*="custom_fields[${fieldName}]"],
+                         select[name*="custom_fields[${fieldName}]"],
+                         textarea[name*="custom_fields[${fieldName}]"]`
+                    );
+
+                    if (fieldInputs.length === 0) {
+                        // Field not found in form - might be missing
+                        console.warn('Required field not found in form:', fieldName);
+                        // Still add error for missing field
+                        errors.push({
+                            field: null,
+                            message: fieldLabel + ' - ' + messages.requiredField +
+                                ' (الحقل غير موجود في النموذج)'
+                        });
+                        return;
+                    }
+
+                    let hasValidValue = false;
+                    let firstEmptyInput = null;
+
+                    // Check all instances
+                    fieldInputs.forEach(input => {
+                        if (fieldType === 'image') {
+                            // For images, check if files are selected or preview exists
+                            const nameAttr = input.getAttribute('name');
+                            if (nameAttr) {
+                                const nameMatch = nameAttr.match(
+                                    /custom_fields\[([^\]]+)\]\[(\d+)\]/);
+                                if (nameMatch) {
+                                    const instanceNum = nameMatch[2];
+                                    const previewContainer = document.getElementById(
+                                        'preview_' + fieldName + '_' + instanceNum);
+                                    const hasFiles = input.files && input.files.length > 0;
+                                    const hasPreviews = previewContainer && previewContainer
+                                        .children.length > 0;
+
+                                    if (hasFiles || hasPreviews) {
+                                        hasValidValue = true;
+                                    } else if (!firstEmptyInput) {
+                                        firstEmptyInput = input;
+                                    }
+                                }
+                            }
+                        } else if (fieldType === 'checkbox') {
+                            // For checkboxes, check if checked
+                            if (input.checked) {
+                                hasValidValue = true;
+                            } else if (!firstEmptyInput) {
+                                firstEmptyInput = input;
+                            }
+                        } else if (fieldType === 'select') {
+                            // For selects, check if value is selected
+                            if (input.value && input.value !== '' && input.value !== null &&
+                                input.value !== '0') {
+                                hasValidValue = true;
+                            } else if (!firstEmptyInput) {
+                                firstEmptyInput = input;
+                            }
+                        } else {
+                            // For text, number, textarea, date, time
+                            if (input.value && input.value.trim() !== '') {
+                                hasValidValue = true;
+                            } else if (!firstEmptyInput) {
+                                firstEmptyInput = input;
+                            }
                         }
+                    });
+
+                    if (!hasValidValue) {
+                        // Use first empty input or first input for highlighting
+                        const targetInput = firstEmptyInput || fieldInputs[0];
+                        errors.push({
+                            field: targetInput,
+                            message: fieldLabel + ' - ' + (fieldType === 'image' ? messages
+                                .imageRequired : messages.requiredField)
+                        });
                     }
                 });
+            }
 
-                // إضافة event listeners لأزرار الحذف
-                const removeButtons = document.querySelectorAll('[onclick*="removeImagePreview"]');
-                console.log('Found', removeButtons.length, 'remove buttons');
+            console.log('Validation completed. Found', errors.length, 'errors');
+            return errors;
+        }
 
-                removeButtons.forEach(function(button) {
-                    console.log('Remove button found:', button);
-                    // إزالة onclick attribute وإضافة event listener
-                    const onclickAttr = button.getAttribute('onclick');
-                    if (onclickAttr) {
-                        const fieldNameMatch = onclickAttr.match(
-                            /removeImagePreview\(this, '([^']+)'\)/);
-                        if (fieldNameMatch) {
-                            const fieldName = fieldNameMatch[1];
-                            button.removeAttribute('onclick');
-                            button.addEventListener('click', function(e) {
-                                e.preventDefault();
-                                console.log('Remove button clicked for field:', fieldName);
-                                removeImagePreview(this, fieldName);
-                            });
-                            console.log('Event listener added to remove button for field:',
-                                fieldName);
-                        }
-                    }
+        function validateField(field) {
+            const isValid = checkFieldValidity(field);
+
+            if (isValid) {
+                field.classList.remove('is-invalid');
+                field.classList.add('is-valid');
+                removeFieldError(field);
+            } else {
+                field.classList.remove('is-valid');
+                field.classList.add('is-invalid');
+                showFieldError(field);
+            }
+        }
+
+        function checkFieldValidity(field) {
+            if (field.type === 'file') {
+                const fieldName = field.getAttribute('name').match(/custom_fields\[([^\]]+)\]/);
+                if (fieldName) {
+                    const previewContainer = document.getElementById('preview_' + fieldName[1] + '_0');
+                    const hasFiles = field.files && field.files.length > 0;
+                    const hasPreviews = previewContainer && previewContainer.children.length > 0;
+                    return hasFiles || hasPreviews;
+                }
+                return field.files && field.files.length > 0;
+            } else if (field.type === 'checkbox') {
+                return field.checked;
+            } else if (field.tagName === 'SELECT') {
+                return field.value && field.value !== '' && field.value !== null;
+            } else {
+                return field.value && field.value.trim() !== '';
+            }
+        }
+
+        function getFieldLabel(field) {
+            // Try to get label from associated label element
+            const label = field.closest('.col-12, .mb-3, .form-group')?.querySelector('label');
+            if (label) {
+                let labelText = label.textContent.trim();
+                // Remove asterisk and icons
+                labelText = labelText.replace(/\*/g, '').replace(/\[.*?\]/g, '').trim();
+                return labelText || field.name || field.id;
+            }
+
+            // Try to get from placeholder
+            if (field.placeholder) {
+                return field.placeholder;
+            }
+
+            // Fallback to name or id
+            return field.name || field.id || '{{ __('messages.error') }}';
+        }
+
+        function showValidationErrors(errors) {
+            if (!validationAlert || !validationMessage || !validationErrors) {
+                console.error('Validation elements not found');
+                return;
+            }
+
+            validationAlert.style.display = 'block';
+            validationAlert.classList.add('alert-danger');
+            validationMessage.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i><strong>' + messages
+                .error + ':</strong> ' + messages.completeRequiredFields;
+
+            validationErrors.innerHTML = '';
+            errors.forEach((error, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = '<i class="fas fa-arrow-left me-2"></i>' + error.message;
+                li.style.marginBottom = '8px';
+                li.style.paddingLeft = '5px';
+                validationErrors.appendChild(li);
+
+                // Mark field as invalid if field exists
+                if (error.field) {
+                    error.field.classList.add('is-invalid');
+                    error.field.classList.remove('is-valid');
+
+                    // Show field error
+                    showFieldError(error.field);
+                }
+            });
+
+            // Scroll to validation alert
+            setTimeout(() => {
+                validationAlert.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
                 });
-            }, 2000);
+            }, 100);
+        }
+
+        function showFieldError(field) {
+            if (!field) return;
+
+            // Remove existing error message
+            removeFieldError(field);
+
+            // Create error message element
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'field-error';
+            errorDiv.style.color = '#dc3545';
+            errorDiv.style.fontSize = '0.875rem';
+            errorDiv.style.marginTop = '0.25rem';
+            errorDiv.innerHTML = '<i class="fas fa-exclamation-circle me-1"></i>' + messages.fieldRequired;
+
+            // Insert after field
+            const fieldContainer = field.closest('.col-12, .mb-3, .form-group') || field.parentElement;
+            if (fieldContainer) {
+                fieldContainer.appendChild(errorDiv);
+            }
+        }
+
+        function removeFieldError(field) {
+            const fieldContainer = field.closest('.col-12, .mb-3, .form-group') || field.parentElement;
+            if (fieldContainer) {
+                const existingError = fieldContainer.querySelector('.field-error');
+                if (existingError) {
+                    existingError.remove();
+                }
+            }
+        }
+
+        function clearValidation() {
+            // Clear all validation classes
+            const invalidFields = document.querySelectorAll('.is-invalid');
+            invalidFields.forEach(field => {
+                field.classList.remove('is-invalid');
+            });
+
+            const validFields = document.querySelectorAll('.is-valid');
+            validFields.forEach(field => {
+                field.classList.remove('is-valid');
+            });
+
+            // Remove all error messages
+            const errorMessages = document.querySelectorAll('.field-error');
+            errorMessages.forEach(error => error.remove());
+
+            // Hide validation alert
+            validationAlert.style.display = 'none';
+        }
+
+        // إضافة event listener مباشر للعناصر الموجودة
+        setTimeout(function() {
+            console.log('Adding direct event listeners...');
+
+            // البحث عن جميع حقول الصور وإضافة event listeners مباشرة
+            const allFileInputs = document.querySelectorAll('input[type="file"]');
+            console.log('Found', allFileInputs.length, 'total file inputs');
+
+            allFileInputs.forEach(function(input) {
+                console.log('Adding direct listener to:', input.id, input.name);
+
+                // إزالة event listeners السابقة
+                input.removeEventListener('change', handleImageUpload);
+
+                // إضافة event listener جديد
+                input.addEventListener('change', function(e) {
+                    console.log('Direct listener triggered for:', input.id);
+                    handleImageUpload(e.target);
+                });
+            });
+
+            // إضافة event listeners للأزرار
+            const addMoreButtons = document.querySelectorAll('[onclick*="showUploadArea"]');
+            console.log('Found', addMoreButtons.length, 'add more buttons');
+
+            addMoreButtons.forEach(function(button) {
+                console.log('Add more button found:', button);
+                // إزالة onclick attribute وإضافة event listener
+                const onclickAttr = button.getAttribute('onclick');
+                if (onclickAttr) {
+                    const fieldNameMatch = onclickAttr.match(/showUploadArea\('([^']+)'\)/);
+                    if (fieldNameMatch) {
+                        const fieldName = fieldNameMatch[1];
+                        button.removeAttribute('onclick');
+                        button.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            console.log('Add more button clicked for field:',
+                                fieldName);
+                            showUploadArea(fieldName);
+                        });
+                        console.log('Event listener added to add more button for field:',
+                            fieldName);
+                    }
+                }
+            });
+
+            // إضافة event listeners لأزرار الحذف
+            const removeButtons = document.querySelectorAll('[onclick*="removeImagePreview"]');
+            console.log('Found', removeButtons.length, 'remove buttons');
+
+            removeButtons.forEach(function(button) {
+                console.log('Remove button found:', button);
+                // إزالة onclick attribute وإضافة event listener
+                const onclickAttr = button.getAttribute('onclick');
+                if (onclickAttr) {
+                    const fieldNameMatch = onclickAttr.match(
+                        /removeImagePreview\(this, '([^']+)'\)/);
+                    if (fieldNameMatch) {
+                        const fieldName = fieldNameMatch[1];
+                        button.removeAttribute('onclick');
+                        button.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            console.log('Remove button clicked for field:',
+                                fieldName);
+                            removeImagePreview(this, fieldName);
+                        });
+                        console.log('Event listener added to remove button for field:',
+                            fieldName);
+                    }
+                }
+            });
+        }, 2000);
+        });
+
+        // Close the validation DOMContentLoaded
         });
     </script>
 

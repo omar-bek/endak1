@@ -97,6 +97,7 @@ Route::middleware(['auth', 'verified', 'user.type.terms'])->group(function () {
     Route::post('/offers/{offer}/deliver', [ServiceOfferController::class, 'markAsDelivered'])->name('service-offers.deliver');
     Route::post('/offers/{offer}/review', [ServiceOfferController::class, 'review'])->name('service-offers.review');
     Route::get('/my-offers', [ServiceOfferController::class, 'myOffers'])->name('service-offers.my-offers');
+    Route::get('/completed-services', [ServiceOfferController::class, 'completedServices'])->name('service-offers.completed-services');
     Route::get('/offers/{offer}/edit', [ServiceOfferController::class, 'edit'])->name('service-offers.edit');
     Route::put('/offers/{offer}', [ServiceOfferController::class, 'update'])->name('service-offers.update');
 });
@@ -121,6 +122,7 @@ Route::middleware(['auth', 'verified', 'user.type.terms'])->group(function () {
     Route::delete('/messages/{id}', [MessageController::class, 'destroy'])->name('messages.destroy');
     Route::get('/messages/unread/count', [MessageController::class, 'getUnreadCount'])->name('messages.unread-count');
     Route::post('/messages/mark-all-read', [MessageController::class, 'markAllAsRead'])->name('messages.mark-all-read');
+    Route::get('/messages/stream', [MessageController::class, 'stream'])->name('messages.stream');
     Route::get('/services/{serviceId}/conversation', [MessageController::class, 'serviceConversation'])->name('messages.service-conversation');
     Route::get('/offers/{offerId}/conversation', [MessageController::class, 'offerConversation'])->name('messages.offer-conversation');
 });
@@ -232,6 +234,9 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'verified', 'user.type.terms'])->group(function () {
     Route::get('/profile', [AuthController::class, 'profile'])->name('profile');
     Route::put('/profile', [AuthController::class, 'updateProfile'])->name('profile.update');
+
+    // عرض ملف مزود الخدمة (عام - متاح للجميع)
+    Route::get('/provider/{userId}/profile', [ProviderProfileController::class, 'showPublic'])->name('provider.profile.public');
 
     // Provider Routes
     Route::middleware('provider')->prefix('provider')->name('provider.')->group(function () {

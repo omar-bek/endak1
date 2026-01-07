@@ -78,7 +78,7 @@
                         <br><small>{{ __('messages.info_alert_body') }}</small>
                     </div>
                     @else
-                    <a href="{{ route('services.request', $category->id) }}" class="btn btn-warning mt-3 fw-bold text-dark shine-btn">
+                    <a href="{{ route('services.request', $category->slug) }}" class="btn btn-warning mt-3 fw-bold text-dark shine-btn">
                         <i class="fas fa-concierge-bell"></i> {{ __('messages.request_service_button_text') }}
                     </a>
                     @endif
@@ -110,7 +110,7 @@
             @foreach($category->subCategories as $subCategory)
                 @if($subCategory->status)
                 <div class="col-6 col-md-3 mb-4">
-                    <a href="{{ route('services.request', $category->id) }}?sub_category_id={{ $subCategory->id }}" class="text-decoration-none text-dark">
+                    <a href="{{ route('services.request', $category->slug) }}?sub_category_id={{ $subCategory->id }}" class="text-decoration-none text-dark">
                         <div class="card sub-category-card h-100 text-center clickable-card">
                             <div class="subcategory-image-container">
                                 @if($subCategory->image)
@@ -518,6 +518,43 @@ document.addEventListener('DOMContentLoaded', function() {
             alert.style.opacity = '0';
             setTimeout(() => alert.remove(), 500);
         }, 5000);
+    });
+
+    // دالة لجلب الأقسام الفرعية من API
+    window.getSubCategories = async function(categoryIdOrSlug) {
+        try {
+            const response = await fetch(`/api/v1/categories/${categoryIdOrSlug}/subcategories`);
+            const result = await response.json();
+            
+            if (result.success && result.data) {
+                return result.data.subcategories || result.data;
+            }
+            return [];
+        } catch (error) {
+            console.error('Error fetching subcategories:', error);
+            return [];
+        }
+    };
+
+    // دالة للتحقق من صحة sub_category_id قبل الانتقال
+    document.querySelectorAll('a[href*="services.request"]').forEach(link => {
+        link.addEventListener('click', async function(e) {
+            const url = new URL(this.href);
+            const subCategoryId = url.searchParams.get('sub_category_id');
+            const categorySlug = url.pathname.split('/').pop();
+            
+            if (subCategoryId) {
+                // التحقق من أن sub_category_id صحيح
+                const subCategories = await window.getSubCategories(categorySlug);
+                const isValid = subCategories.some(sub => sub.id == subCategoryId);
+                
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('القسم الفرعي المحدد غير صحيح');
+                    return false;
+                }
+            }
+        });
     });
 });
 </script>

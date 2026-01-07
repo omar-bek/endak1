@@ -107,8 +107,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
     // Public endpoints
     Route::get('categories', [ApiCategoryController::class, 'index']);
     Route::get('categories/{slug}/details', [ApiCategoryController::class, 'show']);
-    Route::get('categories/{category}/subcategories', [ApiCategoryController::class, 'subcategories'])
-        ->whereNumber('category');
+    Route::get('categories/{category}/subcategories', [ApiCategoryController::class, 'subcategories']);
 
     Route::get('services', [ApiServiceController::class, 'index']);
     Route::get('services/{service}', [ApiServiceController::class, 'show'])->whereNumber('service');

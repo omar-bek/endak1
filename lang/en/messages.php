@@ -316,6 +316,12 @@ return [
     'submit_request' => 'Submit Request',
         'add_group'=>'Add group',
             'del_group'=>'delete group',
+    
+    // Validation Messages
+    'validation_required_field' => 'This field is required',
+    'validation_complete_required_fields' => 'Please complete all required fields before submitting',
+    'validation_image_required' => 'This field is required (at least one image must be uploaded)',
+    'validation_field_required' => 'This field is required',
 
             'home' => 'Home',
     'categories' => 'Categories',

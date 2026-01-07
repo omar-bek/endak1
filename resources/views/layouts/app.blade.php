@@ -998,6 +998,13 @@
                         <li class="nav-item me-3 position-relative">
                             <a class="nav-link" href="{{ route('messages.index') }}">
                                 <i class="fas fa-comments"></i>
+                                @if (Auth::user()->unread_messages_count > 0)
+                                    <span id="navbar-messages-badge" class="badge bg-danger position-absolute top-0 start-100 translate-middle" style="font-size: 0.7rem; padding: 0.2rem 0.4rem;">
+                                        {{ Auth::user()->unread_messages_count > 99 ? '99+' : Auth::user()->unread_messages_count }}
+                                    </span>
+                                @else
+                                    <span id="navbar-messages-badge" class="badge bg-danger position-absolute top-0 start-100 translate-middle" style="font-size: 0.7rem; padding: 0.2rem 0.4rem; display: none;"></span>
+                                @endif
                             </a>
                         </li>
                     @endauth
@@ -1055,6 +1062,9 @@
                                 @if (Auth::user()->isProvider())
                                     <li><a class="dropdown-item" href="{{ route('service-offers.my-offers') }}">
                                             <i class="fas fa-handshake"></i> {{ __('messages.my_offers') }}
+                                        </a></li>
+                                    <li><a class="dropdown-item" href="{{ route('service-offers.completed-services') }}">
+                                            <i class="fas fa-check-circle"></i> الخدمات المكتملة
                                         </a></li>
                                 @endif
                                 <li><a class="dropdown-item"
@@ -2117,22 +2127,48 @@
             fetch('{{ route('messages.unread-count') }}')
                 .then(response => response.json())
                 .then(data => {
-                    const badge = document.querySelector('.footer-nav-badge-messages');
-                    const icon = document.querySelector('.footer-nav-item[href*="messages"] .footer-nav-icon');
+                    // Update footer badge
+                    const footerBadge = document.querySelector('.footer-nav-badge-messages');
+                    const footerIcon = document.querySelector('.footer-nav-item[href*="messages"] .footer-nav-icon');
                     if (data.success && data.count > 0) {
                         const count = data.count > 99 ? '99+' : data.count;
-                        if (badge) {
-                            badge.textContent = count;
-                            badge.style.display = 'flex';
-                        } else {
+                        if (footerBadge) {
+                            footerBadge.textContent = count;
+                            footerBadge.style.display = 'flex';
+                        } else if (footerIcon) {
                             const newBadge = document.createElement('span');
                             newBadge.className = 'footer-nav-badge footer-nav-badge-messages';
                             newBadge.textContent = count;
-                            icon.appendChild(newBadge);
+                            footerIcon.appendChild(newBadge);
                         }
-                    } else if (badge) {
-                        badge.style.display = 'none';
+                    } else if (footerBadge) {
+                        footerBadge.style.display = 'none';
                     }
+
+                    // Update navbar badge
+                    const navbarBadge = document.getElementById('navbar-messages-badge');
+                    const menuBadge = document.getElementById('messages-badge-menu');
+                    if (data.success && data.count > 0) {
+                        const count = data.count > 99 ? '99+' : data.count;
+                        if (navbarBadge) {
+                            navbarBadge.textContent = count;
+                            navbarBadge.style.display = 'inline-block';
+                        }
+                        if (menuBadge) {
+                            menuBadge.textContent = count;
+                            menuBadge.style.display = 'inline-block';
+                        }
+                    } else {
+                        if (navbarBadge) {
+                            navbarBadge.style.display = 'none';
+                        }
+                        if (menuBadge) {
+                            menuBadge.style.display = 'none';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating messages badge:', error);
                 });
 
             fetch('/notifications/unread')

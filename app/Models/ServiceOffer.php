@@ -130,37 +130,6 @@ class ServiceOffer extends Model
             'rating' => $rating,
             'review' => $review
         ]);
-
-        // تحديث التقييم في ProviderProfile
-        $this->updateProviderRating();
-    }
-
-    // تحديث التقييم في ProviderProfile
-    private function updateProviderRating()
-    {
-        $provider = $this->provider;
-        if (!$provider || !$provider->isProvider()) {
-            return;
-        }
-
-        $profile = $provider->providerProfile;
-        if (!$profile) {
-            return;
-        }
-
-        // حساب متوسط التقييمات من جميع العروض المكتملة
-        $ratings = static::where('provider_id', $provider->id)
-            ->whereNotNull('rating')
-            ->where('status', 'delivered')
-            ->pluck('rating');
-
-        if ($ratings->count() > 0) {
-            $averageRating = $ratings->avg();
-            $profile->update([
-                'rating' => round($averageRating, 2),
-                'completed_services' => $ratings->count()
-            ]);
-        }
     }
 
     // التحقق من إمكانية التقييم

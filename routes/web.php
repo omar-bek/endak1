@@ -97,7 +97,6 @@ Route::middleware(['auth', 'verified', 'user.type.terms'])->group(function () {
     Route::post('/offers/{offer}/deliver', [ServiceOfferController::class, 'markAsDelivered'])->name('service-offers.deliver');
     Route::post('/offers/{offer}/review', [ServiceOfferController::class, 'review'])->name('service-offers.review');
     Route::get('/my-offers', [ServiceOfferController::class, 'myOffers'])->name('service-offers.my-offers');
-    Route::get('/completed-services', [ServiceOfferController::class, 'completedServices'])->name('service-offers.completed-services');
     Route::get('/offers/{offer}/edit', [ServiceOfferController::class, 'edit'])->name('service-offers.edit');
     Route::put('/offers/{offer}', [ServiceOfferController::class, 'update'])->name('service-offers.update');
 });
@@ -234,9 +233,6 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'verified', 'user.type.terms'])->group(function () {
     Route::get('/profile', [AuthController::class, 'profile'])->name('profile');
     Route::put('/profile', [AuthController::class, 'updateProfile'])->name('profile.update');
-
-    // عرض ملف مزود الخدمة (عام - متاح للجميع)
-    Route::get('/provider/{userId}/profile', [ProviderProfileController::class, 'showPublic'])->name('provider.profile.public');
 
     // Provider Routes
     Route::middleware('provider')->prefix('provider')->name('provider.')->group(function () {

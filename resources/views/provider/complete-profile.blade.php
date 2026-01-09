@@ -119,13 +119,13 @@
 
                                     <div class="row">
                                         @foreach ($categories as $category)
-                                            @php
-                                                $selectedCategories = $profile
-                                                    ? $profile
-                                                        ->activeCategories()
-                                                        ->pluck('category_id')
-                                                        ->toArray()
-                                                    : [];
+                                                    @php
+                                                        $selectedCategories = $profile
+                                                            ? $profile
+                                                                ->activeCategories()
+                                                                ->pluck('category_id')
+                                                                ->toArray()
+                                                            : [];
                                                 $selectedSubCategories = $profile
                                                     ? $profile
                                                         ->activeCategories()
@@ -136,21 +136,21 @@
                                                     : [];
                                                 $subCategories = $category->subCategories()->where('status', true)->get();
                                                 $hasSubCategories = $subCategories->count() > 0;
-                                            @endphp
+                                                    @endphp
                                             <div class="col-md-6 mb-4">
                                                 <div class="card border">
                                                     <div class="card-body">
                                                         <div class="form-check mb-2">
-                                                            <input class="form-check-input category-checkbox" type="checkbox"
-                                                                name="categories[]" value="{{ $category->id }}"
-                                                                id="category_{{ $category->id }}"
+                                                    <input class="form-check-input category-checkbox" type="checkbox"
+                                                        name="categories[]" value="{{ $category->id }}"
+                                                        id="category_{{ $category->id }}"
                                                                 data-category-id="{{ $category->id }}"
-                                                                {{ in_array($category->id, old('categories', $selectedCategories)) ? 'checked' : '' }}>
+                                                        {{ in_array($category->id, old('categories', $selectedCategories)) ? 'checked' : '' }}>
                                                             <label class="form-check-label fw-bold" for="category_{{ $category->id }}">
-                                                                <i class="{{ $category->icon }} text-primary"></i>
-                                                                {{ $category->name }}
-                                                            </label>
-                                                        </div>
+                                                        <i class="{{ $category->icon }} text-primary"></i>
+                                                        {{ $category->name }}
+                                                    </label>
+                                                </div>
 
                                                         @if ($hasSubCategories)
                                                             <div class="sub-categories-container" id="sub_categories_{{ $category->id }}" 

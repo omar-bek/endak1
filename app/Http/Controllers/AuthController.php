@@ -25,7 +25,7 @@ class AuthController extends Controller
     public function showLoginForm()
     {
         try {
-            return view('auth.login');
+        return view('auth.login');
         } catch (Exception $e) {
             Log::error('Error in AuthController@showLoginForm: ' . $e->getMessage(), [
                 'exception' => $e
@@ -40,34 +40,34 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         try {
-            $credentials = $request->validate([
-                'email' => 'required|email',
-                'password' => 'required',
-            ]);
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
 
-            // التحقق من الإيميل قبل محاولة تسجيل الدخول
-            $user = User::where('email', $credentials['email'])->first();
+        // التحقق من الإيميل قبل محاولة تسجيل الدخول
+        $user = User::where('email', $credentials['email'])->first();
 
-            if ($user && Hash::check($credentials['password'], $user->password)) {
-                // التحقق من تحقق الإيميل
-                if (!$user->hasVerifiedEmail()) {
-                    return back()->withErrors([
-                        'email' => 'يجب التحقق من الإيميل أولاً. تحقق من بريدك الإلكتروني للحصول على رابط التحقق.'
-                    ])->onlyInput('email');
-                }
+        if ($user && Hash::check($credentials['password'], $user->password)) {
+            // التحقق من تحقق الإيميل
+            if (!$user->hasVerifiedEmail()) {
+                return back()->withErrors([
+                    'email' => 'يجب التحقق من الإيميل أولاً. تحقق من بريدك الإلكتروني للحصول على رابط التحقق.'
+                ])->onlyInput('email');
+            }
 
-                // إذا كان الإيميل محققاً، قم بتسجيل الدخول
-                Auth::login($user, $request->boolean('remember'));
-                $request->session()->regenerate();
+            // إذا كان الإيميل محققاً، قم بتسجيل الدخول
+            Auth::login($user, $request->boolean('remember'));
+            $request->session()->regenerate();
 
                 Log::info('User logged in', ['user_id' => $user->id]);
 
-                return redirect()->intended('/');
-            }
+            return redirect()->intended('/');
+        }
 
-            return back()->withErrors([
-                'email' => 'الإيميل أو كلمة المرور غير صحيحة.',
-            ])->onlyInput('email');
+        return back()->withErrors([
+            'email' => 'الإيميل أو كلمة المرور غير صحيحة.',
+        ])->onlyInput('email');
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors($e->errors())->withInput();
         } catch (Exception $e) {
@@ -85,7 +85,7 @@ class AuthController extends Controller
     public function showRegistrationForm()
     {
         try {
-            return view('auth.register');
+        return view('auth.register');
         } catch (Exception $e) {
             Log::error('Error in AuthController@showRegistrationForm: ' . $e->getMessage(), [
                 'exception' => $e
@@ -101,33 +101,33 @@ class AuthController extends Controller
     {
         try {
             $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users',
-                'phone' => 'required|string|max:20|unique:users',
-                'password' => 'required|string',
-                'user_type' => 'required|in:customer,provider',
-                'terms' => 'required|accepted',
-            ]);
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'phone' => 'required|string|max:20|unique:users',
+            'password' => 'required|string',
+            'user_type' => 'required|in:customer,provider',
+            'terms' => 'required|accepted',
+        ]);
 
-            // Create user account
-            $user = User::create([
+        // Create user account
+        $user = User::create([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'phone' => $validated['phone'],
                 'password' => Hash::make($validated['password']),
                 'user_type' => $validated['user_type'],
                 'terms_accepted_at' => now(),
-            ]);
+        ]);
 
-            // Send email verification notification
-            event(new Registered($user));
+        // Send email verification notification
+        event(new Registered($user));
 
-            // Login user temporarily to show verification notice
-            Auth::login($user);
+        // Login user temporarily to show verification notice
+        Auth::login($user);
 
             Log::info('User registered', ['user_id' => $user->id, 'user_type' => $user->user_type]);
 
-            return redirect()->route('verification.notice')->with('success', 'تم إنشاء الحساب بنجاح! يرجى التحقق من الإيميل لإكمال التسجيل.');
+        return redirect()->route('verification.notice')->with('success', 'تم إنشاء الحساب بنجاح! يرجى التحقق من الإيميل لإكمال التسجيل.');
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors($e->errors())->withInput();
         } catch (Exception $e) {
@@ -147,10 +147,10 @@ class AuthController extends Controller
     {
         try {
             $userId = Auth::id();
-            Auth::logout();
+        Auth::logout();
 
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
             Log::info('User logged out', ['user_id' => $userId]);
 
@@ -159,7 +159,7 @@ class AuthController extends Controller
             Log::error('Error in AuthController@logout: ' . $e->getMessage(), [
                 'exception' => $e
             ]);
-            return redirect('/');
+        return redirect('/');
         }
     }
 
@@ -169,18 +169,18 @@ class AuthController extends Controller
     public function profile()
     {
         try {
-            $user = Auth::user();
+        $user = Auth::user();
 
             if (!$user) {
                 return redirect()->route('login')->with('error', 'يجب تسجيل الدخول');
             }
 
-            // إذا كان مزود خدمة، توجيه إلى صفحة مزود الخدمة
-            if ($user->isProvider()) {
-                return redirect()->route('provider.profile');
-            }
+        // إذا كان مزود خدمة، توجيه إلى صفحة مزود الخدمة
+        if ($user->isProvider()) {
+            return redirect()->route('provider.profile');
+        }
 
-            return view('profile', compact('user'));
+        return view('profile', compact('user'));
         } catch (Exception $e) {
             Log::error('Error in AuthController@profile: ' . $e->getMessage(), [
                 'exception' => $e
@@ -195,18 +195,18 @@ class AuthController extends Controller
     public function showCompleteProfile()
     {
         try {
-            $user = Auth::user();
+        $user = Auth::user();
 
             if (!$user) {
                 return redirect()->route('login')->with('error', 'يجب تسجيل الدخول');
             }
 
-            // إذا كان المستخدم قد اختار الدور ووافق على الشروط، لا حاجة لهذه الصفحة
-            if ($user->user_type && $user->terms_accepted_at) {
-                return redirect('/');
-            }
+        // إذا كان المستخدم قد اختار الدور ووافق على الشروط، لا حاجة لهذه الصفحة
+        if ($user->user_type && $user->terms_accepted_at) {
+            return redirect('/');
+        }
 
-            return view('auth.complete-profile');
+        return view('auth.complete-profile');
         } catch (Exception $e) {
             Log::error('Error in AuthController@showCompleteProfile: ' . $e->getMessage(), [
                 'exception' => $e
@@ -368,37 +368,37 @@ class AuthController extends Controller
     public function updateProfile(Request $request)
     {
         try {
-            $user = Auth::user();
+        $user = Auth::user();
 
             if (!$user) {
                 return redirect()->route('login')->with('error', 'يجب تسجيل الدخول');
             }
 
             $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:users,email,' . $user->id,
-                'phone' => 'nullable|string|max:20|unique:users,phone,' . $user->id,
-                'bio' => 'nullable|string|max:1000',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            ]);
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'phone' => 'nullable|string|max:20|unique:users,phone,' . $user->id,
+            'bio' => 'nullable|string|max:1000',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
 
-            $data = $request->only(['name', 'email', 'phone', 'bio']);
+        $data = $request->only(['name', 'email', 'phone', 'bio']);
 
-            // رفع الصورة الشخصية
-            if ($request->hasFile('image')) {
-                // حذف الصورة القديمة
+        // رفع الصورة الشخصية
+        if ($request->hasFile('image')) {
+            // حذف الصورة القديمة
                 if ($user->image && Storage::disk('public')->exists($user->image)) {
-                    Storage::disk('public')->delete($user->image);
-                }
-
-                $data['image'] = $request->file('image')->store('users', 'public');
+                Storage::disk('public')->delete($user->image);
             }
 
-            $user->update($data);
+                $data['image'] = $request->file('image')->store('users', 'public');
+        }
+
+        $user->update($data);
 
             Log::info('User profile updated', ['user_id' => $user->id]);
 
-            return back()->with('success', 'تم تحديث الملف الشخصي بنجاح');
+        return back()->with('success', 'تم تحديث الملف الشخصي بنجاح');
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors($e->errors())->withInput();
         } catch (Exception $e) {

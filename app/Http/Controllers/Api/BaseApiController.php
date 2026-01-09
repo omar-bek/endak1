@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
+use Exception;
 
 abstract class BaseApiController extends Controller
 {
@@ -24,7 +26,29 @@ abstract class BaseApiController extends Controller
             'errors' => $errors,
         ], $status);
     }
+
+    /**
+     * تنفيذ callback مع try-catch وإرجاع JSON response للـ API
+     */
+    protected function executeApiWithTryCatch(callable $callback, string $errorMessage = 'حدث خطأ أثناء العملية'): JsonResponse
+    {
+        try {
+            return $callback();
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return $this->error('بيانات غير صحيحة', 422, $e->errors());
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return $this->error('السجل غير موجود', 404);
+        } catch (Exception $e) {
+            Log::error('API Error: ' . $e->getMessage(), [
+                'exception' => $e,
+                'trace' => $e->getTraceAsString()
+            ]);
+            return $this->error($errorMessage, 500);
+        }
+    }
 }
+
+
 
 
 

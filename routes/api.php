@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController as ApiAuthController;
 use App\Http\Controllers\Api\CategoryController as ApiCategoryController;
+use App\Http\Controllers\Api\CategoryFieldController as ApiCategoryFieldController;
 use App\Http\Controllers\Api\MessageController as ApiMessageController;
 use App\Http\Controllers\Api\NotificationController as ApiNotificationController;
 use App\Http\Controllers\Api\ServiceController as ApiServiceController;
@@ -108,6 +109,12 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
     Route::get('categories', [ApiCategoryController::class, 'index']);
     Route::get('categories/{slug}/details', [ApiCategoryController::class, 'show']);
     Route::get('categories/{category}/subcategories', [ApiCategoryController::class, 'subcategories']);
+    Route::get('categories/{category}/request-data', [ApiCategoryController::class, 'requestData'])->whereNumber('category');
+
+    // Category Fields endpoints
+    Route::get('categories/{category}/fields', [ApiCategoryFieldController::class, 'index'])->whereNumber('category');
+    Route::get('categories/{category}/fields/grouped', [ApiCategoryFieldController::class, 'grouped'])->whereNumber('category');
+    Route::get('categories/{category}/fields/{field}', [ApiCategoryFieldController::class, 'show'])->whereNumber(['category', 'field']);
 
     Route::get('services', [ApiServiceController::class, 'index']);
     Route::get('services/{service}', [ApiServiceController::class, 'show'])->whereNumber('service');

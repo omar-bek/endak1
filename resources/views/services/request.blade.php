@@ -475,10 +475,9 @@
                                 <div class="mb-3">
                                     <label for="notes" class="form-label">
                                         <i class="fas fa-sticky-note"></i> {{ __('messages.additional_notes') }}
-                                        <span class="text-danger">*</span>
                                     </label>
                                     <textarea name="notes" id="notes" class="form-control" rows="4"
-                                        placeholder="{{ __('messages.additional_notes_placeholder') }}   " required>{{ old('notes') }}</textarea>
+                                        placeholder="{{ __('messages.additional_notes_placeholder') }}   ">{{ old('notes') }}</textarea>
                                 </div>
 
                                 @php
@@ -503,7 +502,9 @@
                                                     <label for="custom_fields_{{ $field->name }}_0" class="form-label">
                                                         <i class="fas fa-image"></i>
                                                         {{ $fieldName }}
-                                                        <span class="text-danger">*</span>
+                                                        @if ($field->is_required)
+                                                            <span class="text-danger">*</span>
+                                                        @endif
                                                     </label>
 
                                                     {{-- ✅ نفس image upload container --}}
@@ -525,7 +526,7 @@
                                                                     name="custom_fields[{{ $field->name }}][0][]"
                                                                     id="custom_fields_{{ $field->name }}_0"
                                                                     class="form-control d-none" accept="image/*" multiple
-                                                                    required>
+                                                                    {{ $field->is_required ? 'required' : '' }}>
 
                                                                 <button type="button"
                                                                     class="btn btn-outline-primary btn-sm"
@@ -559,7 +560,6 @@
                                     <label for="city_id" class="form-label">
                                         <i class="fas fa-map-marker-alt text-success"></i>
                                         {{ __('messages.choose_city') }}
-                                        <span class="text-danger">*</span>
                                         @if ($cities->count() > 0)
                                             <small class="text-muted">({{ $cities->count() }}
                                                 {{ __('messages.available_cities_count') }} )</small>
@@ -652,14 +652,16 @@
                                                     <label for="custom_fields_{{ $field->name }}_0" class="form-label">
                                                         <i class="fas fa-{{ $field->getTypeIconAttribute() }}"></i>
                                                         {{ $fieldName }}
-                                                        <span class="text-danger">*</span>
+                                                        @if ($field->is_required)
+                                                            <span class="text-danger">*</span>
+                                                        @endif
                                                     </label>
                                                 @endif
 
                                                 @if ($field->type === 'select' && is_array($field->options))
                                                     <select name="custom_fields[{{ $field->name }}][0]"
                                                         id="custom_fields_{{ $field->name }}_0" class="form-control"
-                                                        required>
+                                                        {{ $field->is_required ? 'required' : '' }}>
                                                         <option value="" disabled selected>
                                                             {{ __('messages.custom_fields_select_placeholder') }}</option>
                                                         @foreach ($field->options as $option)
@@ -673,7 +675,7 @@
                                                         <input type="checkbox"
                                                             name="custom_fields[{{ $field->name }}][0]"
                                                             id="custom_fields_{{ $field->name }}_0" value="1"
-                                                            class="form-check-input" required
+                                                            class="form-check-input"
                                                             {{ old('custom_fields.' . $field->name . '.0') == '1' ? 'checked' : '' }}>
                                                         <label class="form-check-label"
                                                             for="custom_fields_{{ $field->name }}_0">{{ $fieldName }}</label>
@@ -682,21 +684,21 @@
                                                     <input type="date" name="custom_fields[{{ $field->name }}][0]"
                                                         id="custom_fields_{{ $field->name }}_0" class="form-control"
                                                         value="{{ old('custom_fields.' . $field->name . '.0') }}"
-                                                        required>
+                                                        {{ $field->is_required ? 'required' : '' }}>
                                                 @elseif($field->type === 'time')
                                                     <input type="time" name="custom_fields[{{ $field->name }}][0]"
                                                         id="custom_fields_{{ $field->name }}_0" class="form-control"
                                                         value="{{ old('custom_fields.' . $field->name . '.0') }}"
-                                                        required>
+                                                        {{ $field->is_required ? 'required' : '' }}>
                                                 @elseif($field->type === 'textarea')
                                                     <textarea name="custom_fields[{{ $field->name }}][0]" id="custom_fields_{{ $field->name }}_0"
-                                                        class="form-control" rows="3" required>{{ old('custom_fields.' . $field->name . '.0') }}</textarea>
+                                                        class="form-control" rows="3" {{ $field->is_required ? 'required' : '' }}>{{ old('custom_fields.' . $field->name . '.0') }}</textarea>
                                                 @elseif($field->type !== 'image')
                                                     <input type="{{ $field->type }}"
                                                         name="custom_fields[{{ $field->name }}][0]"
                                                         id="custom_fields_{{ $field->name }}_0" class="form-control"
                                                         value="{{ old('custom_fields.' . $field->name . '.0') }}"
-                                                        required>
+                                                        {{ $field->is_required ? 'required' : '' }}>
                                                 @endif
                                             </div>
                                         @endif
@@ -1398,7 +1400,6 @@
             const form = document.getElementById('serviceRequestForm');
             if (!form) {
                 console.error('Form not found');
-                alert('خطأ: لم يتم العثور على النموذج');
                 return false;
             }
 
@@ -1416,86 +1417,20 @@
 
                 if (errors.length > 0) {
                     console.log('Showing validation errors - preventing submission');
-
-                    // Show alert message with all errors
-                    const errorMessages = errors.map((err, index) => (index + 1) + '. ' + err.message).join('\n');
-                    const currentLang = '{{ app()->getLocale() }}';
-                    const alertMessage = currentLang === 'ar' ?
-                        'تحذير:\n\nيرجى إكمال الحقول التالية:\n\n' + errorMessages +
-                        '\n\nيرجى إكمال جميع الحقول المطلوبة قبل الإرسال' :
-                        'Warning:\n\nPlease complete the following fields:\n\n' + errorMessages +
-                        '\n\nPlease complete all required fields before submitting';
-
-                    alert(alertMessage);
-
-                    // Show validation errors in the form
+                    // Show validation errors
                     if (typeof showValidationErrors === 'function') {
                         showValidationErrors(errors);
                     }
 
                     // Scroll to first error
-                    setTimeout(() => {
-                        const firstErrorField = document.querySelector('.is-invalid');
-                        if (firstErrorField) {
-                            firstErrorField.scrollIntoView({
-                                behavior: 'smooth',
-                                block: 'center'
-                            });
-                            firstErrorField.focus();
-                        }
-                    }, 200);
-                    return false;
-                }
-            } else {
-                // Fallback validation if validateForm is not available
-                const requiredFields = form.querySelectorAll('[required]');
-                const missingFields = [];
-
-                requiredFields.forEach(field => {
-                    if (field.type === 'file') {
-                        const fieldName = field.getAttribute('name');
-                        if (fieldName) {
-                            const nameMatch = fieldName.match(/custom_fields\[([^\]]+)\]/);
-                            if (nameMatch) {
-                                const fieldNameOnly = nameMatch[1];
-                                const instanceMatch = fieldName.match(/\[(\d+)\]/);
-                                const instanceNum = instanceMatch ? instanceMatch[1] : '0';
-                                const previewContainer = document.getElementById('preview_' + fieldNameOnly +
-                                    '_' + instanceNum);
-                                const hasFiles = field.files && field.files.length > 0;
-                                const hasPreviews = previewContainer && previewContainer.children.length > 0;
-
-                                if (!hasFiles && !hasPreviews) {
-                                    const label = getFieldLabel(field);
-                                    missingFields.push(label);
-                                }
-                            }
-                        }
-                    } else if (field.type === 'checkbox') {
-                        if (!field.checked) {
-                            const label = getFieldLabel(field);
-                            missingFields.push(label);
-                        }
-                    } else if (field.tagName === 'SELECT') {
-                        if (!field.value || field.value === '' || field.value === null) {
-                            const label = getFieldLabel(field);
-                            missingFields.push(label);
-                        }
-                    } else {
-                        if (!field.value || field.value.trim() === '') {
-                            const label = getFieldLabel(field);
-                            missingFields.push(label);
-                        }
+                    const firstErrorField = document.querySelector('.is-invalid');
+                    if (firstErrorField) {
+                        firstErrorField.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                        firstErrorField.focus();
                     }
-                });
-
-                if (missingFields.length > 0) {
-                    const currentLang = '{{ app()->getLocale() }}';
-                    const alertMessage = currentLang === 'ar' ?
-                        'يرجى إكمال جميع الحقول المطلوبة:\n\n' + missingFields.join('\n') :
-                        'Please complete all required fields:\n\n' + missingFields.join('\n');
-
-                    alert(alertMessage);
                     return false;
                 }
             }
@@ -1507,20 +1442,6 @@
             form.submit();
             return false;
         };
-
-        // Helper function to get field label
-        function getFieldLabel(field) {
-            const label = field.closest('.col-12, .mb-3, .form-group')?.querySelector('label');
-            if (label) {
-                let labelText = label.textContent.trim();
-                labelText = labelText.replace(/\*/g, '').replace(/\[.*?\]/g, '').trim();
-                return labelText || field.name || field.id;
-            }
-            if (field.placeholder) {
-                return field.placeholder;
-            }
-            return field.name || field.id || 'حقل مطلوب';
-        }
 
         // Pass required fields data from backend to frontend
         @php
@@ -1557,16 +1478,14 @@
                 completeRequiredFields: 'يرجى إكمال جميع الحقول المطلوبة قبل الإرسال',
                 imageRequired: 'هذا الحقل مطلوب (يجب رفع صورة واحدة على الأقل)',
                 fieldRequired: 'هذا الحقل مطلوب',
-                error: 'تحذير',
-                pleaseComplete: 'يرجى إكمال الحقول التالية:'
+                error: 'خطأ'
             },
             en: {
                 requiredField: 'This field is required',
                 completeRequiredFields: 'Please complete all required fields before submitting',
                 imageRequired: 'This field is required (at least one image must be uploaded)',
                 fieldRequired: 'This field is required',
-                error: 'Warning',
-                pleaseComplete: 'Please complete the following fields:'
+                error: 'Error'
             }
         };
 
@@ -1603,28 +1522,18 @@
 
             if (errors.length > 0) {
                 console.log('Showing validation errors - preventing submission');
-
-                // Show alert message with all errors
-                const errorMessages = errors.map((err, index) => (index + 1) + '. ' + err.message).join(
-                    '\n');
-                const alertMessage = messages.error + ':\n\n' + messages.pleaseComplete + '\n\n' +
-                    errorMessages + '\n\n' + messages.completeRequiredFields;
-                alert(alertMessage);
-
-                // Show validation errors in the form
+                // Show validation errors
                 showValidationErrors(errors);
 
                 // Scroll to first error
-                setTimeout(() => {
-                    const firstErrorField = document.querySelector('.is-invalid');
-                    if (firstErrorField) {
-                        firstErrorField.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'center'
-                        });
-                        firstErrorField.focus();
-                    }
-                }, 200);
+                const firstErrorField = document.querySelector('.is-invalid');
+                if (firstErrorField) {
+                    firstErrorField.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                    firstErrorField.focus();
+                }
                 return false;
             } else {
                 console.log('All validations passed, submitting form');
@@ -1665,10 +1574,10 @@
                 return errors;
             }
 
-            // Validate city selection (always required if select exists)
+            // Validate city selection
             const citySelect = formElement.querySelector('#city_id');
-            if (citySelect) {
-                if (!citySelect.value || citySelect.value === '' || citySelect.value === null) {
+            if (citySelect && citySelect.hasAttribute('required')) {
+                if (!citySelect.value || citySelect.value === '') {
                     const cityLabel = '{{ __('messages.choose_city') }}';
                     errors.push({
                         field: citySelect,
@@ -1770,7 +1679,7 @@
             // Validate all required custom fields from backend data
             if (typeof requiredCustomFields !== 'undefined' && requiredCustomFields.length > 0) {
                 console.log('Validating required custom fields from backend data:', requiredCustomFields
-                    .length);
+                .length);
 
                 const currentLangForValidation = '{{ app()->getLocale() }}';
 
@@ -1791,71 +1700,53 @@
                     if (fieldInputs.length === 0) {
                         // Field not found in form - might be missing
                         console.warn('Required field not found in form:', fieldName);
-                        // Still add error for missing field
-                        errors.push({
-                            field: null,
-                            message: fieldLabel + ' - ' + messages.requiredField +
-                                ' (الحقل غير موجود في النموذج)'
-                        });
                         return;
                     }
 
                     let hasValidValue = false;
-                    let firstEmptyInput = null;
 
                     // Check all instances
                     fieldInputs.forEach(input => {
                         if (fieldType === 'image') {
                             // For images, check if files are selected or preview exists
-                            const nameAttr = input.getAttribute('name');
-                            if (nameAttr) {
-                                const nameMatch = nameAttr.match(
-                                    /custom_fields\[([^\]]+)\]\[(\d+)\]/);
-                                if (nameMatch) {
-                                    const instanceNum = nameMatch[2];
-                                    const previewContainer = document.getElementById(
-                                        'preview_' + fieldName + '_' + instanceNum);
-                                    const hasFiles = input.files && input.files.length > 0;
-                                    const hasPreviews = previewContainer && previewContainer
-                                        .children.length > 0;
+                            const nameMatch = input.getAttribute('name').match(
+                                /custom_fields\[([^\]]+)\]\[(\d+)\]/);
+                            if (nameMatch) {
+                                const instanceNum = nameMatch[2];
+                                const previewContainer = document.getElementById('preview_' +
+                                    fieldName + '_' + instanceNum);
+                                const hasFiles = input.files && input.files.length > 0;
+                                const hasPreviews = previewContainer && previewContainer
+                                    .children.length > 0;
 
-                                    if (hasFiles || hasPreviews) {
-                                        hasValidValue = true;
-                                    } else if (!firstEmptyInput) {
-                                        firstEmptyInput = input;
-                                    }
+                                if (hasFiles || hasPreviews) {
+                                    hasValidValue = true;
                                 }
                             }
                         } else if (fieldType === 'checkbox') {
                             // For checkboxes, check if checked
                             if (input.checked) {
                                 hasValidValue = true;
-                            } else if (!firstEmptyInput) {
-                                firstEmptyInput = input;
                             }
                         } else if (fieldType === 'select') {
                             // For selects, check if value is selected
                             if (input.value && input.value !== '' && input.value !== null &&
                                 input.value !== '0') {
                                 hasValidValue = true;
-                            } else if (!firstEmptyInput) {
-                                firstEmptyInput = input;
                             }
                         } else {
                             // For text, number, textarea, date, time
                             if (input.value && input.value.trim() !== '') {
                                 hasValidValue = true;
-                            } else if (!firstEmptyInput) {
-                                firstEmptyInput = input;
                             }
                         }
                     });
 
                     if (!hasValidValue) {
-                        // Use first empty input or first input for highlighting
-                        const targetInput = firstEmptyInput || fieldInputs[0];
+                        // Find the first input for this field to highlight
+                        const firstInput = fieldInputs[0];
                         errors.push({
-                            field: targetInput,
+                            field: firstInput,
                             message: fieldLabel + ' - ' + (fieldType === 'image' ? messages
                                 .imageRequired : messages.requiredField)
                         });
@@ -1920,56 +1811,32 @@
         }
 
         function showValidationErrors(errors) {
-            if (!validationAlert || !validationMessage || !validationErrors) {
-                console.error('Validation elements not found');
-                return;
-            }
-
             validationAlert.style.display = 'block';
-            validationAlert.classList.add('alert-danger');
-            validationMessage.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i><strong>' + messages
-                .error + ':</strong> ' + messages.completeRequiredFields;
+            validationMessage.textContent = messages.error + ': ' + messages.completeRequiredFields;
 
             validationErrors.innerHTML = '';
-            errors.forEach((error, index) => {
+            errors.forEach(error => {
                 const li = document.createElement('li');
-                li.innerHTML = '<i class="fas fa-arrow-left me-2"></i>' + error.message;
-                li.style.marginBottom = '8px';
-                li.style.paddingLeft = '5px';
+                li.textContent = error.message;
                 validationErrors.appendChild(li);
 
-                // Mark field as invalid if field exists
-                if (error.field) {
-                    error.field.classList.add('is-invalid');
-                    error.field.classList.remove('is-valid');
+                // Mark field as invalid
+                error.field.classList.add('is-invalid');
+                error.field.classList.remove('is-valid');
 
-                    // Show field error
-                    showFieldError(error.field);
-                }
+                // Show field error
+                showFieldError(error.field);
             });
-
-            // Scroll to validation alert
-            setTimeout(() => {
-                validationAlert.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center'
-                });
-            }, 100);
         }
 
         function showFieldError(field) {
-            if (!field) return;
-
             // Remove existing error message
             removeFieldError(field);
 
             // Create error message element
             const errorDiv = document.createElement('div');
             errorDiv.className = 'field-error';
-            errorDiv.style.color = '#dc3545';
-            errorDiv.style.fontSize = '0.875rem';
-            errorDiv.style.marginTop = '0.25rem';
-            errorDiv.innerHTML = '<i class="fas fa-exclamation-circle me-1"></i>' + messages.fieldRequired;
+            errorDiv.textContent = messages.fieldRequired;
 
             // Insert after field
             const fieldContainer = field.closest('.col-12, .mb-3, .form-group') || field.parentElement;

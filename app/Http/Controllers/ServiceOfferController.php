@@ -15,16 +15,9 @@ class ServiceOfferController extends Controller
     /**
      * عرض نموذج تقديم عرض
      */
-    public function create($service)
+    public function create(Service $service)
     {
         try {
-            // جلب الخدمة بناءً على ID أو slug
-            if (is_numeric($service)) {
-                $service = Service::where('id', $service)->where('is_active', true)->firstOrFail();
-            } else {
-                $service = Service::where('slug', $service)->where('is_active', true)->firstOrFail();
-            }
-
             // التأكد من أن المستخدم مزود خدمة
             if (!Auth::check() || !Auth::user()->isProvider()) {
                 return redirect()->route('login')->with('error', 'يجب أن تكون مزود خدمة لتقديم عرض');
@@ -67,16 +60,9 @@ class ServiceOfferController extends Controller
     /**
      * حفظ العرض
      */
-    public function store(Request $request, $service)
+    public function store(Request $request, Service $service)
     {
         try {
-            // جلب الخدمة بناءً على ID أو slug
-            if (is_numeric($service)) {
-                $service = Service::where('id', $service)->where('is_active', true)->firstOrFail();
-            } else {
-                $service = Service::where('slug', $service)->where('is_active', true)->firstOrFail();
-            }
-
             // التأكد من أن المستخدم مزود خدمة
             if (!Auth::check() || !Auth::user()->isProvider()) {
                 return redirect()->route('login')->with('error', 'يجب أن تكون مزود خدمة لتقديم عرض');
@@ -146,16 +132,9 @@ class ServiceOfferController extends Controller
     /**
      * عرض العروض المقدمة لخدمة معينة
      */
-    public function index($service)
+    public function index(Service $service)
     {
         try {
-            // جلب الخدمة بناءً على ID أو slug
-            if (is_numeric($service)) {
-                $service = Service::where('id', $service)->where('is_active', true)->firstOrFail();
-            } else {
-                $service = Service::where('slug', $service)->where('is_active', true)->firstOrFail();
-            }
-
             // التأكد من أن المستخدم صاحب الخدمة أو مدير
             if (!Auth::check() || (Auth::id() !== $service->user_id && !Auth::user()->isAdmin())) {
                 return redirect()->route('services.show', $service->slug)
@@ -263,53 +242,6 @@ class ServiceOfferController extends Controller
     }
 
     /**
-     * عرض الخدمات المكتملة وتقييماتها لمزود الخدمة
-     */
-    public function completedServices()
-    {
-        try {
-            if (!Auth::check() || !Auth::user()->isProvider()) {
-                return redirect()->route('login')->with('error', 'يجب أن تكون مزود خدمة');
-            }
-
-            $provider = Auth::user();
-
-            // جلب الخدمات المكتملة (delivered) مع التقييمات
-            $completedOffers = ServiceOffer::where('provider_id', $provider->id)
-                ->where('status', 'delivered')
-                ->with([
-                    'service' => function ($query) {
-                        $query->withTrashed()->with(['category', 'subCategory', 'city', 'user']);
-                    }
-                ])
-                ->orderBy('delivered_at', 'desc')
-                ->paginate(12);
-
-            // حساب الإحصائيات
-            $totalCompleted = ServiceOffer::where('provider_id', $provider->id)
-                ->where('status', 'delivered')
-                ->count();
-
-            $totalRated = ServiceOffer::where('provider_id', $provider->id)
-                ->where('status', 'delivered')
-                ->whereNotNull('rating')
-                ->count();
-
-            $averageRating = ServiceOffer::where('provider_id', $provider->id)
-                ->where('status', 'delivered')
-                ->whereNotNull('rating')
-                ->avg('rating');
-
-            return view('service-offers.completed-services', compact('completedOffers', 'totalCompleted', 'totalRated', 'averageRating'));
-        } catch (Exception $e) {
-            Log::error('Error in ServiceOfferController@completedServices: ' . $e->getMessage(), [
-                'exception' => $e
-            ]);
-            return redirect()->route('home')->with('error', 'حدث خطأ أثناء تحميل الخدمات المكتملة');
-        }
-    }
-
-    /**
      * عرض تفاصيل عرض معين
      */
     public function show(ServiceOffer $offer)
@@ -325,26 +257,7 @@ class ServiceOfferController extends Controller
                 return redirect()->route('services.index')->with('error', 'غير مصرح لك بعرض هذا العرض');
             }
 
-            // تحميل بيانات المزود والتقييمات
-            $provider = $offer->provider;
-            $providerProfile = $provider ? $provider->providerProfile : null;
-
-            // جلب التقييمات للمزود
-            $ratings = [];
-            if ($provider) {
-                $ratings = \App\Models\ServiceOffer::where('provider_id', $provider->id)
-                    ->whereNotNull('rating')
-                    ->where('status', 'delivered')
-                    ->with(['service.user', 'service.category'])
-                    ->orderBy('created_at', 'desc')
-                    ->limit(10)
-                    ->get();
-            }
-
-            // تحميل بيانات العميل (صاحب الخدمة)
-            $customer = $offer->service->user;
-
-            return view('service-offers.show', compact('offer', 'provider', 'providerProfile', 'ratings', 'customer'));
+            return view('service-offers.show', compact('offer'));
         } catch (Exception $e) {
             Log::error('Error in ServiceOfferController@show: ' . $e->getMessage(), [
                 'exception' => $e,
@@ -461,9 +374,9 @@ class ServiceOfferController extends Controller
     }
 
     /**
-     * تسليم الخدمة مع التقييم الإلزامي
+     * تسليم الخدمة
      */
-    public function markAsDelivered(Request $request, ServiceOffer $offer)
+    public function markAsDelivered(ServiceOffer $offer)
     {
         try {
             // التأكد من أن المستخدم هو صاحب الخدمة
@@ -476,48 +389,23 @@ class ServiceOfferController extends Controller
                 return back()->with('error', 'لا يمكن تسليم الخدمة إلا بعد قبول العرض');
             }
 
-            // التحقق من وجود التقييم (إلزامي)
-            $validated = $request->validate([
-                'rating' => 'required|integer|min:1|max:5',
-                'review' => 'nullable|string|max:1000',
-            ], [
-                'rating.required' => 'يجب تقييم المزود قبل تسليم الخدمة',
-                'rating.integer' => 'التقييم يجب أن يكون رقماً',
-                'rating.min' => 'التقييم يجب أن يكون على الأقل 1',
-                'rating.max' => 'التقييم يجب أن يكون على الأكثر 5',
-            ]);
-
-            // تسليم الخدمة
             $offer->markAsDelivered();
-
-            // إضافة التقييم مباشرة
-            $offer->addReview($validated['rating'], $validated['review'] ?? null);
-
-            // أرشفة الخدمة (soft delete) بعد التقييم
-            $service = $offer->service;
-            $serviceTitle = $service ? $service->title : 'الخدمة';
-            if ($service) {
-                $service->delete(); // Soft delete لأن Service model يستخدم SoftDeletes
-            }
 
             // إرسال إشعار لمزود الخدمة
             Notification::create([
                 'user_id' => $offer->provider_id,
-                'title' => 'تم تسليم الخدمة وتقييمك',
-                'message' => 'تم تسليم الخدمة: ' . $serviceTitle . ' وتقييمك بـ ' . $validated['rating'] . ' نجوم',
+                'title' => 'تم تسليم الخدمة',
+                'message' => 'تم تسليم الخدمة: ' . $offer->service->title,
                 'type' => 'service_delivered',
-                'data' => json_encode(['offer_id' => $offer->id, 'service_id' => $offer->service_id, 'rating' => $validated['rating']])
+                'data' => json_encode(['offer_id' => $offer->id, 'service_id' => $offer->service_id])
             ]);
 
-            Log::info('Service marked as delivered, rated and archived', [
+            Log::info('Service marked as delivered', [
                 'offer_id' => $offer->id,
-                'service_id' => $offer->service_id,
-                'rating' => $validated['rating']
+                'service_id' => $offer->service_id
             ]);
 
-            return back()->with('success', 'تم تسليم الخدمة وتقييم المزود بنجاح');
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return back()->withErrors($e->errors())->withInput();
+            return back()->with('success', 'تم تسليم الخدمة بنجاح');
         } catch (Exception $e) {
             Log::error('Error in ServiceOfferController@markAsDelivered: ' . $e->getMessage(), [
                 'exception' => $e,

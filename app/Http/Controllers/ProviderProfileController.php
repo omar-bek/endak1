@@ -317,68 +317,13 @@ class ProviderProfileController extends Controller
     }
 
     /**
-     * عرض الملف الشخصي للعامة
-     */
-    public function showPublic($userId)
-    {
-        try {
-            $viewingUser = \App\Models\User::findOrFail($userId);
-            if (!$viewingUser->isProvider()) {
-                return redirect()->back()->with('error', 'المستخدم المحدد ليس مزود خدمة');
-            }
-            $profile = $viewingUser->providerProfile;
-
-            if (!$profile) {
-                return redirect()->back()->with('error', 'المزود لم يكمل ملفه الشخصي بعد');
-            }
-
-            // تحميل العلاقات
-            $profile->load(['activeCategories.category', 'activeCategories.subCategory', 'activeCities.city']);
-
-            // جلب التقييمات
-            $ratings = $profile->getRatings();
-
-            return view('provider.profile', compact('profile', 'ratings', 'viewingUser'));
-        } catch (Exception $e) {
-            Log::error('Error in ProviderProfileController@showPublic: ' . $e->getMessage(), [
-                'exception' => $e,
-                'user_id' => $userId
-            ]);
-            return redirect()->back()->with('error', 'حدث خطأ أثناء تحميل الملف الشخصي');
-        }
-    }
-
-    /**
      * عرض الملف الشخصي
      */
-    public function show(Request $request)
+    public function show()
     {
         try {
+            // التأكد من أن المستخدم مزود خدمة
             $user = Auth::user();
-            $viewingUserId = $request->get('user_id');
-
-            // إذا كان هناك user_id في الطلب، عرض ملف ذلك المستخدم (للعرض العام)
-            if ($viewingUserId) {
-                $viewingUser = \App\Models\User::findOrFail($viewingUserId);
-                if (!$viewingUser->isProvider()) {
-                    return redirect()->back()->with('error', 'المستخدم المحدد ليس مزود خدمة');
-                }
-                $profile = $viewingUser->providerProfile;
-
-                if (!$profile) {
-                    return redirect()->back()->with('error', 'المزود لم يكمل ملفه الشخصي بعد');
-                }
-
-                // تحميل العلاقات
-                $profile->load(['activeCategories.category', 'activeCategories.subCategory', 'activeCities.city']);
-
-                // جلب التقييمات
-                $ratings = $profile->getRatings();
-
-                return view('provider.profile', compact('profile', 'ratings', 'viewingUser'));
-            }
-
-            // إذا لم يكن هناك user_id، عرض ملف المستخدم الحالي (للمزود نفسه)
             if (!$user || !$user->isProvider()) {
                 return redirect()->route('home')->with('error', 'هذه الصفحة متاحة لمزودي الخدمة فقط');
             }
@@ -391,13 +336,7 @@ class ProviderProfileController extends Controller
             // تحميل العلاقات مع الأقسام الفرعية
             $profile->load(['activeCategories.category', 'activeCategories.subCategory', 'activeCities.city']);
 
-            // جلب جميع التقييمات للمزود
-            $ratings = $profile->getRatings();
-
-            // تحديث التقييم في الملف الشخصي
-            $profile->updateRating();
-
-            return view('provider.profile', compact('profile', 'ratings'));
+            return view('provider.profile', compact('profile'));
         } catch (Exception $e) {
             Log::error('Error in ProviderProfileController@show: ' . $e->getMessage(), [
                 'exception' => $e

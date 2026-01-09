@@ -1063,9 +1063,6 @@
                                     <li><a class="dropdown-item" href="{{ route('service-offers.my-offers') }}">
                                             <i class="fas fa-handshake"></i> {{ __('messages.my_offers') }}
                                         </a></li>
-                                    <li><a class="dropdown-item" href="{{ route('service-offers.completed-services') }}">
-                                            <i class="fas fa-check-circle"></i> الخدمات المكتملة
-                                        </a></li>
                                 @endif
                                 <li><a class="dropdown-item"
                                         href="{{ Auth::user()->isProvider() ? route('provider.profile') : route('profile') }}">

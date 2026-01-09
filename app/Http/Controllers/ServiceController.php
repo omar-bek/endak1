@@ -198,18 +198,11 @@ class ServiceController extends Controller
     /**
      * عرض صفحة طلب الخدمة
      */
-    public function request($category)
+    public function request(Category $category)
     {
         // التأكد من أن المستخدم مسجل دخول
         if (!auth()->check()) {
             return redirect()->route('login')->with('error', 'يجب تسجيل الدخول لطلب الخدمة');
-        }
-
-        // جلب القسم بناءً على slug أو id
-        if (is_numeric($category)) {
-            $category = Category::where('id', $category)->where('is_active', true)->firstOrFail();
-        } else {
-            $category = Category::where('slug', $category)->where('is_active', true)->firstOrFail();
         }
 
         // تحميل الحقول المخصصة مع القسم مرتبة حسب الترتيب
@@ -269,9 +262,9 @@ class ServiceController extends Controller
                 'category_id' => 'required|exists:categories,id',
                 'sub_category_id' => 'nullable|exists:sub_categories,id',
                 'city_id' => 'required|exists:cities,id',
-                'notes' => 'required|string|max:1000',
+                'notes' => 'nullable|string|max:1000',
                 'voice_note' => 'nullable|string|max:16777215',
-                'custom_fields.*' => 'required',
+                'custom_fields.*' => 'nullable',
             ]);
 
             // التحقق من صحة القسم والمدينة
@@ -349,9 +342,10 @@ class ServiceController extends Controller
      */
     private function validateCustomFields(Request $request, Category $category)
     {
-        // جلب جميع الحقول المخصصة النشطة (الآن جميع الحقول مطلوبة)
+        // جلب جميع الحقول المخصصة النشطة والمطلوبة للقسم
         $requiredFields = CategoryField::where('category_id', $category->id)
             ->where('is_active', true)
+            ->where('is_required', true)
             ->get();
 
         $errors = [];

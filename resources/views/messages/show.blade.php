@@ -3,8 +3,11 @@
 @section('title', 'المحادثة مع ' . $otherUser->name)
 
 @section('content')
-    <div class="chat-container ">
+    <div class="chat-container">
         <div class="chat-layout">
+            <!-- Overlay for mobile sidebar -->
+            <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
             <!-- Sidebar for conversations -->
             <div class="conversations-sidebar" id="conversationsSidebar">
                 <div class="sidebar-header">
@@ -975,46 +978,547 @@
             background: rgba(255, 255, 255, 0.3);
         }
 
+        /* Tablet Styles */
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .conversations-sidebar {
+                width: 280px;
+            }
+
+            .sidebar-header {
+                padding: 14px 16px;
+            }
+
+            .conversation-item {
+                padding: 12px 16px;
+            }
+        }
+
+        /* Mobile Styles */
         @media (max-width: 768px) {
+            .chat-container {
+                height: 100vh;
+                height: 100dvh;
+                /* Dynamic viewport height for mobile */
+                overflow: hidden;
+            }
+
+            .chat-layout {
+                position: relative;
+                height: 100%;
+            }
+
             .conversations-sidebar {
                 position: fixed;
                 top: 0;
-                left: -100%;
-                height: 100%;
+                right: 0;
                 width: 100%;
+                max-width: 350px;
+                height: 100vh;
+                height: 100dvh;
+                z-index: 1000;
+                transform: translateX(100%);
+                transition: transform 0.3s ease-in-out;
+                box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
                 background: var(--bg-dark-transparent);
-                transition: all 0.4s ease-in-out;
             }
 
-            .conversations-sidebar.active {
-                left: 0;
+            .conversations-sidebar.hidden {
+                transform: translateX(100%);
+                visibility: hidden;
+            }
+
+            .conversations-sidebar:not(.hidden) {
+                transform: translateX(0);
+                visibility: visible;
+            }
+
+            .sidebar-header {
+                padding: 12px 15px;
+                position: sticky;
+                top: 0;
+                z-index: 10;
+            }
+
+            .sidebar-header h5 {
+                font-size: 15px;
+                margin: 0 0 10px 0;
+            }
+
+            .search-input {
+                padding: 8px 30px 8px 12px;
+                font-size: 13px;
+            }
+
+            .sidebar-toggle {
+                display: flex;
+                position: absolute;
+                top: 12px;
+                right: 12px;
+                width: 32px;
+                height: 32px;
+                z-index: 11;
+            }
+
+            .conversations-list {
+                padding: 5px 0;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .conversation-item {
+                padding: 10px 12px;
+                margin: 3px 8px;
+                border-radius: 8px;
+                touch-action: manipulation;
+                -webkit-tap-highlight-color: transparent;
+            }
+
+            .conversation-item:active {
+                background: rgba(255, 255, 255, 0.25);
+                transform: scale(0.98);
+            }
+
+            .conversation-item:hover {
+                background: rgba(255, 255, 255, 0.15);
+            }
+
+            .conversation-avatar {
+                margin-right: 10px;
+            }
+
+            .conversation-avatar img,
+            .conversation-avatar .default-avatar {
+                width: 40px;
+                height: 40px;
+                border-width: 2px;
+            }
+
+            .default-avatar {
+                font-size: 16px;
+            }
+
+            .online-indicator {
+                width: 10px;
+                height: 10px;
+                border-width: 1.5px;
+            }
+
+            .conversation-name {
+                font-size: 13px;
+            }
+
+            .conversation-preview {
+                font-size: 11px;
+            }
+
+            .conversation-time {
+                font-size: 10px;
+            }
+
+            .unread-badge {
+                width: 18px;
+                height: 18px;
+                font-size: 10px;
+                margin-right: 5px;
             }
 
             .chat-area {
                 width: 100%;
             }
 
-            .mobile-sidebar-toggle {
-                display: flex;
-                background-color: var(--accent);
-                border: none;
-                color: var(--text-light);
+            .chat-header {
+                padding: 10px 12px;
+                position: sticky;
+                top: 0;
+                z-index: 100;
+            }
+
+            .message-avatar,
+            .message-avatar.default-avatar {
+                width: 35px;
+                height: 35px;
+                border-width: 2px;
+                font-size: 14px;
+            }
+
+            .chat-header-info h5 {
+                font-size: 15px;
+            }
+
+            .chat-header-info small {
+                font-size: 11px;
+            }
+
+            .chat-header-actions {
+                gap: 5px;
+            }
+
+            .btn-sm {
+                width: 32px;
+                height: 32px;
+                font-size: 12px;
+            }
+
+            .chat-content {
+                padding: 10px;
+                height: calc(100vh - 140px);
+                height: calc(100dvh - 140px);
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .message-item {
+                max-width: 85%;
+            }
+
+            .message-content {
+                padding: 12px 14px;
+                border-radius: 18px;
+                font-size: 14px;
+            }
+
+            .message-text {
+                font-size: 14px;
+                line-height: 1.4;
+            }
+
+            .message-meta {
+                font-size: 11px;
+                margin-top: 6px;
+            }
+
+            .image-message {
+                max-width: 220px;
+                margin-top: 8px;
+            }
+
+            .image-message img {
+                max-width: 100%;
+                max-height: 250px;
+            }
+
+            .voice-message-container {
+                min-width: 180px;
+                padding: 8px 12px;
+            }
+
+            .voice-icon {
+                width: 30px;
+                height: 30px;
+                font-size: 12px;
+            }
+
+            .voice-duration {
+                font-size: 11px;
+            }
+
+            .audio-message audio {
+                height: 35px;
+            }
+
+            .file-link {
+                padding: 8px;
+                font-size: 13px;
+            }
+
+            .location-message,
+            .contact-message {
+                padding: 8px;
+                font-size: 13px;
+            }
+
+            .chat-form {
+                padding: 12px;
+                gap: 8px;
+                position: sticky;
+                bottom: 0;
+                z-index: 50;
+            }
+
+            .message-input-container {
+                flex: 1;
+            }
+
+            .message-input {
+                padding: 10px 14px;
+                font-size: 14px;
+                border-radius: 20px;
+                max-height: 100px;
+            }
+
+            .btn {
                 width: 40px;
                 height: 40px;
-                border-radius: 50%;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-                transition: 0.3s ease;
+                font-size: 16px;
             }
 
-            .mobile-sidebar-toggle:hover {
-                background-color: var(--accent-hover);
+            .btn:active {
+                transform: scale(0.95);
             }
 
-            /* Hide sidebar completely when inactive */
-            .conversations-sidebar.hidden {
+            .btn:hover {
+                transform: none;
+            }
+
+            #imagePreview {
+                padding: 10px;
+                margin-top: 10px;
+            }
+
+            .image-info {
+                gap: 8px;
+                margin-bottom: 8px;
+            }
+
+            #imageName {
+                font-size: 13px;
+            }
+
+            #imageSize {
+                font-size: 11px;
+            }
+
+            #imagePreviewImg {
+                max-width: 100px;
+                max-height: 100px;
+            }
+
+            #voiceControls {
+                margin: 8px 0;
+                padding: 10px;
+                background: rgba(0, 0, 0, 0.05);
+                border-radius: 10px;
+            }
+
+            #startVoiceBtn,
+            #stopVoiceBtn {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+
+            #voiceTimer {
+                font-size: 13px;
+            }
+
+            #voicePlayback {
+                margin-top: 8px;
+            }
+
+            .mobile-sidebar-toggle {
+                display: flex;
+                width: 38px;
+                height: 38px;
+                font-size: 16px;
+                margin-right: 8px;
+            }
+
+            /* Image Modal for Mobile */
+            .image-modal-content {
+                max-width: 95%;
+                max-height: 90%;
+                padding: 10px;
+            }
+
+            .image-modal-close {
+                top: 10px;
+                right: 10px;
+                font-size: 30px;
+            }
+
+            /* Overlay when sidebar is open */
+            .sidebar-overlay {
                 display: none;
+                position: fixed;
+                top: 0;
+                right: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 999;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.3s ease, visibility 0.3s ease;
+            }
+
+            .sidebar-overlay.active {
+                display: block;
+                opacity: 1;
+                visibility: visible;
+            }
+        }
+
+        /* Small Mobile Devices */
+        @media (max-width: 480px) {
+            .conversations-sidebar {
+                max-width: 100%;
+            }
+
+            .sidebar-header {
+                padding: 10px 12px;
+            }
+
+            .sidebar-header h5 {
+                font-size: 14px;
+            }
+
+            .search-input {
+                padding: 7px 28px 7px 10px;
+                font-size: 12px;
+            }
+
+            .conversation-item {
+                padding: 8px 10px;
+                margin: 2px 5px;
+            }
+
+            .conversation-avatar img,
+            .conversation-avatar .default-avatar {
+                width: 35px;
+                height: 35px;
+            }
+
+            .conversation-name {
+                font-size: 12px;
+            }
+
+            .conversation-preview {
+                font-size: 10px;
+            }
+
+            .chat-header {
+                padding: 8px 10px;
+            }
+
+            .message-avatar,
+            .message-avatar.default-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 13px;
+            }
+
+            .chat-header-info h5 {
+                font-size: 14px;
+            }
+
+            .chat-content {
+                padding: 8px;
+                height: calc(100vh - 130px);
+                height: calc(100dvh - 130px);
+            }
+
+            .message-item {
+                max-width: 90%;
+            }
+
+            .message-content {
+                padding: 10px 12px;
+                font-size: 13px;
+            }
+
+            .message-text {
+                font-size: 13px;
+            }
+
+            .image-message {
+                max-width: 200px;
+            }
+
+            .chat-form {
+                padding: 10px;
+                gap: 6px;
+            }
+
+            .message-input {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+
+            .btn {
+                width: 36px;
+                height: 36px;
+                font-size: 14px;
+            }
+
+            .btn-sm {
+                width: 28px;
+                height: 28px;
+                font-size: 11px;
+            }
+
+            .mobile-sidebar-toggle {
+                width: 34px;
+                height: 34px;
+                font-size: 14px;
+            }
+        }
+
+        /* Landscape Orientation on Mobile */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .conversations-sidebar {
+                max-width: 300px;
+            }
+
+            .sidebar-header {
+                padding: 8px 12px;
+            }
+
+            .sidebar-header h5 {
+                margin: 0 0 8px 0;
+                font-size: 14px;
+            }
+
+            .search-input {
+                padding: 6px 25px 6px 10px;
+                font-size: 12px;
+            }
+
+            .conversation-item {
+                padding: 6px 10px;
+            }
+
+            .conversation-avatar img,
+            .conversation-avatar .default-avatar {
+                width: 32px;
+                height: 32px;
+            }
+
+            .chat-content {
+                padding: 8px;
+                height: calc(100vh - 120px);
+                height: calc(100dvh - 120px);
+            }
+
+            .chat-form {
+                padding: 8px;
+            }
+
+            .message-input {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+
+            .btn {
+                width: 34px;
+                height: 34px;
+                font-size: 13px;
+            }
+        }
+
+        /* Touch Device Optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            .conversation-item:hover {
+                background: rgba(255, 255, 255, 0.15);
+            }
+
+            .btn:hover {
+                transform: none;
+            }
+
+            .message-item:hover .message-actions {
+                display: flex;
+            }
+
+            .mobile-sidebar-toggle:hover,
+            .sidebar-toggle:hover {
+                background: rgba(255, 255, 255, 0.2);
             }
         }
 
@@ -1023,11 +1527,25 @@
                 display: none;
             }
 
+            .sidebar-toggle {
+                display: none;
+            }
+
+            .sidebar-overlay {
+                display: none !important;
+            }
+
             .conversations-sidebar {
-                position: relative;
-                width: var(--sidebar-width);
-                left: 0;
+                position: relative !important;
+                width: var(--sidebar-width) !important;
+                transform: translateX(0) !important;
                 height: 100%;
+                z-index: auto;
+            }
+
+            .conversations-sidebar.hidden {
+                transform: translateX(0) !important;
+                display: flex !important;
             }
         }
 
@@ -1761,24 +2279,111 @@
             scrollToBottom();
         });
 
+        // Prevent body scroll when sidebar is open on mobile
+        function toggleBodyScroll(disable) {
+            if (window.innerWidth <= 768) {
+                if (disable) {
+                    document.body.style.overflow = 'hidden';
+                    document.body.style.position = 'fixed';
+                    document.body.style.width = '100%';
+                } else {
+                    document.body.style.overflow = '';
+                    document.body.style.position = '';
+                    document.body.style.width = '';
+                }
+            }
+        }
+
         // Sidebar toggle function
         function toggleSidebar() {
             const sidebar = document.getElementById('conversationsSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+
             if (sidebar) {
-                sidebar.classList.toggle('hidden');
+                const isHidden = sidebar.classList.contains('hidden');
+
+                // Only toggle on mobile
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.toggle('hidden');
+
+                    // Toggle overlay on mobile
+                    if (overlay) {
+                        if (!isHidden) {
+                            overlay.classList.remove('active');
+                            toggleBodyScroll(false);
+                        } else {
+                            overlay.classList.add('active');
+                            toggleBodyScroll(true);
+                        }
+                    }
+                }
             }
+        }
+
+        // Initialize sidebar state on page load
+        function initializeSidebar() {
+            const sidebar = document.getElementById('conversationsSidebar');
+
+            if (!sidebar) return;
+
+            // On desktop, always show sidebar (remove hidden class)
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('hidden');
+                sidebar.style.transform = '';
+                sidebar.style.visibility = '';
+            } else {
+                // On mobile, ensure sidebar is hidden by default
+                sidebar.classList.add('hidden');
+            }
+        }
+
+        // Run on DOM ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeSidebar);
+        } else {
+            initializeSidebar();
         }
 
         // Auto-hide sidebar on mobile when clicking outside
         document.addEventListener('click', function(event) {
             const sidebar = document.getElementById('conversationsSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
             const mobileToggle = document.getElementById('mobileSidebarToggle');
+            const sidebarToggle = document.getElementById('sidebarToggle');
 
-            if (window.innerWidth <= 768 && sidebar && !sidebar.contains(event.target) && !mobileToggle.contains(
-                    event.target)) {
-                sidebar.classList.add('hidden');
+            if (window.innerWidth <= 768 && sidebar && !sidebar.classList.contains('hidden')) {
+                // Close if clicking outside sidebar or on overlay
+                if (event.target === overlay ||
+                    (!sidebar.contains(event.target) &&
+                        mobileToggle && !mobileToggle.contains(event.target) &&
+                        sidebarToggle && !sidebarToggle.contains(event.target))) {
+                    sidebar.classList.add('hidden');
+                    if (overlay) overlay.classList.remove('active');
+                    toggleBodyScroll(false);
+                }
             }
         });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('conversationsSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            if (window.innerWidth > 768) {
+                if (sidebar) {
+                    sidebar.classList.remove('hidden');
+                }
+                if (overlay) {
+                    overlay.classList.remove('active');
+                }
+                toggleBodyScroll(false);
+            }
+        });
+
+        // Add smooth scroll behavior
+        if ('scrollBehavior' in document.documentElement.style) {
+            document.documentElement.style.scrollBehavior = 'smooth';
+        }
 
         // Image modal functionality
         function openImageModal(imageSrc) {
@@ -1816,13 +2421,6 @@
             });
         });
 
-        function toggleSidebar() {
-            const sidebar = document.getElementById('conversationsSidebar');
-            if (sidebar.classList.contains('active')) {
-                sidebar.classList.remove('active');
-            } else {
-                sidebar.classList.add('active');
-            }
-        }
+        // This function is already defined above, so remove duplicate
     </script>
 @endsection

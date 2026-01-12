@@ -67,30 +67,150 @@ class CategoryController extends BaseApiController
         }, 'حدث خطأ أثناء جلب القسم');
     }
 
-    public function subcategories($category)
+    public function subcategories(int $categoryId)
     {
-        return $this->executeApiWithTryCatch(function () use ($category) {
-            // يمكن أن يكون category ID أو slug
-            $categoryModel = is_numeric($category) 
-                ? Category::query()->where('id', $category)->where('is_active', true)->firstOrFail()
-                : Category::query()->where('slug', $category)->where('is_active', true)->firstOrFail();
+        return $this->executeApiWithTryCatch(function () use ($categoryId) {
+            Category::query()->where('id', $categoryId)->where('is_active', true)->firstOrFail();
 
             $subcategories = SubCategory::query()
-                ->where('category_id', $categoryModel->id)
+                ->where('category_id', $categoryId)
                 ->where('status', true)
                 ->orderBy('name_ar')
-                ->get(['id', 'name_ar', 'name_en', 'description_ar', 'description_en', 'category_id', 'image', 'slug']);
+                ->get(['id', 'name_ar', 'name_en', 'category_id']);
+
+            return $this->success($subcategories);
+        }, 'حدث خطأ أثناء جلب الأقسام الفرعية');
+    }
+
+    /**
+     * جلب بيانات صفحة request مع الحقول والمدن والأقسام الفرعية
+     * GET /api/v1/categories/{category}/request-data
+     */
+    public function requestData(int $category, Request $request)
+    {
+        return $this->executeApiWithTryCatch(function () use ($category, $request) {
+            $categoryModel = Category::query()
+                ->where('id', $category)
+                ->where('is_active', true)
+                ->firstOrFail();
+
+            // جلب الحقول المخصصة النشطة مرتبة
+            $fields = \App\Models\CategoryField::where('category_id', $categoryModel->id)
+                ->where('is_active', true)
+                ->orderBy('sort_order', 'asc')
+                ->get();
+
+            // جلب الأقسام الفرعية
+            $subCategories = $categoryModel->subCategories()
+                ->where('status', true)
+                ->orderBy('name_ar')
+                ->get(['id', 'name_ar', 'name_en', 'category_id']);
+
+            $hasSubCategories = $subCategories->count() > 0;
+            $selectedSubCategoryId = $request->get('sub_category_id');
+            $selectedSubCategory = null;
+
+            // إذا كان هناك قسم فرعي محدد
+            if ($selectedSubCategoryId) {
+                $selectedSubCategory = $subCategories->where('id', $selectedSubCategoryId)->first();
+                
+                // إذا كان القسم الفرعي محدد، فلنجلب الحقول الخاصة به أيضاً
+                if ($selectedSubCategory) {
+                    $subCategoryFields = \App\Models\CategoryField::where('category_id', $categoryModel->id)
+                        ->where(function ($query) use ($selectedSubCategoryId) {
+                            $query->where('sub_category_id', $selectedSubCategoryId)
+                                ->orWhereNull('sub_category_id');
+                        })
+                        ->where('is_active', true)
+                        ->orderBy('sort_order', 'asc')
+                        ->get();
+                    
+                    // دمج الحقول
+                    $fields = $subCategoryFields;
+                }
+            }
+
+            // جلب المدن المرتبطة بهذا القسم
+            $cities = $categoryModel->activeCities()
+                ->orderBy('category_cities.sort_order')
+                ->orderBy('cities.name_ar')
+                ->get(['cities.id', 'cities.name_ar', 'cities.name_en']);
+
+            // تجميع الحقول حسب input_group
+            $groupedFields = [];
+            foreach ($fields as $field) {
+                $group = $field->input_group ?: 'default';
+                if (!isset($groupedFields[$group])) {
+                    $groupedFields[$group] = [];
+                }
+                $groupedFields[$group][] = [
+                    'id' => $field->id,
+                    'name' => $field->name,
+                    'name_ar' => $field->name_ar,
+                    'name_en' => $field->name_en,
+                    'type' => $field->type,
+                    'value' => $field->value,
+                    'options' => $field->options,
+                    'is_required' => $field->is_required,
+                    'is_repeatable' => $field->is_repeatable,
+                    'description' => $field->description,
+                    'sort_order' => $field->sort_order,
+                    'sub_category_id' => $field->sub_category_id,
+                ];
+            }
 
             return $this->success([
                 'category' => [
                     'id' => $categoryModel->id,
-                    'name_ar' => $categoryModel->name_ar ?? $categoryModel->name,
+                    'name' => $categoryModel->name,
+                    'name_ar' => $categoryModel->name,
                     'name_en' => $categoryModel->name_en,
                     'slug' => $categoryModel->slug,
+                    'description' => $categoryModel->description,
+                    'description_ar' => $categoryModel->description_ar,
+                    'voice_note_enabled' => $categoryModel->voice_note_enabled ?? false,
                 ],
-                'subcategories' => $subcategories
+                'has_sub_categories' => $hasSubCategories,
+                'sub_categories' => $subCategories->map(function ($sub) {
+                    return [
+                        'id' => $sub->id,
+                        'name_ar' => $sub->name_ar,
+                        'name_en' => $sub->name_en,
+                        'category_id' => $sub->category_id,
+                    ];
+                }),
+                'selected_sub_category' => $selectedSubCategory ? [
+                    'id' => $selectedSubCategory->id,
+                    'name_ar' => $selectedSubCategory->name_ar,
+                    'name_en' => $selectedSubCategory->name_en,
+                ] : null,
+                'cities' => $cities->map(function ($city) {
+                    return [
+                        'id' => $city->id,
+                        'name_ar' => $city->name_ar,
+                        'name_en' => $city->name_en,
+                    ];
+                }),
+                'fields' => $fields->map(function ($field) {
+                    return [
+                        'id' => $field->id,
+                        'name' => $field->name,
+                        'name_ar' => $field->name_ar,
+                        'name_en' => $field->name_en,
+                        'type' => $field->type,
+                        'value' => $field->value,
+                        'options' => $field->options,
+                        'input_group' => $field->input_group,
+                        'is_required' => $field->is_required,
+                        'is_repeatable' => $field->is_repeatable,
+                        'description' => $field->description,
+                        'sort_order' => $field->sort_order,
+                        'sub_category_id' => $field->sub_category_id,
+                    ];
+                }),
+                'grouped_fields' => $groupedFields,
             ]);
-        }, 'حدث خطأ أثناء جلب الأقسام الفرعية');
+        }, 'حدث خطأ أثناء جلب بيانات صفحة الطلب');
     }
 }
 

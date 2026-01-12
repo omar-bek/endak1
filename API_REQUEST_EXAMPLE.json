@@ -1,0 +1,10 @@
+{
+  "title": "text",
+  "description": "asdasda",
+  "price": 2,
+  "category_id": 40,
+  "city_id": 2,
+  "custom_fields": {
+    "الوقت": "14:30"
+  }
+}

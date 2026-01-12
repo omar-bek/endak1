@@ -208,7 +208,7 @@ GET /api/v1/categories/{slug}/details
 ### 3. Get Subcategories
 
 ```
-GET /api/v1/categories/{category}/subcategories
+GET /api/v1/categories/{id}/subcategories
 ```
 
 **Response:**
@@ -227,10 +227,48 @@ GET /api/v1/categories/{category}/subcategories
 }
 ```
 
-### 4. Get Request Data (NEW)
+### 4. Get Cities Available in Category
 
 ```
-GET /api/v1/categories/{category}/request-data
+GET /api/v1/categories/{id}/cities
+```
+
+**Query Parameters:**
+
+-   `search` (optional) - البحث في أسماء المدن
+
+**Response:**
+
+```json
+{
+    "success": true,
+    "data": [
+        {
+            "id": 1,
+            "name_ar": "الرياض",
+            "name_en": "Riyadh",
+            "slug": "riyadh"
+        },
+        {
+            "id": 2,
+            "name_ar": "جدة",
+            "name_en": "Jeddah",
+            "slug": "jeddah"
+        }
+    ]
+}
+```
+
+**Description:**
+
+-   يعيد قائمة المدن المتاحة (النشطة) المرتبطة بفئة معينة
+-   المدن مرتبة حسب `sort_order` ثم حسب الاسم
+-   يمكن البحث في أسماء المدن باستخدام معامل `search`
+
+### 5. Get Request Data (NEW)
+
+```
+GET /api/v1/categories/{id}/request-data
 ```
 
 **Query Parameters:**
@@ -631,8 +669,9 @@ DELETE /api/v1/messages/{message}
 -   [ ] GET /api/v1/status
 -   [ ] GET /api/v1/categories
 -   [ ] GET /api/v1/categories/{slug}/details
--   [ ] GET /api/v1/categories/{category}/subcategories
--   [ ] GET /api/v1/categories/{category}/request-data
+-   [ ] GET /api/v1/categories/{id}/subcategories
+-   [ ] GET /api/v1/categories/{id}/cities
+-   [ ] GET /api/v1/categories/{id}/request-data
 -   [ ] GET /api/v1/categories/{category}/fields
 -   [ ] GET /api/v1/categories/{category}/fields/grouped
 -   [ ] GET /api/v1/categories/{category}/fields/{field}

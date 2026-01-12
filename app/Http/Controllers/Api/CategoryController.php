@@ -18,7 +18,7 @@ class CategoryController extends BaseApiController
                 ->where('is_active', true)
                 ->whereNull('parent_id')
                 ->with([
-                    'children' => fn ($query) => $query->where('is_active', true)->orderBy('sort_order'),
+                    'children' => fn($query) => $query->where('is_active', true)->orderBy('sort_order'),
                 ])
                 ->withCount('services')
                 ->orderBy('sort_order')
@@ -34,7 +34,7 @@ class CategoryController extends BaseApiController
             $category = Category::query()
                 ->where('slug', $slug)
                 ->where('is_active', true)
-                ->with(['subCategories' => fn ($query) => $query->where('status', true)])
+                ->with(['subCategories' => fn($query) => $query->where('status', true)])
                 ->firstOrFail();
 
             $servicesQuery = Service::query()
@@ -67,13 +67,13 @@ class CategoryController extends BaseApiController
         }, 'حدث خطأ أثناء جلب القسم');
     }
 
-    public function subcategories(int $categoryId)
+    public function subcategories(int $id)
     {
-        return $this->executeApiWithTryCatch(function () use ($categoryId) {
-            Category::query()->where('id', $categoryId)->where('is_active', true)->firstOrFail();
+        return $this->executeApiWithTryCatch(function () use ($id) {
+            Category::query()->where('id', $id)->where('is_active', true)->firstOrFail();
 
             $subcategories = SubCategory::query()
-                ->where('category_id', $categoryId)
+                ->where('category_id', $id)
                 ->where('status', true)
                 ->orderBy('name_ar')
                 ->get(['id', 'name_ar', 'name_en', 'category_id']);
@@ -84,13 +84,13 @@ class CategoryController extends BaseApiController
 
     /**
      * جلب بيانات صفحة request مع الحقول والمدن والأقسام الفرعية
-     * GET /api/v1/categories/{category}/request-data
+     * GET /api/v1/categories/{id}/request-data
      */
-    public function requestData(int $category, Request $request)
+    public function requestData(int $id, Request $request)
     {
-        return $this->executeApiWithTryCatch(function () use ($category, $request) {
+        return $this->executeApiWithTryCatch(function () use ($id, $request) {
             $categoryModel = Category::query()
-                ->where('id', $category)
+                ->where('id', $id)
                 ->where('is_active', true)
                 ->firstOrFail();
 
@@ -113,7 +113,7 @@ class CategoryController extends BaseApiController
             // إذا كان هناك قسم فرعي محدد
             if ($selectedSubCategoryId) {
                 $selectedSubCategory = $subCategories->where('id', $selectedSubCategoryId)->first();
-                
+
                 // إذا كان القسم الفرعي محدد، فلنجلب الحقول الخاصة به أيضاً
                 if ($selectedSubCategory) {
                     $subCategoryFields = \App\Models\CategoryField::where('category_id', $categoryModel->id)
@@ -124,7 +124,7 @@ class CategoryController extends BaseApiController
                         ->where('is_active', true)
                         ->orderBy('sort_order', 'asc')
                         ->get();
-                    
+
                     // دمج الحقول
                     $fields = $subCategoryFields;
                 }
@@ -212,5 +212,44 @@ class CategoryController extends BaseApiController
             ]);
         }, 'حدث خطأ أثناء جلب بيانات صفحة الطلب');
     }
-}
 
+    /**
+     * جلب المدن المتاحة في فئة معينة
+     * GET /api/v1/categories/{id}/cities
+     */
+    public function cities(int $id, Request $request)
+    {
+        return $this->executeApiWithTryCatch(function () use ($id, $request) {
+            $categoryModel = Category::query()
+                ->where('id', $id)
+                ->where('is_active', true)
+                ->firstOrFail();
+
+            // جلب المدن النشطة المرتبطة بهذا القسم
+            // activeCities() already has orderBy, so we don't need to add it again
+            // Also filter by city is_active to ensure only active cities are returned
+            $cities = $categoryModel->activeCities()
+                ->orderBy('category_cities.sort_order')
+                ->orderBy('cities.name_ar')
+                ->get(['cities.id', 'cities.name_ar', 'cities.name_en', 'cities.slug']);
+
+            // إذا كان هناك فلتر للبحث
+            if ($request->filled('search')) {
+                $searchTerm = $request->get('search');
+                $cities = $cities->filter(function ($city) use ($searchTerm) {
+                    return stripos($city->name_ar, $searchTerm) !== false
+                        || stripos($city->name_en, $searchTerm) !== false;
+                })->values();
+            }
+
+            return $this->success($cities->map(function ($city) {
+                return [
+                    'id' => $city->id,
+                    'name_ar' => $city->name_ar,
+                    'name_en' => $city->name_en,
+                    'slug' => $city->slug ?? null,
+                ];
+            }));
+        }, 'حدث خطأ أثناء جلب المدن');
+    }
+}

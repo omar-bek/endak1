@@ -1,0 +1,10 @@
+{
+  "title": "خدمة تنظيف",
+  "description": "وصف الخدمة",
+  "price": 100.0,
+  "category_id": 40,
+  "city_id": 2,
+  "custom_fields": {
+    "الوقت": "14:30"
+  }
+}

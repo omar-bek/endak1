@@ -324,7 +324,9 @@ class ServiceController extends BaseApiController
         foreach ($customFields as $fieldKey => $fieldValue) {
             $field = $this->findFieldByKey($allFields, $fieldKey);
             if ($field) {
-                $filteredFields[$field->name] = $fieldValue;
+                // استخدام name_en إذا كان موجوداً، وإلا name
+                $fieldKeyForStorage = !empty($field->name_en) ? $field->name_en : $field->name;
+                $filteredFields[$fieldKeyForStorage] = $fieldValue;
             } else {
                 Log::warning('Filtered out unknown field', [
                     'field_key' => $fieldKey,
@@ -385,14 +387,19 @@ class ServiceController extends BaseApiController
         } else {
             // إذا كان للقسم حقول معرفة، يجب إرسال custom_fields
             if (empty($customFields)) {
-                $availableFieldsList = $allFields->pluck('name_ar')->implode('، ');
+                // استخدام name_en إذا كان موجوداً، وإلا name
+                $availableFieldsList = $allFields->map(function ($field) {
+                    return !empty($field->name_en) ? $field->name_en : $field->name;
+                })->implode(', ');
                 $errors['custom_fields'] = "يجب إدخال الحقول المخصصة للقسم (ID: {$categoryId}). الحقول المتاحة: {$availableFieldsList}";
             } else {
                 // التحقق من أن جميع الحقول المتاحة موجودة في custom_fields
                 foreach ($allFields as $field) {
                     $fieldValue = $this->getFieldValue($customFields, $field);
+                    // استخدام name_en إذا كان موجوداً، وإلا name
+                    $fieldKeyForError = !empty($field->name_en) ? $field->name_en : $field->name;
                     if ($this->isEmpty($fieldValue)) {
-                        $errors["custom_fields.{$field->name}"] = "حقل '{$field->name_ar}' مطلوب للقسم (ID: {$categoryId})";
+                        $errors["custom_fields.{$fieldKeyForError}"] = "حقل '{$field->name_ar}' مطلوب للقسم (ID: {$categoryId})";
                     } else {
                         $this->validateFieldType($field, $fieldValue, $errors);
                     }
@@ -402,8 +409,11 @@ class ServiceController extends BaseApiController
                 foreach ($customFields as $fieldKey => $fieldValue) {
                     $field = $this->findFieldByKey($allFields, $fieldKey);
                     if (!$field) {
+                        // حقل غير موجود - استخدام الاسم المرسل في مفتاح الخطأ
                         $errors["custom_fields.{$fieldKey}"] = $this->getUnknownFieldErrorMessage($fieldKey, $categoryId, $allFields);
                     }
+                    // ملاحظة: إذا كان الحقل موجوداً، فإن التحقق الأساسي أعلاه سيتعامل معه
+                    // باستخدام الاسم الإنجليزي ($field->name) في مفتاح الخطأ
                 }
             }
         }
@@ -454,10 +464,17 @@ class ServiceController extends BaseApiController
      */
     private function getFieldValue(array $customFields, CategoryField $field)
     {
-        return $customFields[$field->name]
-            ?? $customFields[$field->name_ar]
-            ?? $customFields[$field->name_en]
-            ?? null;
+        // البحث بالترتيب: name_en أولاً، ثم name، ثم name_ar
+        if (!empty($field->name_en) && isset($customFields[$field->name_en])) {
+            return $customFields[$field->name_en];
+        }
+        if (isset($customFields[$field->name])) {
+            return $customFields[$field->name];
+        }
+        if (isset($customFields[$field->name_ar])) {
+            return $customFields[$field->name_ar];
+        }
+        return null;
     }
 
     /**
@@ -481,7 +498,9 @@ class ServiceController extends BaseApiController
 
         $error = $this->validateFieldValue($field, $fieldValue);
         if ($error) {
-            $errors["custom_fields.{$field->name}"] = $error;
+            // استخدام name_en إذا كان موجوداً، وإلا name
+            $fieldKeyForError = !empty($field->name_en) ? $field->name_en : $field->name;
+            $errors["custom_fields.{$fieldKeyForError}"] = $error;
         }
     }
 
@@ -590,7 +609,10 @@ class ServiceController extends BaseApiController
      */
     private function getUnknownFieldErrorMessage(string $fieldKey, int $categoryId, Collection $allFields): string
     {
-        $availableFieldsList = $allFields->pluck('name_ar')->implode('، ');
+        // استخدام الأسماء الإنجليزية في قائمة الحقول المتاحة
+        $availableFieldsList = $allFields->map(function ($field) {
+            return !empty($field->name_en) ? $field->name_en : $field->name;
+        })->implode(', ');
         $availableFieldsCount = $allFields->count();
 
         if ($availableFieldsCount > 0) {

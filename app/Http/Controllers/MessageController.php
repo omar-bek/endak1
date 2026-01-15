@@ -448,16 +448,34 @@ class MessageController extends Controller
      */
     public function getUnreadCount(): JsonResponse
     {
-        $user = Auth::user();
-        $count = Message::where('receiver_id', $user->id)
-            ->where('is_read', false)
-            ->where('is_deleted', false)
-            ->count();
+        try {
+            $user = Auth::user();
+            
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'count' => 0
+                ], 401);
+            }
 
-        return response()->json([
-            'success' => true,
-            'count' => $count
-        ]);
+            $count = Message::where('receiver_id', $user->id)
+                ->where('is_read', false)
+                ->where('is_deleted', false)
+                ->count();
+
+            return response()->json([
+                'success' => true,
+                'count' => $count
+            ]);
+        } catch (Exception $e) {
+            Log::error('Error in MessageController@getUnreadCount: ' . $e->getMessage(), [
+                'exception' => $e
+            ]);
+            return response()->json([
+                'success' => false,
+                'count' => 0
+            ], 500);
+        }
     }
 
     /**

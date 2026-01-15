@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class ProviderProfile extends Model
 {
@@ -48,13 +49,13 @@ class ProviderProfile extends Model
         return $this->hasMany(ProviderCity::class, 'user_id', 'user_id');
     }
 
-    // الحصول على الأقسام النشطة
+    // الحصول على الأقسام النشطة (query builder)
     public function activeCategories()
     {
         return $this->categories()->where('is_active', true);
     }
 
-    // الحصول على المدن النشطة
+    // الحصول على المدن النشطة (query builder)
     public function activeCities()
     {
         return $this->cities()->where('is_active', true);

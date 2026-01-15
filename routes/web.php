@@ -97,6 +97,7 @@ Route::middleware(['auth', 'verified', 'user.type.terms'])->group(function () {
     Route::post('/offers/{offer}/deliver', [ServiceOfferController::class, 'markAsDelivered'])->name('service-offers.deliver');
     Route::post('/offers/{offer}/review', [ServiceOfferController::class, 'review'])->name('service-offers.review');
     Route::get('/my-offers', [ServiceOfferController::class, 'myOffers'])->name('service-offers.my-offers');
+    Route::get('/completed-services', [ServiceOfferController::class, 'completedServices'])->name('service-offers.completed-services');
     Route::get('/offers/{offer}/edit', [ServiceOfferController::class, 'edit'])->name('service-offers.edit');
     Route::put('/offers/{offer}', [ServiceOfferController::class, 'update'])->name('service-offers.update');
 });
@@ -239,7 +240,7 @@ Route::middleware(['auth', 'verified', 'user.type.terms'])->group(function () {
         Route::resource('services', ProviderService::class);
         Route::patch('/services/{service}/toggle-status', [ProviderService::class, 'toggleStatus'])->name('services.toggle-status');
 
-        // ملف مزود الخدمة
+        // ملف مزود الخدمة (للمزود نفسه فقط)
         Route::get('/profile/complete', [ProviderProfileController::class, 'completeProfile'])->name('complete-profile');
         Route::get('/profile/edit', [ProviderProfileController::class, 'edit'])->name('profile.edit');
         Route::post('/profile', [ProviderProfileController::class, 'store'])->name('profile.store');
@@ -253,6 +254,15 @@ Route::middleware(['auth', 'verified', 'user.type.terms'])->group(function () {
         Route::delete('/cities/{id}', [ProviderProfileController::class, 'removeCity'])->name('cities.remove');
     });
 });
+
+// الملف الشخصي العام لمزود الخدمة (متاح للجميع)
+Route::get('/provider/{userId}/profile', [ProviderProfileController::class, 'publicProfile'])->name('provider.profile.public');
+
+// ملف مزود الخدمة (متاح للجميع - للمستخدمين العاديين)
+Route::get('/provider/profile/{userId?}', [ProviderProfileController::class, 'showPublic'])->name('provider.profile.show');
+
+// الملف الشخصي العام للمستخدم (متاح للجميع)
+Route::get('/users/{userId}/profile', [AuthController::class, 'publicProfile'])->name('user.profile.public');
 
 // Route اختبار لحفظ sub_category_id
 Route::get('/test-subcategory', function () {

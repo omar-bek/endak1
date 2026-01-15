@@ -104,8 +104,26 @@ class NotificationController extends Controller
                 return response()->json(['notifications' => [], 'count' => 0]);
             }
 
-            $notifications = $user->unread_notifications;
-            $count = $user->unread_notifications_count;
+            // استخدام نموذج Notification مباشرة للحصول على الإشعارات غير المقروءة
+            $notifications = CustomNotification::where('user_id', $user->id)
+                ->whereNull('read_at')
+                ->orderBy('created_at', 'desc')
+                ->limit(10)
+                ->get()
+                ->map(function($notification) {
+                    return [
+                        'id' => $notification->id,
+                        'title' => $notification->title,
+                        'message' => $notification->message,
+                        'type' => $notification->type,
+                        'created_at' => $notification->created_at->diffForHumans(),
+                        'data' => $notification->data
+                    ];
+                });
+
+            $count = CustomNotification::where('user_id', $user->id)
+                ->whereNull('read_at')
+                ->count();
 
             return response()->json([
                 'notifications' => $notifications,

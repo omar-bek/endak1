@@ -962,13 +962,13 @@
                             href="{{ route('services.index') }}">{{ __('messages.services') }}</a>
                     </li>
                     <!-- @auth
-                                                                            <li class="nav-item">
-                                                                                <a class="nav-link {{ request()->routeIs('services.my-services') ? 'active' : '' }}" href="{{ route('services.my-services') }}">{{ __('messages.my_services') }}</a>
-                                                                            </li>
-                                                                            @if (Auth::user()->isProvider())
-    <li class="nav-item">
-                                                                                    <a class="nav-link {{ request()->routeIs('service-offers.my-offers') ? 'active' : '' }}" href="{{ route('service-offers.my-offers') }}">{{ __('messages.my_offers') }}</a>
+                                                                                <li class="nav-item">
+                                                                                    <a class="nav-link {{ request()->routeIs('services.my-services') ? 'active' : '' }}" href="{{ route('services.my-services') }}">{{ __('messages.my_services') }}</a>
                                                                                 </li>
+                                                                                @if (Auth::user()->isProvider())
+    <li class="nav-item">
+                                                                                        <a class="nav-link {{ request()->routeIs('service-offers.my-offers') ? 'active' : '' }}" href="{{ route('service-offers.my-offers') }}">{{ __('messages.my_offers') }}</a>
+                                                                                    </li>
     @endif
                 @endauth -->
                     <li class="nav-item">
@@ -999,11 +999,15 @@
                             <a class="nav-link" href="{{ route('messages.index') }}">
                                 <i class="fas fa-comments"></i>
                                 @if (Auth::user()->unread_messages_count > 0)
-                                    <span id="navbar-messages-badge" class="badge bg-danger position-absolute top-0 start-100 translate-middle" style="font-size: 0.7rem; padding: 0.2rem 0.4rem;">
+                                    <span id="navbar-messages-badge"
+                                        class="badge bg-danger position-absolute top-0 start-100 translate-middle"
+                                        style="font-size: 0.7rem; padding: 0.2rem 0.4rem;">
                                         {{ Auth::user()->unread_messages_count > 99 ? '99+' : Auth::user()->unread_messages_count }}
                                     </span>
                                 @else
-                                    <span id="navbar-messages-badge" class="badge bg-danger position-absolute top-0 start-100 translate-middle" style="font-size: 0.7rem; padding: 0.2rem 0.4rem; display: none;"></span>
+                                    <span id="navbar-messages-badge"
+                                        class="badge bg-danger position-absolute top-0 start-100 translate-middle"
+                                        style="font-size: 0.7rem; padding: 0.2rem 0.4rem; display: none;"></span>
                                 @endif
                             </a>
                         </li>
@@ -1261,7 +1265,7 @@
                         <i class="fas fa-file-contract text-warning"></i> {{ __('messages.terms_conditions') }}
                     </a>
                     <a href="{{ route('about') }}" class="footer-link">
-                        <i class="fas fa-info-circle text-success"></i> {{ __('messages.about_us') }} 
+                        <i class="fas fa-info-circle text-success"></i> {{ __('messages.about_us') }}
                     </a>
                 </div>
             </div>
@@ -1802,54 +1806,73 @@
             // Create a modal or dropdown menu for the menu button
             @auth
             @if (Auth::user()->isProvider())
-            // مزود الخدمة
-            const menuItems = [{
-                    icon: 'fas fa-user',
-                    text: '{{ __('messages.menu_profile') }}',
-                    href: '{{ route('provider.profile') }}'
-                },
-                {
-                    icon: 'fas fa-concierge-bell',
-                    text: '{{ __('messages.menu_my_services') }}',
-                    href: '{{ route('services.my-services') }}'
-                },
-                {
-                    icon: 'fas fa-handshake',
-                    text: '{{ __('messages.menu_my_offers') }}',
-                    href: '{{ route('service-offers.my-offers') }}'
-                },
-                {
-                    icon: 'fas fa-cog',
-                    text: '{{ __('messages.menu_settings') }}',
-                    href: '#'
-                },
-                {
-                    icon: 'fas fa-question-circle',
-                    text: '{{ __('messages.menu_help') }}',
-                    href: '{{ route('contact') }}'
-                },
-                {
-                    icon: 'fas fa-info-circle',
-                    text: '{{ __('messages.menu_about') }}',
-                    href: '#'
-                }
-            ];
+                // مزود الخدمة
+                const menuItems = [{
+                        icon: 'fas fa-user',
+                        text: '{{ __('messages.menu_profile') }}',
+                        href: '{{ route('provider.profile') }}'
+                    },
+                    {
+                        icon: 'fas fa-concierge-bell',
+                        text: '{{ __('messages.menu_my_services') }}',
+                        href: '{{ route('services.my-services') }}'
+                    },
+                    {
+                        icon: 'fas fa-handshake',
+                        text: '{{ __('messages.menu_my_offers') }}',
+                        href: '{{ route('service-offers.my-offers') }}'
+                    },
+                    {
+                        icon: 'fas fa-cog',
+                        text: '{{ __('messages.menu_settings') }}',
+                        href: '#'
+                    },
+                    {
+                        icon: 'fas fa-question-circle',
+                        text: '{{ __('messages.menu_help') }}',
+                        href: '{{ route('contact') }}'
+                    },
+                    {
+                        icon: 'fas fa-info-circle',
+                        text: '{{ __('messages.menu_about') }}',
+                        href: '#'
+                    }
+                ];
             @else
                 // مستخدم عادي
-               const menuItems = [{
-                    icon: 'fas fa-user',
-                    text: '{{ __('messages.menu_profile') }}',
-                    href: '{{ route('profile') }}'
-                },
-                {
-                    icon: 'fas fa-th-large',
-                    text: '{{ __('messages.menu_my_ads') }}',
-                    href: '{{ route('services.index') }}'
-                },
-                {
-                    icon: 'fas fa-cog',
-                    text: '{{ __('messages.menu_settings') }}',
-                    href: '#'
+                const menuItems = [{
+                        icon: 'fas fa-user',
+                        text: '{{ __('messages.menu_profile') }}',
+                        href: '{{ route('profile') }}'
+                    },
+                    {
+                        icon: 'fas fa-th-large',
+                        text: '{{ __('messages.menu_my_ads') }}',
+                        href: '{{ route('services.index') }}'
+                    },
+                    {
+                        icon: 'fas fa-cog',
+                        text: '{{ __('messages.menu_settings') }}',
+                        href: '#'
+                    },
+                    {
+                        icon: 'fas fa-question-circle',
+                        text: '{{ __('messages.menu_help') }}',
+                        href: '{{ route('contact') }}'
+                    },
+                    {
+                        icon: 'fas fa-info-circle',
+                        text: '{{ __('messages.menu_about') }}',
+                        href: '#'
+                    }
+                ];
+            @endif
+        @else
+            // ضيف (غير مسجل الدخول)
+            const menuItems = [{
+                    icon: 'fas fa-user-plus',
+                    text: '{{ __('messages.menu_create_account') }}',
+                    href: '{{ route('register') }}'
                 },
                 {
                     icon: 'fas fa-question-circle',
@@ -1862,26 +1885,7 @@
                     href: '#'
                 }
             ];
-        @endif
-    @else
-        // ضيف (غير مسجل الدخول)
-        const menuItems = [{
-                icon: 'fas fa-user-plus',
-                text: '{{ __('messages.menu_create_account') }}',
-                href: '{{ route('register') }}'
-            },
-            {
-                icon: 'fas fa-question-circle',
-                text: '{{ __('messages.menu_help') }}',
-                href: '{{ route('contact') }}'
-            },
-            {
-                icon: 'fas fa-info-circle',
-                text: '{{ __('messages.menu_about') }}',
-                href: '#'
-            }
-        ];
-    @endauth
+        @endauth
 
         // Language switcher items
         const languageItems = [{
@@ -1917,23 +1921,23 @@
                                 <span>اللغة / Language</span>
                             </div>
                             ${languageItems.map(item => `
-                                                                                <a href="${item.href}" class="footer-menu-item ${item.isActive ? 'active' : ''}">
-                                                                                    <i class="${item.icon}"></i>
-                                                                                    <span>${item.text}</span>
-                                                                                    ${item.isActive ? '<i class="fas fa-check text-success"></i>' : ''}
-                                                                                </a>
-                                                                            `).join('')}
+                                                                                    <a href="${item.href}" class="footer-menu-item ${item.isActive ? 'active' : ''}">
+                                                                                        <i class="${item.icon}"></i>
+                                                                                        <span>${item.text}</span>
+                                                                                        ${item.isActive ? '<i class="fas fa-check text-success"></i>' : ''}
+                                                                                    </a>
+                                                                                `).join('')}
                         </div>
 
                         <hr class="footer-menu-divider">
 
                         <!-- Main Menu Items -->
                         ${menuItems.map(item => `
-                                                                            <a href="${item.href}" class="footer-menu-item">
-                                                                                <i class="${item.icon}"></i>
-                                                                                <span>${item.text}</span>
-                                                                            </a>
-                                                                        `).join('')}
+                                                                                <a href="${item.href}" class="footer-menu-item">
+                                                                                    <i class="${item.icon}"></i>
+                                                                                    <span>${item.text}</span>
+                                                                                </a>
+                                                                            `).join('')}
 
                         @auth
                          @if (Auth::user()->is_admin)

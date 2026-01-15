@@ -190,6 +190,34 @@ class AuthController extends Controller
     }
 
     /**
+     * عرض الملف الشخصي العام للمستخدم
+     */
+    public function publicProfile($userId)
+    {
+        try {
+            $user = \App\Models\User::where('id', $userId)
+                ->where('is_active', true)
+                ->firstOrFail();
+
+            // إذا كان مزود خدمة ومعه ملف شخصي، توجيه إلى صفحة مزود الخدمة العامة
+            if ($user->isProvider() && $user->providerProfile) {
+                return redirect()->route('provider.profile.public', $userId);
+            }
+
+            // عرض الملف الشخصي العام للمستخدم العادي
+            return view('user.public-profile', compact('user'));
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->route('home')->with('error', 'الملف الشخصي غير موجود');
+        } catch (Exception $e) {
+            Log::error('Error in AuthController@publicProfile: ' . $e->getMessage(), [
+                'exception' => $e,
+                'user_id' => $userId
+            ]);
+            return redirect()->route('home')->with('error', 'حدث خطأ أثناء تحميل الملف الشخصي');
+        }
+    }
+
+    /**
      * عرض صفحة إتمام الملف الشخصي (اختيار الدور والموافقة على الشروط)
      */
     public function showCompleteProfile()

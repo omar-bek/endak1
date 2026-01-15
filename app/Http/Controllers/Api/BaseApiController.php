@@ -38,19 +38,55 @@ abstract class BaseApiController extends Controller
             return $this->error('بيانات غير صحيحة', 422, $e->errors());
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return $this->error('السجل غير موجود', 404);
+        } catch (\Illuminate\Database\QueryException $e) {
+            Log::error('API Database Error: ' . $e->getMessage(), [
+                'exception' => $e,
+                'sql' => $e->getSql() ?? 'N/A',
+                'bindings' => $e->getBindings() ?? [],
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $response = [
+                'success' => false,
+                'message' => $errorMessage,
+                'errors' => null,
+            ];
+
+            if (config('app.debug')) {
+                $response['debug'] = [
+                    'message' => $e->getMessage(),
+                    'sql' => $e->getSql() ?? 'N/A',
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                ];
+            }
+
+            return response()->json($response, 500);
         } catch (Exception $e) {
             Log::error('API Error: ' . $e->getMessage(), [
                 'exception' => $e,
+                'class' => get_class($e),
                 'trace' => $e->getTraceAsString()
             ]);
-            return $this->error($errorMessage, 500);
+
+            // في بيئة التطوير، أضف تفاصيل الخطأ
+            $response = [
+                'success' => false,
+                'message' => $errorMessage,
+                'errors' => null,
+            ];
+
+            if (config('app.debug')) {
+                $response['debug'] = [
+                    'message' => $e->getMessage(),
+                    'class' => get_class($e),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => explode("\n", $e->getTraceAsString()),
+                ];
+            }
+
+            return response()->json($response, 500);
         }
     }
 }
-
-
-
-
-
-
-

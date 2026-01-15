@@ -242,6 +242,31 @@ class ServiceOfferController extends Controller
     }
 
     /**
+     * عرض الخدمات المكتملة لمزود الخدمة
+     */
+    public function completedServices()
+    {
+        try {
+            if (!Auth::check() || !Auth::user()->isProvider()) {
+                return redirect()->route('login')->with('error', 'يجب أن تكون مزود خدمة');
+            }
+
+            $offers = Auth::user()->offers()
+                ->where('status', 'delivered')
+                ->with(['service', 'service.category', 'service.user'])
+                ->latest()
+                ->paginate(10);
+
+            return view('service-offers.completed-services', compact('offers'));
+        } catch (Exception $e) {
+            Log::error('Error in ServiceOfferController@completedServices: ' . $e->getMessage(), [
+                'exception' => $e
+            ]);
+            return redirect()->route('home')->with('error', 'حدث خطأ أثناء تحميل الخدمات المكتملة');
+        }
+    }
+
+    /**
      * عرض تفاصيل عرض معين
      */
     public function show(ServiceOffer $offer)
@@ -252,12 +277,54 @@ class ServiceOfferController extends Controller
                 return redirect()->route('login')->with('error', 'يجب تسجيل الدخول أولاً');
             }
 
+            // تحميل العلاقات المطلوبة (بما في ذلك السجلات المحذوفة)
+            $offer->load(['provider.providerProfile']);
+
+            // تحميل service مع السجلات المحذوفة
+            if (!$offer->relationLoaded('service')) {
+                $offer->load(['service' => function ($query) {
+                    $query->withTrashed();
+                }]);
+            }
+
+            // إذا كانت الخدمة محذوفة، إرجاع خطأ
+            if (!$offer->service) {
+                return redirect()->route('services.index')->with('error', 'الخدمة المرتبطة بهذا العرض غير موجودة أو تم حذفها');
+            }
+
+            // تحميل باقي العلاقات
+            $offer->load(['service.user', 'service.category']);
+
             // التحقق من أن المستخدم إما مزود الخدمة (صاحب العرض) أو صاحب الخدمة
             if (Auth::id() !== $offer->provider_id && Auth::id() !== $offer->service->user_id) {
                 return redirect()->route('services.index')->with('error', 'غير مصرح لك بعرض هذا العرض');
             }
 
-            return view('service-offers.show', compact('offer'));
+            // الحصول على مزود الخدمة
+            $provider = $offer->provider;
+
+            // الحصول على ملف مزود الخدمة
+            $providerProfile = $provider ? $provider->providerProfile : null;
+
+            // الحصول على العميل (صاحب الخدمة)
+            $customer = $offer->service->user;
+
+            // الحصول على تقييمات المزود من عروض أخرى مكتملة (بما في ذلك السجلات المحذوفة للخدمات)
+            $ratings = ServiceOffer::where('provider_id', $offer->provider_id)
+                ->where('status', 'delivered')
+                ->whereNotNull('rating')
+                ->where('id', '!=', $offer->id)
+                ->with(['service' => function ($query) {
+                    $query->withTrashed();
+                }, 'service.user', 'service.category'])
+                ->latest()
+                ->take(6)
+                ->get()
+                ->filter(function ($rating) {
+                    return $rating->service !== null;
+                });
+
+            return view('service-offers.show', compact('offer', 'provider', 'providerProfile', 'customer', 'ratings'));
         } catch (Exception $e) {
             Log::error('Error in ServiceOfferController@show: ' . $e->getMessage(), [
                 'exception' => $e,

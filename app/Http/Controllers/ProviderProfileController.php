@@ -317,29 +317,307 @@ class ProviderProfileController extends Controller
     }
 
     /**
-     * عرض الملف الشخصي
+     * عرض الملف الشخصي (للمزود نفسه فقط)
      */
     public function show()
     {
         try {
-            // التأكد من أن المستخدم مزود خدمة
+            // التحقق من المستخدم
             $user = Auth::user();
+            
+            // يجب أن يكون مسجل دخول ومزود خدمة
             if (!$user || !$user->isProvider()) {
                 return redirect()->route('home')->with('error', 'هذه الصفحة متاحة لمزودي الخدمة فقط');
             }
-            $profile = $user->providerProfile;
 
+            // الحصول على الملف الشخصي
+            $profile = $user->providerProfile;
             if (!$profile) {
                 return redirect()->route('provider.complete-profile')->with('error', 'يجب إكمال الملف الشخصي أولاً');
             }
+            
+            // تحديد ما إذا كان المستخدم الحالي هو صاحب الملف الشخصي
+            $isOwner = true; // دائماً true لأن هذا ملف المزود نفسه
 
-            // تحميل العلاقات مع الأقسام الفرعية
-            $profile->load(['activeCategories.category', 'activeCategories.subCategory', 'activeCities.city']);
+            // تحميل الأقسام النشطة مع علاقاتها
+            try {
+                $activeCategories = ProviderCategory::where('user_id', $user->id)
+                    ->where('is_active', true)
+                    ->with(['category', 'subCategory'])
+                    ->get()
+                    ->filter(function ($item) {
+                        return $item->category !== null;
+                    })
+                    ->values();
+            } catch (\Exception $e) {
+                Log::warning('Error loading categories: ' . $e->getMessage());
+                $activeCategories = collect();
+            }
 
-            return view('provider.profile', compact('profile'));
-        } catch (Exception $e) {
+            // تحميل المدن النشطة مع علاقاتها
+            try {
+                $activeCities = ProviderCity::where('user_id', $user->id)
+                    ->where('is_active', true)
+                    ->with('city')
+                    ->get()
+                    ->filter(function ($item) {
+                        return $item->city !== null;
+                    })
+                    ->values();
+            } catch (\Exception $e) {
+                Log::warning('Error loading cities: ' . $e->getMessage());
+                $activeCities = collect();
+            }
+
+            // القيم الافتراضية
+            $maxCategories = $profile->max_categories ?? 3;
+            $maxCities = $profile->max_cities ?? 10;
+
+            // حساب الإمكانيات
+            $canAddCategory = $activeCategories->count() < $maxCategories;
+            $canAddCity = $activeCities->count() < $maxCities;
+
+            // التأكد من وجود البيانات الأساسية
+            $profile->bio = $profile->bio ?? '';
+            $profile->phone = $profile->phone ?? '';
+            $profile->address = $profile->address ?? '';
+            $profile->rating = $profile->rating ?? 0;
+            $profile->completed_services = $profile->completed_services ?? 0;
+
+            // تحديد ما إذا كان المستخدم الحالي هو صاحب الملف الشخصي
+            $isOwner = true; // دائماً true لأن هذا ملف المزود نفسه
+            $provider = $user; // المستخدم الحالي هو المزود
+
+            return view('provider.profile', compact(
+                'profile',
+                'activeCategories',
+                'activeCities',
+                'canAddCategory',
+                'canAddCity',
+                'maxCategories',
+                'maxCities',
+                'isOwner',
+                'provider'
+            ));
+        } catch (\Exception $e) {
             Log::error('Error in ProviderProfileController@show: ' . $e->getMessage(), [
-                'exception' => $e
+                'exception' => $e,
+                'trace' => $e->getTraceAsString(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'user_id' => Auth::id()
+            ]);
+
+            if (config('app.debug')) {
+                return redirect()->route('home')->with('error', 'خطأ: ' . $e->getMessage() . ' في ' . basename($e->getFile()) . ':' . $e->getLine());
+            }
+
+            return redirect()->route('home')->with('error', 'حدث خطأ أثناء تحميل الملف الشخصي');
+        }
+    }
+
+    /**
+     * عرض الملف الشخصي (متاح للجميع)
+     */
+    public function showPublic($userId = null)
+    {
+        try {
+            // إذا لم يتم تحديد userId، استخدم المستخدم الحالي
+            if (!$userId) {
+                $userId = Auth::id();
+            }
+            
+            // إذا لم يكن هناك userId، توجيه للصفحة الرئيسية
+            if (!$userId) {
+                return redirect()->route('home')->with('error', 'يجب تحديد مزود الخدمة');
+            }
+
+            $provider = \App\Models\User::where('id', $userId)
+                ->where('is_active', true)
+                ->firstOrFail();
+
+            // إذا لم يكن مزود خدمة، توجيه إلى صفحة المستخدم العادي
+            if (!$provider->isProvider()) {
+                return redirect()->route('user.profile.public', $userId);
+            }
+
+            $profile = $provider->providerProfile;
+
+            // إذا لم يكن لديه ملف شخصي، عرض صفحة بسيطة
+            if (!$profile) {
+                return view('provider.public-profile', [
+                    'provider' => $provider,
+                    'profile' => null,
+                    'services' => collect(),
+                    'ratings' => collect(),
+                    'activeCategories' => collect(),
+                    'activeCities' => collect()
+                ]);
+            }
+
+            // التحقق من أن الملف الشخصي نشط
+            if (!$profile->is_active) {
+                return redirect()->route('home')->with('error', 'الملف الشخصي غير نشط');
+            }
+
+            // تحميل الأقسام والمدن النشطة
+            try {
+                $activeCategories = ProviderCategory::where('user_id', $provider->id)
+                    ->where('is_active', true)
+                    ->with(['category', 'subCategory'])
+                    ->get()
+                    ->filter(function($item) {
+                        return $item->category !== null;
+                    })
+                    ->values();
+            } catch (\Exception $e) {
+                Log::warning('Error loading activeCategories in showPublic: ' . $e->getMessage());
+                $activeCategories = collect();
+            }
+
+            try {
+                $activeCities = ProviderCity::where('user_id', $provider->id)
+                    ->where('is_active', true)
+                    ->with('city')
+                    ->get()
+                    ->filter(function($item) {
+                        return $item->city !== null;
+                    })
+                    ->values();
+            } catch (\Exception $e) {
+                Log::warning('Error loading activeCities in showPublic: ' . $e->getMessage());
+                $activeCities = collect();
+            }
+
+            // جلب الخدمات النشطة للمزود
+            $services = \App\Models\Service::where('user_id', $provider->id)
+                ->where('is_active', true)
+                ->with(['category', 'city'])
+                ->latest()
+                ->take(6)
+                ->get();
+
+            // جلب التقييمات الأخيرة
+            $ratings = \App\Models\ServiceOffer::where('provider_id', $provider->id)
+                ->where('status', 'delivered')
+                ->whereNotNull('rating')
+                ->with(['service', 'service.user'])
+                ->latest()
+                ->take(5)
+                ->get();
+
+            // تحديد ما إذا كان المستخدم الحالي هو صاحب الملف الشخصي
+            $isOwner = Auth::check() && Auth::id() == $provider->id;
+
+            return view('provider.profile', compact(
+                'profile',
+                'activeCategories',
+                'activeCities',
+                'services',
+                'ratings',
+                'isOwner',
+                'provider'
+            ));
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->route('home')->with('error', 'الملف الشخصي غير موجود');
+        } catch (Exception $e) {
+            Log::error('Error in ProviderProfileController@showPublic: ' . $e->getMessage(), [
+                'exception' => $e,
+                'user_id' => $userId
+            ]);
+            return redirect()->route('home')->with('error', 'حدث خطأ أثناء تحميل الملف الشخصي');
+        }
+    }
+
+    /**
+     * عرض الملف الشخصي العام لمزود الخدمة
+     */
+    public function publicProfile($userId)
+    {
+        try {
+            $provider = \App\Models\User::where('id', $userId)
+                ->where('is_active', true)
+                ->firstOrFail();
+
+            // إذا لم يكن مزود خدمة، توجيه إلى صفحة المستخدم العادي
+            if (!$provider->isProvider()) {
+                return redirect()->route('user.profile.public', $userId);
+            }
+
+            $profile = $provider->providerProfile;
+
+            // إذا لم يكن لديه ملف شخصي، عرض صفحة بسيطة
+            if (!$profile) {
+                // عرض صفحة بسيطة بدون معلومات إضافية
+                return view('provider.public-profile', [
+                    'provider' => $provider,
+                    'profile' => null,
+                    'services' => collect(),
+                    'ratings' => collect(),
+                    'activeCategories' => collect(),
+                    'activeCities' => collect()
+                ]);
+            }
+
+            // التحقق من أن الملف الشخصي نشط
+            if (!$profile->is_active) {
+                return redirect()->route('home')->with('error', 'الملف الشخصي غير نشط');
+            }
+
+            // تحميل الأقسام والمدن النشطة
+            try {
+                $activeCategories = ProviderCategory::where('user_id', $provider->id)
+                    ->where('is_active', true)
+                    ->with(['category', 'subCategory'])
+                    ->get()
+                    ->filter(function ($item) {
+                        return $item->category !== null;
+                    })
+                    ->values();
+            } catch (\Exception $e) {
+                Log::warning('Error loading activeCategories in publicProfile: ' . $e->getMessage());
+                $activeCategories = collect();
+            }
+
+            try {
+                $activeCities = ProviderCity::where('user_id', $provider->id)
+                    ->where('is_active', true)
+                    ->with('city')
+                    ->get()
+                    ->filter(function ($item) {
+                        return $item->city !== null;
+                    })
+                    ->values();
+            } catch (\Exception $e) {
+                Log::warning('Error loading activeCities in publicProfile: ' . $e->getMessage());
+                $activeCities = collect();
+            }
+
+            // جلب الخدمات النشطة للمزود
+            $services = \App\Models\Service::where('user_id', $provider->id)
+                ->where('is_active', true)
+                ->with(['category', 'city'])
+                ->latest()
+                ->take(6)
+                ->get();
+
+            // جلب التقييمات الأخيرة
+            $ratings = \App\Models\ServiceOffer::where('provider_id', $provider->id)
+                ->where('status', 'delivered')
+                ->whereNotNull('rating')
+                ->with(['service', 'service.user'])
+                ->latest()
+                ->take(5)
+                ->get();
+
+            return view('provider.public-profile', compact('provider', 'profile', 'services', 'ratings', 'activeCategories', 'activeCities'));
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->route('home')->with('error', 'الملف الشخصي غير موجود');
+        } catch (Exception $e) {
+            Log::error('Error in ProviderProfileController@publicProfile: ' . $e->getMessage(), [
+                'exception' => $e,
+                'user_id' => $userId
             ]);
             return redirect()->route('home')->with('error', 'حدث خطأ أثناء تحميل الملف الشخصي');
         }

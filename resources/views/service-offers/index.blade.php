@@ -120,8 +120,8 @@
                                             <button type="button" class="btn btn-warning btn-sm rounded-pill text-white"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#deliverModal{{ $offer->id }}">
-                                                <i class="fas fa-check-double"></i> تم تسليم الخدمة
-                                            </button>
+                                                    <i class="fas fa-check-double"></i> تم تسليم الخدمة
+                                                </button>
                                         @else
                                             <span class="badge bg-success mb-2 rounded-pill px-3 py-2">
                                                 <i class="fas fa-check-circle"></i> تم التسليم

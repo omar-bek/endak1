@@ -144,4 +144,18 @@ class Category extends Model
         }
         return asset('images/default-category.jpg');
     }
+
+    // استخدام slug في route model binding
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
+    // تحميل النموذج باستخدام slug مع التحقق من أنه نشط
+    public function resolveRouteBinding($value, $field = null)
+    {
+        return $this->where('slug', $value)
+                    ->where('is_active', true)
+                    ->firstOrFail();
+    }
 }

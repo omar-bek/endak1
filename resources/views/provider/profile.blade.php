@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'الملف الشخصي - مزود الخدمة')
+@section('title', 'الملف الشخصي - ' . (isset($provider) ? $provider->name : 'مزود الخدمة'))
 
 @section('content')
 <div class="container mt-4">
@@ -34,10 +34,13 @@
                     <div class="row">
                         <div class="col-md-6">
                             <h6 class="text-primary">المعلومات الأساسية</h6>
-                            <p><strong>الاسم:</strong> {{ Auth::user()->name }}</p>
-                            <p><strong>البريد الإلكتروني:</strong> {{ Auth::user()->email }}</p>
-                            <p><strong>رقم الهاتف:</strong> {{ $profile->phone }}</p>
-                            <p><strong>العنوان:</strong> {{ $profile->address }}</p>
+                            @php
+                                $displayUser = isset($provider) ? $provider : Auth::user();
+                            @endphp
+                            <p><strong>الاسم:</strong> {{ $displayUser->name }}</p>
+                            <p><strong>البريد الإلكتروني:</strong> {{ (isset($isOwner) && $isOwner) ? $displayUser->email : 'مخفي' }}</p>
+                            <p><strong>رقم الهاتف:</strong> {{ (isset($isOwner) && $isOwner) ? ($profile->phone ?? 'غير محدد') : 'مخفي' }}</p>
+                            <p><strong>العنوان:</strong> {{ (isset($isOwner) && $isOwner) ? ($profile->address ?? 'غير محدد') : 'مخفي' }}</p>
                         </div>
                         <div class="col-md-6">
                             <h6 class="text-primary">الإحصائيات</h6>
@@ -60,16 +63,20 @@
 
                     <hr>
 
+                    @if($profile->bio)
                     <div class="mb-3">
                         <h6 class="text-primary">نبذة عني</h6>
                         <p>{{ $profile->bio }}</p>
                     </div>
+                    @endif
 
+                    @if(isset($isOwner) && $isOwner)
                     <div class="text-center">
                         <a href="{{ route('provider.profile.edit') }}" class="btn btn-primary">
                             <i class="fas fa-edit"></i> تعديل الملف الشخصي
                         </a>
                     </div>
+                    @endif
                 </div>
             </div>
 
@@ -78,28 +85,32 @@
                 <div class="card-header bg-success text-white">
                     <h5 class="mb-0">
                         <i class="fas fa-folder"></i> الأقسام التي أعمل فيها
-                        <small class="float-end">({{ $profile->activeCategories()->count() }}/{{ $profile->max_categories }})</small>
+                        <small class="float-end">({{ $activeCategories->count() }}/{{ $maxCategories }})</small>
                     </h5>
                 </div>
                 <div class="card-body">
-                    @if($profile->activeCategories()->count() > 0)
+                    @if($activeCategories->count() > 0)
                         @php
                             // تجميع الأقسام حسب القسم الرئيسي
-                            $groupedCategories = $profile->activeCategories->groupBy('category_id');
+                            $groupedCategories = $activeCategories->groupBy('category_id');
                         @endphp
                         <div class="row">
                             @foreach($groupedCategories as $categoryId => $providerCategories)
                                 @php
-                                    $mainCategory = $providerCategories->first()->category;
-                                    $subCategories = $providerCategories->whereNotNull('sub_category_id');
+                                    $firstCategory = $providerCategories->first();
+                                    $mainCategory = $firstCategory && $firstCategory->category ? $firstCategory->category : null;
+                                    $subCategories = $providerCategories->filter(function($item) {
+                                        return $item->sub_category_id !== null && $item->subCategory !== null;
+                                    });
                                     $hasSubCategories = $subCategories->count() > 0;
                                 @endphp
+                                @if($mainCategory && $firstCategory)
                                 <div class="col-md-6 mb-3">
                                     <div class="card border-primary">
                                         <div class="card-body">
                                             <h6 class="card-title">
-                                                <i class="{{ $mainCategory->icon }} text-primary"></i>
-                                                {{ $mainCategory->name }}
+                                                <i class="{{ isset($mainCategory->icon) ? $mainCategory->icon : 'fas fa-folder' }} text-primary"></i>
+                                                {{ isset($mainCategory->name) ? $mainCategory->name : 'قسم غير محدد' }}
                                             </h6>
 
                                             @if($hasSubCategories)
@@ -107,7 +118,7 @@
                                                     <small class="text-muted d-block mb-1">الأقسام الفرعية:</small>
                                                     <div class="d-flex flex-wrap gap-1">
                                                         @foreach($subCategories as $subCat)
-                                                            @if($subCat->subCategory)
+                                                            @if($subCat->subCategory && isset($subCat->subCategory->name_ar))
                                                                 <span class="badge bg-secondary">
                                                                     {{ $subCat->subCategory->name_ar }}
                                                                 </span>
@@ -117,21 +128,18 @@
                                                 </div>
                                             @endif
 
-                                            @php
-                                                $firstCategory = $providerCategories->first();
-                                            @endphp
-                                            @if($firstCategory->description)
+                                            @if($firstCategory && $firstCategory->description)
                                                 <p class="card-text small">{{ $firstCategory->description }}</p>
                                             @endif
 
                                             <div class="row">
-                                                @if($firstCategory->hourly_rate)
+                                                @if($firstCategory && $firstCategory->hourly_rate)
                                                     <div class="col-6">
                                                         <small class="text-muted">السعر بالساعة:</small>
                                                         <br><strong>{{ number_format($firstCategory->hourly_rate, 2) }} ريال</strong>
                                                     </div>
                                                 @endif
-                                                @if($firstCategory->experience_years)
+                                                @if($firstCategory && $firstCategory->experience_years)
                                                     <div class="col-6">
                                                         <small class="text-muted">سنوات الخبرة:</small>
                                                         <br><strong>{{ $firstCategory->experience_years }} سنوات</strong>
@@ -141,13 +149,14 @@
                                         </div>
                                     </div>
                                 </div>
+                                @endif
                             @endforeach
                         </div>
                     @else
                         <p class="text-muted text-center">لم يتم إضافة أي أقسام بعد</p>
                     @endif
 
-                    @if($profile->canAddCategory())
+                    @if(isset($isOwner) && $isOwner && $canAddCategory)
                         <div class="text-center mt-3">
                             <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
                                 <i class="fas fa-plus"></i> إضافة قسم جديد
@@ -161,20 +170,22 @@
                 <div class="card-header bg-info text-white">
                     <h5 class="mb-0">
                         <i class="fas fa-map-marker-alt"></i> المدن التي أعمل فيها
-                        <small class="float-end">({{ $profile->activeCities()->count() }}/{{ $profile->max_cities }})</small>
+                        <small class="float-end">({{ $activeCities->count() }}/{{ $maxCities }})</small>
                     </h5>
                 </div>
                 <div class="card-body">
-                    @if($profile->activeCities()->count() > 0)
+                    @if($activeCities->count() > 0)
                         <div class="row">
-                            @foreach($profile->activeCities as $providerCity)
+                            @foreach($activeCities as $providerCity)
                                 <div class="col-md-4 mb-2">
                                     <div class="badge bg-info p-2 d-flex justify-content-between align-items-center">
-                                        <span>{{ $providerCity->city->name_ar }}</span>
+                                        <span>{{ $providerCity->city && isset($providerCity->city->name_ar) ? $providerCity->city->name_ar : 'غير محدد' }}</span>
+                                        @if(isset($isOwner) && $isOwner)
                                         <button type="button" class="btn btn-sm btn-outline-light ms-2"
                                                 onclick="removeCity({{ $providerCity->id }})">
                                             <i class="fas fa-times"></i>
                                         </button>
+                                        @endif
                                     </div>
                                     @if($providerCity->notes)
                                         <small class="text-muted d-block">{{ $providerCity->notes }}</small>
@@ -232,13 +243,13 @@
                     <div class="row text-center">
                         <div class="col-6 mb-3">
                             <div class="border rounded p-3">
-                                <h4 class="text-primary">{{ $profile->activeCategories()->count() }}</h4>
+                                <h4 class="text-primary">{{ $activeCategories->count() }}</h4>
                                 <small class="text-muted">الأقسام</small>
                             </div>
                         </div>
                         <div class="col-6 mb-3">
                             <div class="border rounded p-3">
-                                <h4 class="text-success">{{ $profile->activeCities()->count() }}</h4>
+                                <h4 class="text-success">{{ $activeCities->count() }}</h4>
                                 <small class="text-muted">المدن</small>
                             </div>
                         </div>
@@ -261,6 +272,7 @@
     </div>
 </div>
 
+@if(isset($isOwner) && $isOwner)
 <!-- Modal إضافة قسم -->
 <div class="modal fade" id="addCategoryModal" tabindex="-1">
     <div class="modal-dialog">
@@ -276,7 +288,7 @@
                         <select name="category_id" id="category_id" class="form-select" required>
                             <option value="">اختر القسم</option>
                             @foreach(\App\Models\Category::where('is_active', true)->get() as $category)
-                                @if(!$profile->activeCategories()->where('category_id', $category->id)->exists())
+                                @if($activeCategories->where('category_id', $category->id)->count() == 0)
                                     <option value="{{ $category->id }}" data-has-sub="{{ $category->subCategories()->where('status', true)->count() > 0 ? '1' : '0' }}">
                                         {{ $category->name }}
                                     </option>
@@ -313,7 +325,9 @@
         </div>
     </div>
 </div>
+@endif
 
+@if(isset($isOwner) && $isOwner)
 <div class="modal fade" id="addCityModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -341,6 +355,7 @@
     </div>
 </div>
 
+@if(isset($isOwner) && $isOwner)
 @push('scripts')
 <script>
 // تحديث الأقسام الفرعية عند اختيار قسم رئيسي
@@ -467,7 +482,8 @@ function removeCity(cityId) {
             alert('حدث خطأ أثناء حذف المدينة');
         });
     }
-}
+    }
 </script>
 @endpush
+@endif
 @endsection

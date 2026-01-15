@@ -133,12 +133,17 @@ class ServiceController extends Controller
         }
 
         // الخدمات المشابهة
-        $relatedServices = Service::where('category_id', $service->category_id)
+        $relatedServicesQuery = Service::where('category_id', $service->category_id)
             ->where('id', '!=', $service->id)
             ->where('is_active', true)
-            ->with(['category', 'subCategory', 'user', 'city'])
-            ->limit(6)
-            ->get();
+            ->with(['category', 'subCategory', 'user', 'city']);
+        
+        // إذا كان المستخدم مسجل دخول وليس مزود خدمة، اعرض فقط خدماته
+        if (auth()->check() && !auth()->user()->isProvider()) {
+            $relatedServicesQuery->where('user_id', auth()->id());
+        }
+        
+        $relatedServices = $relatedServicesQuery->limit(6)->get();
 
         return view('services.show', compact('service', 'relatedServices', 'canProviderOffer', 'userOffer'));
     }

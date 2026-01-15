@@ -19,14 +19,27 @@ class HomeController extends Controller
         $categories = Category::getMainCategories();
 
         // الخدمات المميزة
-        $featuredServices = Service::getFeaturedServices(6);
+        $featuredServicesQuery = Service::where('is_active', true)
+            ->where('is_featured', true)
+            ->with(['category', 'user']);
+        
+        // إذا كان المستخدم مسجل دخول وليس مزود خدمة، اعرض فقط خدماته
+        if (auth()->check() && !auth()->user()->isProvider()) {
+            $featuredServicesQuery->where('user_id', auth()->id());
+        }
+        
+        $featuredServices = $featuredServicesQuery->latest()->limit(6)->get();
 
         // أحدث الخدمات
-        $latestServices = Service::where('is_active', true)
-                                ->with(['category', 'user'])
-                                ->latest()
-                                ->limit(8)
-                                ->get();
+        $latestServicesQuery = Service::where('is_active', true)
+                                ->with(['category', 'user']);
+        
+        // إذا كان المستخدم مسجل دخول وليس مزود خدمة، اعرض فقط خدماته
+        if (auth()->check() && !auth()->user()->isProvider()) {
+            $latestServicesQuery->where('user_id', auth()->id());
+        }
+        
+        $latestServices = $latestServicesQuery->latest()->limit(8)->get();
 
         return view('home', compact('categories', 'featuredServices', 'latestServices'));
         } catch (Exception $e) {

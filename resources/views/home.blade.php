@@ -166,7 +166,7 @@
             <div class="row justify-content-center">
                 @forelse($categories as $category)
                     <div class="col-6 col-md-6 col-lg-3 mb-4 fade-card">
-                        <a href="{{ $category->hasChildren() ? route('categories.subcategories', $category->slug) : route('services.request', $category->id) }}"
+                        <a href="{{ $category->hasChildren() ? route('categories.subcategories', $category->slug) : route('categories.show', $category->slug) }}"
                             class="card-link">
                             <div class="card category-card h-100">
                                 <div class="category-image-container">

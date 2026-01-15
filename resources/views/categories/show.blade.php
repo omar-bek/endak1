@@ -78,9 +78,15 @@
                         <br><small>{{ __('messages.info_alert_body') }}</small>
                     </div>
                     @else
+                    @auth
                     <a href="{{ route('services.request', $category->slug) }}" class="btn btn-warning mt-3 fw-bold text-dark shine-btn">
                         <i class="fas fa-concierge-bell"></i> {{ __('messages.request_service_button_text') }}
                     </a>
+                    @else
+                    <a href="{{ route('login') }}" class="btn btn-warning mt-3 fw-bold text-dark shine-btn">
+                        <i class="fas fa-sign-in-alt"></i> {{ __('messages.request_service_button_text') }}
+                    </a>
+                    @endauth
                     @endif
                     @endif
                     @else
@@ -110,7 +116,11 @@
             @foreach($category->subCategories as $subCategory)
                 @if($subCategory->status)
                 <div class="col-6 col-md-3 mb-4">
+                    @auth
                     <a href="{{ route('services.request', $category->slug) }}?sub_category_id={{ $subCategory->id }}" class="text-decoration-none text-dark">
+                    @else
+                    <a href="{{ route('login') }}" class="text-decoration-none text-dark">
+                    @endauth
                         <div class="card sub-category-card h-100 text-center clickable-card">
                             <div class="subcategory-image-container">
                                 @if($subCategory->image)

@@ -35,24 +35,29 @@
                         <div class="col-md-6">
                             <h6 class="text-primary">المعلومات الأساسية</h6>
                             @php
-                                $displayUser = isset($provider) ? $provider : Auth::user();
+                                $displayUser = isset($provider) ? $provider : (Auth::check() ? Auth::user() : null);
                             @endphp
-                            <p><strong>الاسم:</strong> {{ $displayUser->name }}</p>
-                            <p><strong>البريد الإلكتروني:</strong> {{ (isset($isOwner) && $isOwner) ? $displayUser->email : 'مخفي' }}</p>
+                            @if($displayUser)
+                            <p><strong>الاسم:</strong> {{ $displayUser->name ?? 'غير محدد' }}</p>
+                            <p><strong>البريد الإلكتروني:</strong> {{ (isset($isOwner) && $isOwner) ? ($displayUser->email ?? 'غير محدد') : 'مخفي' }}</p>
+                            @endif
                             <p><strong>رقم الهاتف:</strong> {{ (isset($isOwner) && $isOwner) ? ($profile->phone ?? 'غير محدد') : 'مخفي' }}</p>
                             <p><strong>العنوان:</strong> {{ (isset($isOwner) && $isOwner) ? ($profile->address ?? 'غير محدد') : 'مخفي' }}</p>
                         </div>
                         <div class="col-md-6">
                             <h6 class="text-primary">الإحصائيات</h6>
                             <p><strong>التقييم:</strong>
+                                @php
+                                    $rating = $profile->rating ?? 0;
+                                @endphp
                                 @for($i = 1; $i <= 5; $i++)
-                                    <i class="fas fa-star {{ $i <= $profile->rating ? 'text-warning' : 'text-muted' }}"></i>
+                                    <i class="fas fa-star {{ $i <= $rating ? 'text-warning' : 'text-muted' }}"></i>
                                 @endfor
-                                ({{ number_format($profile->rating, 1) }})
+                                ({{ number_format($rating, 1) }})
                             </p>
-                            <p><strong>الخدمات المكتملة:</strong> {{ $profile->completed_services }}</p>
+                            <p><strong>الخدمات المكتملة:</strong> {{ $profile->completed_services ?? 0 }}</p>
                             <p><strong>الحالة:</strong>
-                                @if($profile->is_verified)
+                                @if($profile->is_verified ?? false)
                                     <span class="badge bg-success">موثق</span>
                                 @else
                                     <span class="badge bg-warning">في انتظار التوثيق</span>
@@ -85,7 +90,7 @@
                 <div class="card-header bg-success text-white">
                     <h5 class="mb-0">
                         <i class="fas fa-folder"></i> الأقسام التي أعمل فيها
-                        <small class="float-end">({{ $activeCategories->count() }}/{{ $maxCategories }})</small>
+                        <small class="float-end">({{ $activeCategories->count() }}/{{ $maxCategories ?? 3 }})</small>
                     </h5>
                 </div>
                 <div class="card-body">
@@ -156,7 +161,7 @@
                         <p class="text-muted text-center">لم يتم إضافة أي أقسام بعد</p>
                     @endif
 
-                    @if(isset($isOwner) && $isOwner && $canAddCategory)
+                    @if(isset($isOwner) && $isOwner && isset($canAddCategory) && $canAddCategory)
                         <div class="text-center mt-3">
                             <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
                                 <i class="fas fa-plus"></i> إضافة قسم جديد
@@ -170,7 +175,7 @@
                 <div class="card-header bg-info text-white">
                     <h5 class="mb-0">
                         <i class="fas fa-map-marker-alt"></i> المدن التي أعمل فيها
-                        <small class="float-end">({{ $activeCities->count() }}/{{ $maxCities }})</small>
+                        <small class="float-end">({{ $activeCities->count() }}/{{ $maxCities ?? 10 }})</small>
                     </h5>
                 </div>
                 <div class="card-body">
@@ -210,13 +215,13 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    @if($profile->working_hours)
+                    @if($profile->working_hours && is_array($profile->working_hours))
                         @php
                             $days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
                         @endphp
 
                         @foreach($profile->working_hours as $index => $hours)
-                            @if(isset($hours['enabled']) && $hours['enabled'])
+                            @if(isset($hours['enabled']) && $hours['enabled'] && isset($days[$index]))
                                 <div class="mb-2">
                                     <strong>{{ $days[$index] }}:</strong>
                                     <br>
@@ -255,13 +260,13 @@
                         </div>
                         <div class="col-6 mb-3">
                             <div class="border rounded p-3">
-                                <h4 class="text-info">{{ $profile->completed_services }}</h4>
+                                <h4 class="text-info">{{ $profile->completed_services ?? 0 }}</h4>
                                 <small class="text-muted">الخدمات المكتملة</small>
                             </div>
                         </div>
                         <div class="col-6 mb-3">
                             <div class="border rounded p-3">
-                                <h4 class="text-warning">{{ number_format($profile->rating, 1) }}</h4>
+                                <h4 class="text-warning">{{ number_format($profile->rating ?? 0, 1) }}</h4>
                                 <small class="text-muted">التقييم</small>
                             </div>
                         </div>
@@ -354,12 +359,15 @@
         </div>
     </div>
 </div>
+@endif
 
 @if(isset($isOwner) && $isOwner)
 @push('scripts')
 <script>
 // تحديث الأقسام الفرعية عند اختيار قسم رئيسي
-document.getElementById('category_id').addEventListener('change', function() {
+const categorySelect = document.getElementById('category_id');
+if (categorySelect) {
+categorySelect.addEventListener('change', function() {
     const categoryId = this.value;
     const subCategoryContainer = document.getElementById('sub_category_container');
     const subCategorySelect = document.getElementById('sub_category_id');
@@ -399,9 +407,12 @@ document.getElementById('category_id').addEventListener('change', function() {
         subCategoryContainer.style.display = 'none';
     }
 });
+}
 
 // إضافة قسم جديد
-document.getElementById('addCategoryForm').addEventListener('submit', function(e) {
+const addCategoryForm = document.getElementById('addCategoryForm');
+if (addCategoryForm) {
+addCategoryForm.addEventListener('submit', function(e) {
     e.preventDefault();
 
     const formData = new FormData(this);
@@ -433,8 +444,11 @@ document.getElementById('addCategoryForm').addEventListener('submit', function(e
         alert('حدث خطأ أثناء إضافة القسم');
     });
 });
+}
 
-document.getElementById('addCityForm').addEventListener('submit', function(e) {
+const addCityForm = document.getElementById('addCityForm');
+if (addCityForm) {
+addCityForm.addEventListener('submit', function(e) {
     e.preventDefault();
 
     const formData = new FormData(this);
@@ -460,6 +474,7 @@ document.getElementById('addCityForm').addEventListener('submit', function(e) {
         alert('حدث خطأ أثناء إضافة المدينة');
     });
 });
+}
 
 function removeCity(cityId) {
     if (confirm('هل أنت متأكد من حذف هذه المدينة؟')) {

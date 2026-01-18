@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -87,8 +88,16 @@ class ServiceController extends BaseApiController
 
             // معالجة وفلترة الحقول المخصصة (بعد التحقق)
             $processedFields = $this->processCustomFields($request);
-            $data['custom_fields'] = $this->filterCustomFields(
+            $filteredFields = $this->filterCustomFields(
                 $processedFields,
+                $data['category_id'],
+                $data['sub_category_id'] ?? null
+            );
+
+            // معالجة الصور في custom_fields وحفظها كملفات
+            $data['custom_fields'] = $this->processImageFieldsInCustomFields(
+                $request,
+                $filteredFields,
                 $data['category_id'],
                 $data['sub_category_id'] ?? null
             );
@@ -147,8 +156,17 @@ class ServiceController extends BaseApiController
             // التحقق من الحقول المخصصة إذا كانت موجودة
             if ($request->has('custom_fields')) {
                 $this->validateCustomFields($request, $categoryId, $subCategoryId);
-                $data['custom_fields'] = $this->filterCustomFields(
-                    $this->processCustomFields($request),
+                $processedFields = $this->processCustomFields($request);
+                $filteredFields = $this->filterCustomFields(
+                    $processedFields,
+                    $categoryId,
+                    $subCategoryId
+                );
+
+                // معالجة الصور في custom_fields وحفظها كملفات
+                $data['custom_fields'] = $this->processImageFieldsInCustomFields(
+                    $request,
+                    $filteredFields,
                     $categoryId,
                     $subCategoryId
                 );
@@ -943,5 +961,147 @@ class ServiceController extends BaseApiController
         if (!empty($errors)) {
             throw ValidationException::withMessages($errors);
         }
+    }
+
+    /**
+     * معالجة الصور في custom_fields وحفظها كملفات
+     *
+     * @param Request $request
+     * @param array|null $customFields
+     * @param int $categoryId
+     * @param int|null $subCategoryId
+     * @return array|null
+     */
+    private function processImageFieldsInCustomFields(
+        Request $request,
+        ?array $customFields,
+        int $categoryId,
+        ?int $subCategoryId = null
+    ): ?array {
+        if (empty($customFields) || !is_array($customFields)) {
+            return $customFields;
+        }
+
+        // جلب جميع الحقول من نوع image
+        $imageFields = $this->getCategoryFields($categoryId, $subCategoryId)
+            ->where('type', 'image');
+
+        if ($imageFields->isEmpty()) {
+            return $customFields;
+        }
+
+        $processedFields = $customFields;
+
+        foreach ($imageFields as $field) {
+            $fieldName = $field->name;
+            $fieldValue = $processedFields[$fieldName] ?? null;
+
+            if ($fieldValue === null) {
+                continue;
+            }
+
+            // إذا كانت القيمة ملف مرفوع
+            if ($request->hasFile("custom_fields.{$fieldName}")) {
+                $file = $request->file("custom_fields.{$fieldName}");
+                if ($file && $file->isValid()) {
+                    $path = $file->store("services/custom_fields/{$categoryId}", 'public');
+                    $processedFields[$fieldName] = $path;
+                    continue;
+                }
+            }
+
+            // إذا كانت القيمة base64
+            if (is_string($fieldValue) && preg_match('/^data:image\/(jpeg|jpg|png|gif|webp);base64,/', $fieldValue)) {
+                $extension = $this->getBase64ImageExtension($fieldValue);
+                $imageData = preg_replace('/^data:image\/\w+;base64,/', '', $fieldValue);
+                $decoded = base64_decode($imageData, true);
+
+                if ($decoded !== false) {
+                    $fileName = Str::random(40) . '.' . $extension;
+                    $path = "services/custom_fields/{$categoryId}/{$fileName}";
+                    Storage::disk('public')->put($path, $decoded);
+                    $processedFields[$fieldName] = $path;
+                }
+                continue;
+            }
+
+            // إذا كانت القيمة URL
+            if (is_string($fieldValue) && filter_var($fieldValue, FILTER_VALIDATE_URL)) {
+                // يمكن تنزيل الصورة من URL وحفظها
+                // لكن سنتركها كـ URL للآن
+                continue;
+            }
+
+            // إذا كانت القيمة اسم ملف فقط (مثل "hhhhhhh.png")
+            // نحاول البحث عن الملف المرفوع في الطلب
+            if (is_string($fieldValue) && preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', $fieldValue)) {
+                // البحث عن الملف في جميع الملفات المرفوعة
+                $allFiles = $request->allFiles();
+                $foundFile = null;
+
+                foreach ($allFiles as $key => $file) {
+                    // البحث في custom_fields
+                    if (str_contains($key, 'custom_fields') && str_contains($key, $fieldName)) {
+                        if (is_object($file) && method_exists($file, 'isValid') && $file->isValid()) {
+                            $foundFile = $file;
+                            break;
+                        }
+                    }
+                }
+
+                // إذا لم نجد الملف، نبحث في الملفات المرفوعة مباشرة
+                if (!$foundFile && $request->hasFile($fieldName)) {
+                    $foundFile = $request->file($fieldName);
+                }
+
+                // إذا وجدنا الملف، نحفظه
+                if ($foundFile && $foundFile->isValid()) {
+                    $path = $foundFile->store("services/custom_fields/{$categoryId}", 'public');
+                    $processedFields[$fieldName] = $path;
+                } else {
+                    // إذا لم نجد الملف، نحاول البحث عنه في storage
+                    // قد يكون الملف موجوداً بالفعل (مثل الصور المحفوظة مسبقاً)
+                    $possiblePaths = [
+                        "services/custom_fields/{$categoryId}/{$fieldValue}",
+                        "services/custom_fields/{$fieldValue}",
+                        $fieldValue,
+                    ];
+
+                    $fileExists = false;
+                    foreach ($possiblePaths as $possiblePath) {
+                        if (Storage::disk('public')->exists($possiblePath)) {
+                            $processedFields[$fieldName] = $possiblePath;
+                            $fileExists = true;
+                            break;
+                        }
+                    }
+
+                    // إذا لم نجد الملف في storage، نرفض الطلب
+                    if (!$fileExists) {
+                        throw ValidationException::withMessages([
+                            "custom_fields.{$fieldName}" => "حقل '{$field->name_ar}': الملف '{$fieldValue}' غير موجود. يرجى رفع الملف أو إرسال الصورة كـ base64 أو URL."
+                        ]);
+                    }
+                }
+            }
+        }
+
+        return $processedFields;
+    }
+
+    /**
+     * استخراج امتداد الصورة من base64
+     *
+     * @param string $base64String
+     * @return string
+     */
+    private function getBase64ImageExtension(string $base64String): string
+    {
+        if (preg_match('/^data:image\/(jpeg|jpg|png|gif|webp);base64,/', $base64String, $matches)) {
+            $extension = $matches[1];
+            return $extension === 'jpeg' ? 'jpg' : $extension;
+        }
+
+        return 'jpg'; // افتراضي
     }
 }

@@ -409,9 +409,17 @@ class ServiceController extends BaseApiController
             } else {
                 // التحقق من أن جميع الحقول المتاحة موجودة في custom_fields
                 foreach ($allFields as $field) {
-                    $fieldValue = $this->getFieldValue($customFields, $field);
+                    // إذا كان الحقل من نوع image، تحقق من الملفات المرفوعة أولاً
+                    if ($field->type === 'image' && $request->hasFile("custom_fields.{$field->name}")) {
+                        $fieldValue = $request->file("custom_fields.{$field->name}");
+                    } else {
+                        $fieldValue = $this->getFieldValue($customFields, $field);
+                    }
+
                     if ($this->isEmpty($fieldValue)) {
-                        $errors["custom_fields.{$field->name}"] = "حقل '{$field->name_ar}' مطلوب للقسم (ID: {$categoryId})";
+                        if ($field->is_required) {
+                            $errors["custom_fields.{$field->name}"] = "حقل '{$field->name_ar}' مطلوب للقسم (ID: {$categoryId})";
+                        }
                     } else {
                         $this->validateFieldType($field, $fieldValue, $errors);
                     }
@@ -540,7 +548,7 @@ class ServiceController extends BaseApiController
             'checkbox' => $this->validateCheckboxField($field, $value),
             'date' => $this->validateDateField($field, $value),
             'time' => $this->validateTimeField($field, $value),
-            'image' => !is_string($value) ? "حقل {$field->name_ar} يجب أن يكون صورة" : null,
+            'image' => $this->validateImageFieldValue($field, $value),
             'text', 'textarea', 'title' => !is_string($value) ? "حقل {$field->name_ar} يجب أن يكون نصاً" : null,
             default => null,
         };
@@ -593,6 +601,92 @@ class ServiceController extends BaseApiController
         if (!preg_match('/^([01]?[0-9]|2[0-3]):[0-5][0-9](:([0-5][0-9]))?$/', $value)) {
             return "حقل {$field->name_ar} يجب أن يكون وقتاً بصيغة H:i أو H:i:s";
         }
+        return null;
+    }
+
+    /**
+     * التحقق من قيمة حقل الصورة في custom_fields
+     */
+    private function validateImageFieldValue(CategoryField $field, $value): ?string
+    {
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        $maxSize = 5 * 1024 * 1024; // 5MB
+
+        // إذا كانت القيمة ملف مرفوع
+        if (is_object($value) && method_exists($value, 'isValid')) {
+            if (!$value->isValid()) {
+                return "حقل {$field->name_ar}: الصورة المرفوعة غير صالحة";
+            }
+
+            // التحقق من نوع الملف
+            $mimeType = $value->getMimeType();
+            $allowedMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+            if (!in_array($mimeType, $allowedMimes)) {
+                return "حقل {$field->name_ar}: نوع الصورة غير مدعوم. يجب أن يكون: " . implode(', ', $allowedExtensions);
+            }
+
+            // التحقق من حجم الملف
+            if ($value->getSize() > $maxSize) {
+                return "حقل {$field->name_ar}: حجم الصورة كبير جداً. الحد الأقصى هو 5MB";
+            }
+
+            return null;
+        }
+
+        // إذا كانت القيمة string (اسم ملف، URL، أو base64)
+        if (!is_string($value)) {
+            return "حقل {$field->name_ar} يجب أن يكون صورة (ملف أو اسم ملف أو URL)";
+        }
+
+        // التحقق من base64
+        if (preg_match('/^data:image\/(jpeg|jpg|png|gif|webp);base64,/', $value)) {
+            // استخراج البيانات من base64
+            $base64Data = preg_replace('/^data:image\/\w+;base64,/', '', $value);
+            $decoded = base64_decode($base64Data, true);
+
+            if ($decoded === false) {
+                return "حقل {$field->name_ar}: بيانات base64 غير صالحة";
+            }
+
+            // التحقق من حجم البيانات
+            if (strlen($decoded) > $maxSize) {
+                return "حقل {$field->name_ar}: حجم الصورة كبير جداً. الحد الأقصى هو 5MB";
+            }
+
+            // التحقق من نوع الصورة من البيانات
+            $imageInfo = @getimagesizefromstring($decoded);
+            if ($imageInfo === false) {
+                return "حقل {$field->name_ar}: البيانات المرسلة ليست صورة صالحة";
+            }
+
+            $mimeType = $imageInfo['mime'];
+            $allowedMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+            if (!in_array($mimeType, $allowedMimes)) {
+                return "حقل {$field->name_ar}: نوع الصورة غير مدعوم. يجب أن يكون: " . implode(', ', $allowedExtensions);
+            }
+
+            return null;
+        }
+
+        // التحقق من URL
+        if (filter_var($value, FILTER_VALIDATE_URL)) {
+            // التحقق من أن URL ينتهي بامتداد صورة صالح
+            $urlPath = parse_url($value, PHP_URL_PATH);
+            $extension = strtolower(pathinfo($urlPath, PATHINFO_EXTENSION));
+
+            if (!in_array($extension, $allowedExtensions)) {
+                return "حقل {$field->name_ar}: رابط الصورة يجب أن ينتهي بامتداد صورة صالح: " . implode(', ', $allowedExtensions);
+            }
+
+            return null;
+        }
+
+        // التحقق من اسم الملف (امتداد فقط)
+        $extension = strtolower(pathinfo($value, PATHINFO_EXTENSION));
+        if (!in_array($extension, $allowedExtensions)) {
+            return "حقل {$field->name_ar}: اسم الملف يجب أن ينتهي بامتداد صورة صالح: " . implode(', ', $allowedExtensions);
+        }
+
         return null;
     }
 

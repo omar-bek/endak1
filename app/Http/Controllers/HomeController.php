@@ -15,33 +15,33 @@ class HomeController extends Controller
     public function index()
     {
         try {
-        // الأقسام الرئيسية
-        $categories = Category::getMainCategories();
+            // الأقسام الرئيسية
+            $categories = Category::getMainCategories();
 
-        // الخدمات المميزة
-        $featuredServicesQuery = Service::where('is_active', true)
-            ->where('is_featured', true)
-            ->with(['category', 'user']);
-        
-        // إذا كان المستخدم مسجل دخول وليس مزود خدمة، اعرض فقط خدماته
-        if (auth()->check() && !auth()->user()->isProvider()) {
-            $featuredServicesQuery->where('user_id', auth()->id());
-        }
-        
-        $featuredServices = $featuredServicesQuery->latest()->limit(6)->get();
+            // الخدمات المميزة
+            $featuredServicesQuery = Service::where('is_active', true)
+                ->where('is_featured', true)
+                ->with(['category', 'user']);
 
-        // أحدث الخدمات
-        $latestServicesQuery = Service::where('is_active', true)
-                                ->with(['category', 'user']);
-        
-        // إذا كان المستخدم مسجل دخول وليس مزود خدمة، اعرض فقط خدماته
-        if (auth()->check() && !auth()->user()->isProvider()) {
-            $latestServicesQuery->where('user_id', auth()->id());
-        }
-        
-        $latestServices = $latestServicesQuery->latest()->limit(8)->get();
+            // إذا كان المستخدم مسجل دخول وليس مزود خدمة، اعرض فقط خدماته
+            if (auth()->check() && !auth()->user()->isProvider()) {
+                $featuredServicesQuery->where('user_id', auth()->id());
+            }
 
-        return view('home', compact('categories', 'featuredServices', 'latestServices'));
+            $featuredServices = $featuredServicesQuery->latest()->limit(6)->get();
+
+            // أحدث الخدمات
+            $latestServicesQuery = Service::where('is_active', true)
+                ->with(['category', 'user']);
+
+            // إذا كان المستخدم مسجل دخول وليس مزود خدمة، اعرض فقط خدماته
+            if (auth()->check() && !auth()->user()->isProvider()) {
+                $latestServicesQuery->where('user_id', auth()->id());
+            }
+
+            $latestServices = $latestServicesQuery->latest()->limit(8)->get();
+
+            return view('home', compact('categories', 'featuredServices', 'latestServices'));
         } catch (Exception $e) {
             Log::error('Error in HomeController@index: ' . $e->getMessage(), [
                 'exception' => $e
@@ -60,7 +60,7 @@ class HomeController extends Controller
     public function contact()
     {
         try {
-        return view('contact');
+            return view('contact');
         } catch (Exception $e) {
             Log::error('Error in HomeController@contact: ' . $e->getMessage(), [
                 'exception' => $e

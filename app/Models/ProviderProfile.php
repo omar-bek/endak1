@@ -89,9 +89,9 @@ class ProviderProfile extends Model
     public function isProfileComplete()
     {
         return $this->bio &&
-               $this->phone &&
-               $this->address &&
-               $this->activeCategories()->count() > 0 &&
-               $this->activeCities()->count() > 0;
+            $this->phone &&
+            $this->address &&
+            $this->activeCategories()->count() > 0 &&
+            $this->activeCities()->count() > 0;
     }
 }

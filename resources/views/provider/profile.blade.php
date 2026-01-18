@@ -371,134 +371,134 @@
     @endif
 
     @if (isset($isOwner) && $isOwner)
-    @push('scripts')
-                <script>
-                    // تحديث الأقسام الفرعية عند اختيار قسم رئيسي
-                    document.getElementById('category_id').addEventListener('change', function() {
-                        const categoryId = this.value;
-                        const subCategoryContainer = document.getElementById('sub_category_container');
-                        const subCategorySelect = document.getElementById('sub_category_id');
-                        const selectedOption = this.options[this.selectedIndex];
-                        const hasSub = selectedOption.getAttribute('data-has-sub') === '1';
+        @push('scripts')
+            <script>
+                // تحديث الأقسام الفرعية عند اختيار قسم رئيسي
+                document.getElementById('category_id').addEventListener('change', function() {
+                    const categoryId = this.value;
+                    const subCategoryContainer = document.getElementById('sub_category_container');
+                    const subCategorySelect = document.getElementById('sub_category_id');
+                    const selectedOption = this.options[this.selectedIndex];
+                    const hasSub = selectedOption.getAttribute('data-has-sub') === '1';
 
-                        // إعادة تعيين القسم الفرعي
-                        subCategorySelect.innerHTML = '<option value="">اختر القسم الفرعي (اختياري)</option>';
+                    // إعادة تعيين القسم الفرعي
+                    subCategorySelect.innerHTML = '<option value="">اختر القسم الفرعي (اختياري)</option>';
 
-                        if (hasSub && categoryId) {
-                            // جلب الأقسام الفرعية
-                            fetch(`/api/categories/${categoryId}/subcategories`, {
-                                    method: 'GET',
-                                    headers: {
-                                        'Accept': 'application/json',
-                                    }
-                                })
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (data && Array.isArray(data)) {
-                                        data.forEach(function(subCat) {
-                                            const option = document.createElement('option');
-                                            option.value = subCat.id;
-                                            option.textContent = subCat.name_ar || subCat.name_en;
-                                            subCategorySelect.appendChild(option);
-                                        });
-                                        subCategoryContainer.style.display = 'block';
-                                    } else {
-                                        subCategoryContainer.style.display = 'none';
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error('Error:', error);
+                    if (hasSub && categoryId) {
+                        // جلب الأقسام الفرعية
+                        fetch(`/api/categories/${categoryId}/subcategories`, {
+                                method: 'GET',
+                                headers: {
+                                    'Accept': 'application/json',
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data && Array.isArray(data)) {
+                                    data.forEach(function(subCat) {
+                                        const option = document.createElement('option');
+                                        option.value = subCat.id;
+                                        option.textContent = subCat.name_ar || subCat.name_en;
+                                        subCategorySelect.appendChild(option);
+                                    });
+                                    subCategoryContainer.style.display = 'block';
+                                } else {
                                     subCategoryContainer.style.display = 'none';
-                                });
-                        } else {
-                            subCategoryContainer.style.display = 'none';
-                        }
-                    });
-
-                    // إضافة قسم جديد
-                    document.getElementById('addCategoryForm').addEventListener('submit', function(e) {
-                        e.preventDefault();
-
-                        const formData = new FormData(this);
-                        const data = Object.fromEntries(formData);
-
-                        // إذا لم يتم اختيار قسم فرعي، لا نرسله
-                        if (!data.sub_category_id) {
-                            delete data.sub_category_id;
-                        }
-
-                        fetch('{{ route('provider.categories.add') }}', {
-                                method: 'POST',
-                                headers: {
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify(data)
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    location.reload();
-                                } else {
-                                    alert(data.error);
                                 }
                             })
                             .catch(error => {
                                 console.error('Error:', error);
-                                alert('حدث خطأ أثناء إضافة القسم');
+                                subCategoryContainer.style.display = 'none';
                             });
-                    });
-
-                    document.getElementById('addCityForm').addEventListener('submit', function(e) {
-                        e.preventDefault();
-
-                        const formData = new FormData(this);
-
-                        fetch('{{ route('provider.cities.add') }}', {
-                                method: 'POST',
-                                headers: {
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify(Object.fromEntries(formData))
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    location.reload();
-                                } else {
-                                    alert(data.error);
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                alert('حدث خطأ أثناء إضافة المدينة');
-                            });
-                    });
-
-                    function removeCity(cityId) {
-                        if (confirm('هل أنت متأكد من حذف هذه المدينة؟')) {
-                            fetch(`{{ url('provider/cities') }}/${cityId}`, {
-                                    method: 'DELETE',
-                                    headers: {
-                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                    }
-                                })
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (data.success) {
-                                        location.reload();
-                                    } else {
-                                        alert(data.error);
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error('Error:', error);
-                                    alert('حدث خطأ أثناء حذف المدينة');
-                                });
-                        }
+                    } else {
+                        subCategoryContainer.style.display = 'none';
                     }
-                </script>
-            @endpush
-        @endif
-    @endsection
+                });
+
+                // إضافة قسم جديد
+                document.getElementById('addCategoryForm').addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    const formData = new FormData(this);
+                    const data = Object.fromEntries(formData);
+
+                    // إذا لم يتم اختيار قسم فرعي، لا نرسله
+                    if (!data.sub_category_id) {
+                        delete data.sub_category_id;
+                    }
+
+                    fetch('{{ route('provider.categories.add') }}', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(data)
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                location.reload();
+                            } else {
+                                alert(data.error);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('حدث خطأ أثناء إضافة القسم');
+                        });
+                });
+
+                document.getElementById('addCityForm').addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    const formData = new FormData(this);
+
+                    fetch('{{ route('provider.cities.add') }}', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(Object.fromEntries(formData))
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                location.reload();
+                            } else {
+                                alert(data.error);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('حدث خطأ أثناء إضافة المدينة');
+                        });
+                });
+
+                function removeCity(cityId) {
+                    if (confirm('هل أنت متأكد من حذف هذه المدينة؟')) {
+                        fetch(`{{ url('provider/cities') }}/${cityId}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    location.reload();
+                                } else {
+                                    alert(data.error);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('حدث خطأ أثناء حذف المدينة');
+                            });
+                    }
+                }
+            </script>
+        @endpush
+    @endif
+@endsection

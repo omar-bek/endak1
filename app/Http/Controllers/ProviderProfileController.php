@@ -324,7 +324,7 @@ class ProviderProfileController extends Controller
         try {
             // التحقق من المستخدم
             $user = Auth::user();
-            
+
             // يجب أن يكون مسجل دخول ومزود خدمة
             if (!$user || !$user->isProvider()) {
                 return redirect()->route('home')->with('error', 'هذه الصفحة متاحة لمزودي الخدمة فقط');
@@ -426,7 +426,7 @@ class ProviderProfileController extends Controller
             if (!$userId) {
                 $userId = Auth::id();
             }
-            
+
             // إذا لم يكن هناك userId، توجيه للصفحة الرئيسية
             if (!$userId) {
                 return redirect()->route('home')->with('error', 'يجب تحديد مزود الخدمة');
@@ -466,7 +466,7 @@ class ProviderProfileController extends Controller
                     ->where('is_active', true)
                     ->with(['category', 'subCategory'])
                     ->get()
-                    ->filter(function($item) {
+                    ->filter(function ($item) {
                         return $item->category !== null;
                     })
                     ->values();
@@ -480,7 +480,7 @@ class ProviderProfileController extends Controller
                     ->where('is_active', true)
                     ->with('city')
                     ->get()
-                    ->filter(function($item) {
+                    ->filter(function ($item) {
                         return $item->city !== null;
                     })
                     ->values();
@@ -518,7 +518,6 @@ class ProviderProfileController extends Controller
                 'isOwner',
                 'provider'
             ));
-
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return redirect()->route('home')->with('error', 'الملف الشخصي غير موجود');
         } catch (Exception $e) {

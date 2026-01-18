@@ -17,8 +17,8 @@ class NotificationController extends Controller
     {
         try {
             $notifications = CustomNotification::where('user_id', Auth::id())
-                                             ->orderBy('created_at', 'desc')
-                                             ->paginate(20);
+                ->orderBy('created_at', 'desc')
+                ->paginate(20);
 
             return view('notifications.index', compact('notifications'));
         } catch (Exception $e) {
@@ -36,7 +36,7 @@ class NotificationController extends Controller
     {
         try {
             $notification = CustomNotification::where('user_id', Auth::id())
-                                            ->findOrFail($id);
+                ->findOrFail($id);
             $notification->markAsRead();
 
             return response()->json(['success' => true]);
@@ -58,8 +58,8 @@ class NotificationController extends Controller
     {
         try {
             CustomNotification::where('user_id', Auth::id())
-                            ->whereNull('read_at')
-                            ->update(['read_at' => now()]);
+                ->whereNull('read_at')
+                ->update(['read_at' => now()]);
 
             return response()->json(['success' => true]);
         } catch (Exception $e) {
@@ -78,7 +78,7 @@ class NotificationController extends Controller
     {
         try {
             $notification = CustomNotification::where('user_id', Auth::id())
-                                            ->findOrFail($id);
+                ->findOrFail($id);
             $notification->delete();
 
             return redirect()->back()->with('success', 'تم حذف الإشعار بنجاح');
@@ -110,7 +110,7 @@ class NotificationController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->limit(10)
                 ->get()
-                ->map(function($notification) {
+                ->map(function ($notification) {
                     return [
                         'id' => $notification->id,
                         'title' => $notification->title,

@@ -43,7 +43,7 @@ class CategoryController extends Controller
 
             // إذا كان المستخدم مسجل دخول وليس مزود خدمة، توجيهه مباشرة إلى صفحة طلب الخدمة
             if (Auth::check() && !Auth::user()->isProvider()) {
-                // إذا كان القسم يحتوي على أقسام فرعية ولم يتم اختيار قسم فرعي، 
+                // إذا كان القسم يحتوي على أقسام فرعية ولم يتم اختيار قسم فرعي،
                 // اتركه في الصفحة لاختيار قسم فرعي (لكن بدون عرض الخدمات)
                 $hasSubCategories = $category->subCategories && $category->subCategories->count() > 0;
                 if ($hasSubCategories && !$request->has('sub_category_id')) {
@@ -53,7 +53,7 @@ class CategoryController extends Controller
                     $selectedSubCategory = null;
                     return view('categories.show', compact('category', 'services', 'selectedSubCategory'));
                 }
-                
+
                 // إذا تم اختيار قسم فرعي أو لا يوجد أقسام فرعية، توجيه مباشر إلى صفحة طلب الخدمة
                 $redirectUrl = route('services.request', ['category' => $category->slug]);
                 if ($request->has('sub_category_id')) {
@@ -66,7 +66,7 @@ class CategoryController extends Controller
             $query = Service::where('category_id', $category->id)
                 ->where('is_active', true)
                 ->with(['user', 'category', 'subCategory', 'city']);
-            
+
             $query->orderBy('created_at', 'desc');
 
             // إذا كان هناك قسم فرعي محدد، فلنعرض فقط الخدمات التابعة له

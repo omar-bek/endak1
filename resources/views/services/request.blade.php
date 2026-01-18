@@ -525,9 +525,8 @@
                                                                 <input type="file"
                                                                     name="custom_fields[{{ $field->name }}][0][]"
                                                                     id="custom_fields_{{ $field->name }}_0"
-                                                                    class="form-control d-none image-file-input" 
-                                                                    accept="image/*" 
-                                                                    multiple
+                                                                    class="form-control d-none image-file-input"
+                                                                    accept="image/*" multiple
                                                                     data-field-name="{{ $field->name }}"
                                                                     {{ $field->is_required ? 'required' : '' }}
                                                                     onchange="handleImageUpload(this)">
@@ -1128,7 +1127,8 @@
                         const reader = new FileReader();
                         reader.onload = function(e) {
                             console.log('Image loaded, adding preview for:', file.name);
-                            addImagePreview(e.target.result, file.name, fieldName, previewContainer);
+                            addImagePreview(e.target.result, file.name, fieldName,
+                            previewContainer);
                         };
                         reader.onerror = function(e) {
                             console.error('Error reading file:', file.name, e);
@@ -1169,7 +1169,8 @@
 
                     console.log('Created preview element:', col);
                     container.appendChild(col);
-                    console.log('Image preview added to container. Container children count:', container.children.length);
+                    console.log('Image preview added to container. Container children count:', container.children
+                        .length);
                     console.log('Image preview added successfully');
 
                     // إضافة event listener لزر الحذف الجديد
@@ -1262,7 +1263,8 @@
 
                     allFileInputs.forEach(function(input) {
                         // التحقق من أن الـ input خاص بالصور
-                        if (input.accept && (input.accept.includes('image') || input.accept === 'image/*')) {
+                        if (input.accept && (input.accept.includes('image') || input.accept ===
+                                'image/*')) {
                             console.log('Setting up image input:', input.id, input.name);
 
                             // إضافة event listener مباشر (بدون clone)
@@ -1716,7 +1718,7 @@
             // Validate all required custom fields from backend data
             if (typeof requiredCustomFields !== 'undefined' && requiredCustomFields.length > 0) {
                 console.log('Validating required custom fields from backend data:', requiredCustomFields
-                .length);
+                    .length);
 
                 const currentLangForValidation = '{{ app()->getLocale() }}';
 
@@ -1922,7 +1924,8 @@
 
             allFileInputs.forEach(function(input) {
                 // التحقق من أن الـ input خاص بالصور
-                if (input.accept && (input.accept.includes('image') || input.accept === 'image/*')) {
+                if (input.accept && (input.accept.includes('image') || input.accept ===
+                        'image/*')) {
                     console.log('Adding backup listener to:', input.id, input.name);
 
                     // إضافة event listener مباشر

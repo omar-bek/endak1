@@ -71,6 +71,10 @@ class ServiceController extends BaseApiController
             $this->validateRootFields($request);
 
             $data = $this->validateServiceData($request);
+
+            // التحقق الإضافي من الصور
+            $this->validateImages($request);
+
             $data['user_id'] = $request->user()->id;
             $data['is_active'] = true;
             $data['price'] = $request->input('price', 0.00);
@@ -111,7 +115,7 @@ class ServiceController extends BaseApiController
         return $this->executeApiWithTryCatch(function () use ($request, $service) {
             $this->authorizeServiceOwner($request->user()->id, $service);
 
-            $data = $request->validate([
+            $rules = [
                 'title' => ['sometimes', 'string', 'max:255'],
                 'description' => ['sometimes', 'string'],
                 'price' => ['sometimes', 'nullable', 'numeric', 'min:0'],
@@ -120,7 +124,16 @@ class ServiceController extends BaseApiController
                 'city_id' => ['sometimes', 'exists:cities,id'],
                 'custom_fields' => ['sometimes', 'array'],
                 'is_active' => ['sometimes', 'boolean'],
-            ]);
+            ];
+
+            // إضافة قواعد validation للصور
+            $imageRules = $this->getImageValidationRules($request, true);
+            $rules = array_merge($rules, $imageRules);
+
+            $data = $request->validate($rules);
+
+            // التحقق الإضافي من الصور
+            $this->validateImages($request);
 
             $categoryId = $data['category_id'] ?? $service->category_id;
             $subCategoryId = $data['sub_category_id'] ?? $service->sub_category_id;
@@ -193,7 +206,7 @@ class ServiceController extends BaseApiController
      */
     private function validateServiceData(Request $request): array
     {
-        return $request->validate([
+        $rules = [
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
             'price' => ['nullable', 'numeric', 'min:0'],
@@ -202,7 +215,13 @@ class ServiceController extends BaseApiController
             'city_id' => ['required', 'exists:cities,id'],
             'custom_fields' => ['nullable', 'array'],
             'custom_fields.*' => ['nullable'],
-        ]);
+        ];
+
+        // إضافة قواعد validation للصور
+        $imageRules = $this->getImageValidationRules($request);
+        $rules = array_merge($rules, $imageRules);
+
+        return $request->validate($rules);
     }
 
     /**
@@ -731,6 +750,104 @@ class ServiceController extends BaseApiController
             throw ValidationException::withMessages([
                 'city_id' => "المدينة '{$city->name_ar}' معطلة للقسم '{$category->name}' حالياً"
             ]);
+        }
+    }
+
+    /**
+     * الحصول على قواعد validation للصور
+     *
+     * @param Request $request
+     * @param bool $isUpdate
+     * @return array
+     */
+    private function getImageValidationRules(Request $request, bool $isUpdate = false): array
+    {
+        $rules = [];
+        $prefix = $isUpdate ? 'sometimes|' : '';
+
+        // التحقق من الصورة الرئيسية (image)
+        if ($request->hasFile('image')) {
+            $rules['image'] = $prefix . 'image|mimes:jpeg,jpg,png,gif,webp|max:5120';
+        } elseif ($request->has('image')) {
+            // إذا كانت الصورة كـ base64 أو URL
+            $rules['image'] = $prefix . 'string|max:10000';
+        }
+
+        // التحقق من الصور المتعددة (images)
+        if ($request->hasFile('images')) {
+            $rules['images'] = 'array|max:10';
+            $rules['images.*'] = 'image|mimes:jpeg,jpg,png,gif,webp|max:5120';
+        } elseif ($request->has('images') && is_array($request->input('images'))) {
+            $rules['images'] = 'array|max:10';
+            $rules['images.*'] = 'string|max:10000';
+        }
+
+        return $rules;
+    }
+
+    /**
+     * التحقق من الصور يدوياً (للتحقق الإضافي)
+     *
+     * @param Request $request
+     * @return void
+     * @throws ValidationException
+     */
+    private function validateImages(Request $request): void
+    {
+        $errors = [];
+        $maxSize = 5 * 1024 * 1024; // 5MB
+        $allowedMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+        // التحقق من الصورة الرئيسية
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+
+            if (!$image->isValid()) {
+                $errors['image'] = 'الصورة الرئيسية غير صالحة';
+            } else {
+                // التحقق من نوع الملف
+                $mimeType = $image->getMimeType();
+                if (!in_array($mimeType, $allowedMimes)) {
+                    $errors['image'] = 'نوع الصورة الرئيسية غير مدعوم. يجب أن يكون: ' . implode(', ', $allowedExtensions);
+                }
+
+                // التحقق من حجم الملف
+                if ($image->getSize() > $maxSize) {
+                    $errors['image'] = 'حجم الصورة الرئيسية كبير جداً. الحد الأقصى هو 5MB';
+                }
+            }
+        }
+
+        // التحقق من الصور المتعددة
+        if ($request->hasFile('images')) {
+            $images = $request->file('images');
+
+            if (count($images) > 10) {
+                $errors['images'] = 'يمكن رفع 10 صور كحد أقصى';
+            }
+
+            foreach ($images as $index => $image) {
+                if (!$image->isValid()) {
+                    $errors["images.{$index}"] = "الصورة رقم " . ($index + 1) . " غير صالحة";
+                    continue;
+                }
+
+                // التحقق من نوع الملف
+                $mimeType = $image->getMimeType();
+                if (!in_array($mimeType, $allowedMimes)) {
+                    $errors["images.{$index}"] = "نوع الصورة رقم " . ($index + 1) . " غير مدعوم. يجب أن يكون: " . implode(', ', $allowedExtensions);
+                }
+
+                // التحقق من حجم الملف
+                if ($image->getSize() > $maxSize) {
+                    $errors["images.{$index}"] = "حجم الصورة رقم " . ($index + 1) . " كبير جداً. الحد الأقصى هو 5MB";
+                }
+            }
+        }
+
+        if (!empty($errors)) {
+            throw ValidationException::withMessages($errors);
         }
     }
 }

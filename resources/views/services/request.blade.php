@@ -525,8 +525,12 @@
                                                                 <input type="file"
                                                                     name="custom_fields[{{ $field->name }}][0][]"
                                                                     id="custom_fields_{{ $field->name }}_0"
-                                                                    class="form-control d-none" accept="image/*" multiple
-                                                                    {{ $field->is_required ? 'required' : '' }}>
+                                                                    class="form-control d-none image-file-input" 
+                                                                    accept="image/*" 
+                                                                    multiple
+                                                                    data-field-name="{{ $field->name }}"
+                                                                    {{ $field->is_required ? 'required' : '' }}
+                                                                    onchange="handleImageUpload(this)">
 
                                                                 <button type="button"
                                                                     class="btn btn-outline-primary btn-sm"
@@ -1047,32 +1051,241 @@
                 }
             }
 
+            // تعريف handleImageUpload قبل استخدامها (يجب أن تكون global)
+            window.handleImageUpload = function(input) {
+                console.log('handleImageUpload called with input:', input);
+
+                const files = Array.from(input.files);
+                console.log('Files array:', files);
+
+                // البحث عن fieldName بطريقة مختلفة
+                let fieldName = null;
+                let previewContainer = null;
+
+                console.log('Input element:', input);
+                console.log('Input id:', input.id);
+                console.log('Input name:', input.name);
+
+                // الطريقة الأولى: البحث في image-upload-container
+                const container = input.closest('.image-upload-container');
+                console.log('Container found:', container);
+                if (container) {
+                    fieldName = container.dataset.fieldName || container.getAttribute('data-field-name');
+                    console.log('Field name from container:', fieldName);
+                    if (fieldName) {
+                        previewContainer = document.getElementById('preview_' + fieldName + '_0');
+                        console.log('Preview container from container method:', previewContainer);
+                    }
+                }
+
+                // الطريقة الثانية: البحث في name attribute
+                if (!fieldName && input.name) {
+                    const nameMatch = input.name.match(/custom_fields\[([^\]]+)\]/);
+                    console.log('Name match result:', nameMatch);
+                    if (nameMatch && nameMatch[1]) {
+                        fieldName = nameMatch[1];
+                        previewContainer = document.getElementById('preview_' + fieldName + '_0');
+                        console.log('Field name from name attribute:', fieldName);
+                        console.log('Preview container from name method:', previewContainer);
+                    }
+                }
+
+                // الطريقة الثالثة: البحث في id attribute
+                if (!fieldName && input.id) {
+                    const idMatch = input.id.match(/custom_fields_([^_]+)_/);
+                    console.log('ID match result:', idMatch);
+                    if (idMatch && idMatch[1]) {
+                        fieldName = idMatch[1];
+                        previewContainer = document.getElementById('preview_' + fieldName + '_0');
+                        console.log('Field name from id attribute:', fieldName);
+                        console.log('Preview container from id method:', previewContainer);
+                    }
+                }
+
+                console.log('Handling upload for field:', fieldName);
+                console.log('Preview container:', previewContainer);
+                console.log('Files to process:', files.length);
+
+                if (!previewContainer) {
+                    console.error('Preview container not found for field:', fieldName);
+                    console.log('Available preview containers:');
+                    const allContainers = document.querySelectorAll('[id^="preview_"]');
+                    allContainers.forEach(container => console.log('-', container.id));
+                    alert('خطأ: لم يتم العثور على حاوية المعاينة');
+                    return;
+                }
+
+                if (files.length === 0) {
+                    console.log('No files selected');
+                    return;
+                }
+
+                files.forEach(function(file, index) {
+                    console.log('Processing file', index + 1, ':', file.name, 'Type:', file.type);
+
+                    if (file.type.startsWith('image/')) {
+                        console.log('Processing image:', file.name);
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            console.log('Image loaded, adding preview for:', file.name);
+                            addImagePreview(e.target.result, file.name, fieldName, previewContainer);
+                        };
+                        reader.onerror = function(e) {
+                            console.error('Error reading file:', file.name, e);
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        console.log('Skipping non-image file:', file.name);
+                        alert('تم تجاهل الملف: ' + file.name + ' (ليس صورة)');
+                    }
+                });
+            };
+
+            // تعريف addImagePreview قبل استخدامها
+            function addImagePreview(imageSrc, fileName, fieldName, container) {
+                console.log('Adding image preview for:', fileName);
+                console.log('Field name:', fieldName);
+                console.log('Container:', container);
+                console.log('Container element:', container ? container.constructor.name : 'null');
+
+                if (!container) {
+                    console.error('Container is null or undefined!');
+                    alert('خطأ: حاوية المعاينة غير موجودة');
+                    return;
+                }
+
+                try {
+                    const col = document.createElement('div');
+                    col.className = 'col-md-3 mb-2';
+
+                    col.innerHTML = `
+                <div class="image-preview-item">
+                    <img src="${imageSrc}" alt="${fileName}" class="img-fluid">
+                    <button type="button" class="remove-image-btn" data-field-name="${fieldName}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+
+                    console.log('Created preview element:', col);
+                    container.appendChild(col);
+                    console.log('Image preview added to container. Container children count:', container.children.length);
+                    console.log('Image preview added successfully');
+
+                    // إضافة event listener لزر الحذف الجديد
+                    const removeBtn = col.querySelector('.remove-image-btn');
+                    if (removeBtn) {
+                        removeBtn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            console.log('Remove button clicked for field:', fieldName);
+                            removeImagePreview(this, fieldName);
+                        });
+                        console.log('Event listener added to new remove button');
+                    }
+
+                    // إخفاء منطقة الرفع وإظهار زر إضافة المزيد
+                    const uploadArea = container.closest('.image-upload-container').querySelector('.upload-area');
+                    const addMoreBtn = document.getElementById('add_more_' + fieldName + '_0');
+
+                    if (uploadArea) {
+                        uploadArea.style.display = 'none';
+                        console.log('Upload area hidden');
+                    }
+
+                    if (addMoreBtn) {
+                        addMoreBtn.style.display = 'block';
+                        console.log('Add more button shown');
+                    }
+
+                    // إظهار رسالة نجاح
+                    console.log('Image preview completed successfully');
+
+                } catch (error) {
+                    console.error('Error adding image preview:', error);
+                    alert('خطأ في إضافة معاينة الصورة: ' + error.message);
+                }
+            }
+
+            // تعريف removeImagePreview قبل استخدامها
+            function removeImagePreview(button, fieldName) {
+                console.log('Removing image preview for field:', fieldName);
+
+                const previewItem = button.closest('.col-md-3');
+                if (previewItem) {
+                    previewItem.remove();
+                    console.log('Preview item removed');
+                }
+
+                // إظهار منطقة الرفع مرة أخرى إذا لم تعد هناك صور
+                const container = document.getElementById('preview_' + fieldName + '_0');
+                if (container) {
+                    const remainingImages = container.children.length;
+                    console.log('Remaining images:', remainingImages);
+
+                    if (remainingImages === 0) {
+                        // لا توجد صور متبقية - إظهار منطقة الرفع
+                        const uploadArea = container.closest('.image-upload-container').querySelector(
+                            '.upload-area');
+                        const addMoreBtn = document.getElementById('add_more_' + fieldName + '_0');
+
+                        if (uploadArea) {
+                            uploadArea.style.display = 'block';
+                            console.log('Upload area shown (no images left)');
+                        }
+
+                        if (addMoreBtn) {
+                            addMoreBtn.style.display = 'none';
+                            console.log('Add more button hidden (no images left)');
+                        }
+                    } else {
+                        // لا تزال هناك صور - إظهار زر إضافة المزيد
+                        const addMoreBtn = document.getElementById('add_more_' + fieldName + '_0');
+                        if (addMoreBtn) {
+                            addMoreBtn.style.display = 'block';
+                            console.log('Add more button shown (images still exist)');
+                        }
+                    }
+                }
+            }
+
             // رفع الصور المتعددة
             document.addEventListener('DOMContentLoaded', function() {
                 console.log('DOM loaded, initializing image upload...');
 
-                // انتظار قليل للتأكد من تحميل جميع العناصر
-                setTimeout(function() {
-                    console.log('Starting image upload setup...');
+                // تعريف دالة لإعداد event listeners
+                function setupImageUploadListeners() {
+                    console.log('Setting up image upload listeners...');
 
-                    // معالجة رفع الصور
-                    const fileInputs = document.querySelectorAll('input[type="file"][multiple]');
-                    console.log('Found', fileInputs.length, 'file inputs');
+                    // البحث عن جميع حقول الصور
+                    const allFileInputs = document.querySelectorAll('input[type="file"]');
+                    console.log('Found', allFileInputs.length, 'total file inputs');
 
-                    if (fileInputs.length === 0) {
-                        console.log('No file inputs found, trying alternative selector...');
-                        const altInputs = document.querySelectorAll('input[type="file"]');
-                        console.log('Found', altInputs.length, 'regular file inputs');
-                    }
+                    allFileInputs.forEach(function(input) {
+                        // التحقق من أن الـ input خاص بالصور
+                        if (input.accept && (input.accept.includes('image') || input.accept === 'image/*')) {
+                            console.log('Setting up image input:', input.id, input.name);
 
-                    fileInputs.forEach(function(input) {
-                        console.log('Setting up file input:', input.id, input.name);
-                        input.addEventListener('change', function(e) {
-                            console.log('File input changed:', e.target.files
-                                .length, 'files');
-                            handleImageUpload(e.target);
-                        });
+                            // إضافة event listener مباشر (بدون clone)
+                            input.addEventListener('change', function(e) {
+                                console.log('File input changed for:', input.id);
+                                console.log('Files selected:', e.target.files.length);
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleImageUpload(e.target);
+                                return false;
+                            }, true);
+
+                            console.log('Event listener added to:', input.id);
+                        }
                     });
+                }
+
+                // إعداد listeners مباشرة
+                setupImageUploadListeners();
+
+                // انتظار قليل وإعادة المحاولة للتأكد
+                setTimeout(function() {
+                    setupImageUploadListeners();
                 }, 500);
 
                 // معالجة السحب والإفلات
@@ -1119,182 +1332,6 @@
                     });
                 }, 500);
             });
-
-            function handleImageUpload(input) {
-                console.log('handleImageUpload called with input:', input);
-
-                const files = Array.from(input.files);
-                console.log('Files array:', files);
-
-                // البحث عن fieldName بطريقة مختلفة
-                let fieldName = null;
-                let previewContainer = null;
-
-                // الطريقة الأولى: البحث في image-upload-container
-                const container = input.closest('.image-upload-container');
-                if (container) {
-                    fieldName = container.dataset.fieldName;
-                    previewContainer = document.getElementById('preview_' + fieldName + '_0');
-                }
-
-                // الطريقة الثانية: البحث في name attribute
-                if (!fieldName && input.name) {
-                    const nameMatch = input.name.match(/custom_fields\[([^\]]+)\]/);
-                    if (nameMatch) {
-                        fieldName = nameMatch[1];
-                        previewContainer = document.getElementById('preview_' + fieldName + '_0');
-                    }
-                }
-
-                // الطريقة الثالثة: البحث في id attribute
-                if (!fieldName && input.id) {
-                    const idMatch = input.id.match(/custom_fields_([^_]+)_/);
-                    if (idMatch) {
-                        fieldName = idMatch[1];
-                        previewContainer = document.getElementById('preview_' + fieldName + '_0');
-                    }
-                }
-
-                console.log('Handling upload for field:', fieldName);
-                console.log('Preview container:', previewContainer);
-                console.log('Files to process:', files.length);
-
-                if (!previewContainer) {
-                    console.error('Preview container not found for field:', fieldName);
-                    console.log('Available preview containers:');
-                    const allContainers = document.querySelectorAll('[id^="preview_"]');
-                    allContainers.forEach(container => console.log('-', container.id));
-                    alert('خطأ: لم يتم العثور على حاوية المعاينة');
-                    return;
-                }
-
-                if (files.length === 0) {
-                    console.log('No files selected');
-                    return;
-                }
-
-                files.forEach(function(file, index) {
-                    console.log('Processing file', index + 1, ':', file.name, 'Type:', file.type);
-
-                    if (file.type.startsWith('image/')) {
-                        console.log('Processing image:', file.name);
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            console.log('Image loaded, adding preview for:', file.name);
-                            addImagePreview(e.target.result, file.name, fieldName, previewContainer);
-                        };
-                        reader.onerror = function(e) {
-                            console.error('Error reading file:', file.name, e);
-                        };
-                        reader.readAsDataURL(file);
-                    } else {
-                        console.log('Skipping non-image file:', file.name);
-                        alert('تم تجاهل الملف: ' + file.name + ' (ليس صورة)');
-                    }
-                });
-            }
-
-            function addImagePreview(imageSrc, fileName, fieldName, container) {
-                console.log('Adding image preview for:', fileName);
-
-                try {
-                    const col = document.createElement('div');
-                    col.className = 'col-md-3 mb-2';
-
-                    col.innerHTML = `
-                <div class="image-preview-item">
-                    <img src="${imageSrc}" alt="${fileName}" class="img-fluid">
-                    <button type="button" class="remove-image-btn" data-field-name="${fieldName}">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            `;
-
-                    container.appendChild(col);
-                    console.log('Image preview added successfully');
-
-                    // إضافة event listener لزر الحذف الجديد
-                    const removeBtn = col.querySelector('.remove-image-btn');
-                    if (removeBtn) {
-                        removeBtn.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            console.log('Remove button clicked for field:', fieldName);
-                            removeImagePreview(this, fieldName);
-                        });
-                        console.log('Event listener added to new remove button');
-                    }
-
-                    // إخفاء منطقة الرفع وإظهار زر إضافة المزيد
-                    const uploadArea = container.closest('.image-upload-container').querySelector('.upload-area');
-                    const addMoreBtn = document.getElementById('add_more_' + fieldName + '_0');
-
-                    if (uploadArea) {
-                        uploadArea.style.display = 'none';
-                        console.log('Upload area hidden');
-                    }
-
-                    if (addMoreBtn) {
-                        addMoreBtn.style.display = 'block';
-                        console.log('Add more button shown');
-                    }
-
-                    // إظهار رسالة نجاح
-                    console.log('Image preview completed successfully');
-
-                } catch (error) {
-                    console.error('Error adding image preview:', error);
-                    alert('خطأ في إضافة معاينة الصورة: ' + error.message);
-                }
-            }
-
-            function removeImagePreview(button, fieldName) {
-                console.log('Removing image preview for field:', fieldName);
-
-                const previewItem = button.closest('.col-md-3');
-                if (previewItem) {
-                    previewItem.remove();
-                    console.log('Preview item removed');
-                }
-
-                // إظهار منطقة الرفع مرة أخرى إذا لم تعد هناك صور
-                const container = document.getElementById('preview_' + fieldName + '_0');
-                if (container) {
-                    const remainingImages = container.children.length;
-                    console.log('Remaining images:', remainingImages);
-
-                    if (remainingImages === 0) {
-                        // لا توجد صور متبقية - إظهار منطقة الرفع
-                        const uploadArea = container.closest('.image-upload-container').querySelector(
-                            '.upload-area');
-                        const addMoreBtn = document.getElementById('add_more_' + fieldName + '_0');
-
-                        if (uploadArea) {
-                            uploadArea.style.display = 'block';
-                            console.log('Upload area shown (no images left)');
-                        }
-
-                        if (addMoreBtn) {
-                            addMoreBtn.style.display = 'none';
-                            console.log('Add more button hidden (no images left)');
-                        }
-                    } else {
-                        // لا تزال هناك صور - إظهار زر "إضافة المزيد"
-                        const uploadArea = container.closest('.image-upload-container').querySelector(
-                            '.upload-area');
-                        const addMoreBtn = document.getElementById('add_more_' + fieldName + '_0');
-
-                        if (uploadArea) {
-                            uploadArea.style.display = 'none';
-                            console.log('Upload area hidden (images still exist)');
-                        }
-
-                        if (addMoreBtn) {
-                            addMoreBtn.style.display = 'block';
-                            console.log('Add more button shown (images still exist)');
-                        }
-                    }
-                }
-            }
 
             // دالة لإظهار منطقة الرفع
             function showUploadArea(fieldName) {
@@ -1875,25 +1912,26 @@
             validationAlert.style.display = 'none';
         }
 
-        // إضافة event listener مباشر للعناصر الموجودة
+        // إضافة event listener مباشر للعناصر الموجودة (احتياطي)
         setTimeout(function() {
-            console.log('Adding direct event listeners...');
+            console.log('Adding backup event listeners...');
 
             // البحث عن جميع حقول الصور وإضافة event listeners مباشرة
             const allFileInputs = document.querySelectorAll('input[type="file"]');
-            console.log('Found', allFileInputs.length, 'total file inputs');
+            console.log('Found', allFileInputs.length, 'total file inputs for backup listeners');
 
             allFileInputs.forEach(function(input) {
-                console.log('Adding direct listener to:', input.id, input.name);
+                // التحقق من أن الـ input خاص بالصور
+                if (input.accept && (input.accept.includes('image') || input.accept === 'image/*')) {
+                    console.log('Adding backup listener to:', input.id, input.name);
 
-                // إزالة event listeners السابقة
-                input.removeEventListener('change', handleImageUpload);
-
-                // إضافة event listener جديد
-                input.addEventListener('change', function(e) {
-                    console.log('Direct listener triggered for:', input.id);
-                    handleImageUpload(e.target);
-                });
+                    // إضافة event listener مباشر
+                    input.addEventListener('change', function(e) {
+                        console.log('Backup listener triggered for:', input.id);
+                        console.log('Files selected:', e.target.files.length);
+                        handleImageUpload(e.target);
+                    }, true);
+                }
             });
 
             // إضافة event listeners للأزرار

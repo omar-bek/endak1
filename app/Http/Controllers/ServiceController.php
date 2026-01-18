@@ -137,12 +137,12 @@ class ServiceController extends Controller
             ->where('id', '!=', $service->id)
             ->where('is_active', true)
             ->with(['category', 'subCategory', 'user', 'city']);
-        
+
         // إذا كان المستخدم مسجل دخول وليس مزود خدمة، اعرض فقط خدماته
         if (auth()->check() && !auth()->user()->isProvider()) {
             $relatedServicesQuery->where('user_id', auth()->id());
         }
-        
+
         $relatedServices = $relatedServicesQuery->limit(6)->get();
 
         return view('services.show', compact('service', 'relatedServices', 'canProviderOffer', 'userOffer'));
@@ -347,53 +347,37 @@ class ServiceController extends Controller
      */
     private function validateCustomFields(Request $request, Category $category)
     {
-        // جلب جميع الحقول المخصصة النشطة والمطلوبة للقسم
-        $requiredFields = CategoryField::where('category_id', $category->id)
+        // جلب جميع الحقول المخصصة النشطة للقسم
+        $allFields = CategoryField::where('category_id', $category->id)
             ->where('is_active', true)
-            ->where('is_required', true)
             ->get();
 
         $errors = [];
         $customFields = $request->custom_fields ?? [];
 
-        foreach ($requiredFields as $field) {
+        foreach ($allFields as $field) {
             $fieldName = $field->name;
             $fieldValue = $customFields[$fieldName] ?? null;
 
-            // التحقق من وجود القيمة
-            if ($fieldValue === null || $fieldValue === '') {
-                $fieldLabel = app()->getLocale() == 'ar' ? $field->name_ar : $field->name_en;
-                $errors["custom_fields.{$fieldName}"] = "حقل '{$fieldLabel}' مطلوب";
-                continue;
+            // التحقق من الحقول المطلوبة فقط أولاً
+            if ($field->is_required) {
+                // التحقق من وجود القيمة
+                if ($fieldValue === null || $fieldValue === '') {
+                    $fieldLabel = app()->getLocale() == 'ar' ? $field->name_ar : $field->name_en;
+                    $errors["custom_fields.{$fieldName}"] = "حقل '{$fieldLabel}' مطلوب";
+                    continue;
+                }
             }
 
-            // التحقق حسب نوع الحقل
+            // التحقق حسب نوع الحقل (لجميع الحقول - مطلوبة وغير مطلوبة)
             switch ($field->type) {
                 case 'image':
-                    // للصور، يجب التحقق من وجود ملفات
-                    if (is_array($fieldValue)) {
-                        $hasFiles = false;
-                        foreach ($fieldValue as $value) {
-                            if (is_array($value)) {
-                                // ملفات متعددة في repeatable groups
-                                foreach ($value as $file) {
-                                    if ($file && (is_object($file) && method_exists($file, 'isValid') && $file->isValid())) {
-                                        $hasFiles = true;
-                                        break 2;
-                                    }
-                                }
-                            } elseif ($value !== null && $value !== '') {
-                                $hasFiles = true;
-                                break;
-                            }
+                    // التحقق من الصور (حتى لو كانت اختيارية)
+                    if ($fieldValue !== null && $fieldValue !== '') {
+                        $imageValidation = $this->validateImageField($fieldValue, $field, $fieldName);
+                        if ($imageValidation !== true) {
+                            $errors = array_merge($errors, $imageValidation);
                         }
-                        if (!$hasFiles) {
-                            $fieldLabel = app()->getLocale() == 'ar' ? $field->name_ar : $field->name_en;
-                            $errors["custom_fields.{$fieldName}"] = "يجب رفع صورة واحدة على الأقل لحقل '{$fieldLabel}'";
-                        }
-                    } else {
-                        $fieldLabel = app()->getLocale() == 'ar' ? $field->name_ar : $field->name_en;
-                        $errors["custom_fields.{$fieldName}"] = "حقل '{$fieldLabel}' مطلوب (يجب رفع صورة)";
                     }
                     break;
 
@@ -457,6 +441,121 @@ class ServiceController extends Controller
         }
 
         return true;
+    }
+
+    /**
+     * التحقق من حقل الصور
+     */
+    private function validateImageField($fieldValue, $field, string $fieldName): array|bool
+    {
+        $errors = [];
+        $fieldLabel = app()->getLocale() == 'ar' ? $field->name_ar : $field->name_en;
+        $maxSize = 5 * 1024 * 1024; // 5MB بالبايت
+        $allowedMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+        // التحقق من وجود الملفات
+        if (is_array($fieldValue)) {
+            $hasValidFiles = false;
+            $fileCount = 0;
+
+            foreach ($fieldValue as $value) {
+                if (is_array($value)) {
+                    // ملفات متعددة في repeatable groups
+                    foreach ($value as $file) {
+                        if ($file && (is_object($file) && method_exists($file, 'isValid'))) {
+                            $fileCount++;
+                            if ($file->isValid()) {
+                                $hasValidFiles = true;
+
+                                // التحقق من نوع الملف
+                                $mimeType = $file->getMimeType();
+                                if (!in_array($mimeType, $allowedMimes)) {
+                                    $errors["custom_fields.{$fieldName}"] = "نوع الملف غير مدعوم لحقل '{$fieldLabel}'. يجب أن يكون: " . implode(', ', $allowedExtensions);
+                                    continue;
+                                }
+
+                                // التحقق من الامتداد
+                                $extension = strtolower($file->getClientOriginalExtension());
+                                if (!in_array($extension, $allowedExtensions)) {
+                                    $errors["custom_fields.{$fieldName}"] = "امتداد الملف غير مدعوم لحقل '{$fieldLabel}'. يجب أن يكون: " . implode(', ', $allowedExtensions);
+                                    continue;
+                                }
+
+                                // التحقق من حجم الملف
+                                if ($file->getSize() > $maxSize) {
+                                    $maxSizeMB = round($maxSize / (1024 * 1024), 1);
+                                    $fileSizeMB = round($file->getSize() / (1024 * 1024), 1);
+                                    $errors["custom_fields.{$fieldName}"] = "حجم الملف كبير جداً لحقل '{$fieldLabel}'. الحد الأقصى: {$maxSizeMB}MB (الحجم الحالي: {$fileSizeMB}MB)";
+                                    continue;
+                                }
+
+                                // التحقق من أن الملف صورة فعلاً
+                                try {
+                                    $imageInfo = getimagesize($file->getRealPath());
+                                    if ($imageInfo === false) {
+                                        $errors["custom_fields.{$fieldName}"] = "الملف المرفوع ليس صورة صحيحة لحقل '{$fieldLabel}'";
+                                        continue;
+                                    }
+                                } catch (Exception $e) {
+                                    $errors["custom_fields.{$fieldName}"] = "حدث خطأ أثناء التحقق من صورة حقل '{$fieldLabel}'";
+                                    continue;
+                                }
+                            } else {
+                                $errors["custom_fields.{$fieldName}"] = "ملف غير صالح تم رفعه لحقل '{$fieldLabel}'";
+                            }
+                        }
+                    }
+                } elseif ($value !== null && $value !== '') {
+                    // قيمة نصية (رابط صورة موجودة - لن نتحقق منها)
+                    $hasValidFiles = true;
+                }
+            }
+
+            if (!$hasValidFiles && $field->is_required) {
+                $errors["custom_fields.{$fieldName}"] = "يجب رفع صورة واحدة على الأقل لحقل '{$fieldLabel}'";
+            }
+
+            // التحقق من عدد الصور (حد أقصى 10 صور لكل حقل)
+            if ($fileCount > 10) {
+                $errors["custom_fields.{$fieldName}"] = "عدد الصور كبير جداً لحقل '{$fieldLabel}'. الحد الأقصى: 10 صور";
+            }
+        } else {
+            // قيمة واحدة - التحقق إذا كان ملف
+            if ($field->is_required && ($fieldValue === null || $fieldValue === '')) {
+                $errors["custom_fields.{$fieldName}"] = "حقل '{$fieldLabel}' مطلوب (يجب رفع صورة)";
+            } elseif ($fieldValue instanceof \Illuminate\Http\UploadedFile) {
+                // التحقق من الملف الواحد
+                if (!$fieldValue->isValid()) {
+                    $errors["custom_fields.{$fieldName}"] = "ملف غير صالح تم رفعه لحقل '{$fieldLabel}'";
+                } else {
+                    // التحقق من نوع الملف
+                    $mimeType = $fieldValue->getMimeType();
+                    if (!in_array($mimeType, $allowedMimes)) {
+                        $errors["custom_fields.{$fieldName}"] = "نوع الملف غير مدعوم لحقل '{$fieldLabel}'. يجب أن يكون: " . implode(', ', $allowedExtensions);
+                    } else {
+                        // التحقق من حجم الملف
+                        if ($fieldValue->getSize() > $maxSize) {
+                            $maxSizeMB = round($maxSize / (1024 * 1024), 1);
+                            $fileSizeMB = round($fieldValue->getSize() / (1024 * 1024), 1);
+                            $errors["custom_fields.{$fieldName}"] = "حجم الملف كبير جداً لحقل '{$fieldLabel}'. الحد الأقصى: {$maxSizeMB}MB (الحجم الحالي: {$fileSizeMB}MB)";
+                        } else {
+                            // التحقق من أن الملف صورة فعلاً
+                            try {
+                                $imageInfo = getimagesize($fieldValue->getRealPath());
+                                if ($imageInfo === false) {
+                                    $errors["custom_fields.{$fieldName}"] = "الملف المرفوع ليس صورة صحيحة لحقل '{$fieldLabel}'";
+                                }
+                            } catch (Exception $e) {
+                                $errors["custom_fields.{$fieldName}"] = "حدث خطأ أثناء التحقق من صورة حقل '{$fieldLabel}'";
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return !empty($errors) ? $errors : true;
     }
 
     /**

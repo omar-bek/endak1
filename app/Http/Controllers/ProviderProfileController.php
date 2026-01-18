@@ -335,7 +335,7 @@ class ProviderProfileController extends Controller
             if (!$profile) {
                 return redirect()->route('provider.complete-profile')->with('error', 'يجب إكمال الملف الشخصي أولاً');
             }
-            
+
             // تحديد ما إذا كان المستخدم الحالي هو صاحب الملف الشخصي
             $isOwner = true; // دائماً true لأن هذا ملف المزود نفسه
 

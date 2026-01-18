@@ -66,27 +66,27 @@ class Category extends Model
     public function cities()
     {
         return $this->belongsToMany(City::class, 'category_cities')
-                    ->withPivot('is_active', 'sort_order')
-                    ->withTimestamps();
+            ->withPivot('is_active', 'sort_order')
+            ->withTimestamps();
     }
 
     // الحصول على المدن المفعلة فقط
     public function activeCities()
     {
         return $this->belongsToMany(City::class, 'category_cities')
-                    ->wherePivot('is_active', true)
-                    ->withPivot('sort_order')
-                    ->orderBy('category_cities.sort_order')
-                    ->orderBy('cities.name_ar');
+            ->wherePivot('is_active', true)
+            ->withPivot('sort_order')
+            ->orderBy('category_cities.sort_order')
+            ->orderBy('cities.name_ar');
     }
 
     // الحصول على الأقسام الرئيسية فقط
     public static function getMainCategories()
     {
         return self::whereNull('parent_id')
-                   ->where('is_active', true)
-                   ->orderBy('sort_order')
-                   ->get();
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->get();
     }
 
     public function getAllChildren()
@@ -145,17 +145,9 @@ class Category extends Model
         return asset('images/default-category.jpg');
     }
 
-    // استخدام slug في route model binding
+    // استخدام slug كـ route key
     public function getRouteKeyName()
     {
         return 'slug';
-    }
-
-    // تحميل النموذج باستخدام slug مع التحقق من أنه نشط
-    public function resolveRouteBinding($value, $field = null)
-    {
-        return $this->where('slug', $value)
-                    ->where('is_active', true)
-                    ->firstOrFail();
     }
 }

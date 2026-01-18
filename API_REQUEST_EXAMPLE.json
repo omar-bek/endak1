@@ -1,12 +1,1 @@
-{
-  "title": "خدمة نقل أثاث",
-  "description": "نقل أثاث من الرياض إلى جدة",
-  "price": 500.00,
-  "category_id": 40,
-  "city_id": 2,
-  "sub_category_id": null,
-  "slug": "service-slug-123",
-  "custom_fields": {
-    "الوقت": "14:30"
-  }
-}
+

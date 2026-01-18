@@ -340,11 +340,13 @@
             <div class="col-md-2 col-sm-6">
                 <select name="city" class="form-select">
 <option value="">{{ __('messages.filter_city_all') }}</option>
-                    @foreach($cities as $city)
-                    <option value="{{ $city->id }}" {{ request('city') == $city->id ? 'selected' : '' }}>
-                        {{ app()->getLocale() == 'ar' ? $city->name : $city->name_en }}
-                    </option>
-                    @endforeach
+                    @if(isset($cities) && $cities->count() > 0)
+                        @foreach($cities as $city)
+                        <option value="{{ $city->id }}" {{ request('city') == $city->id ? 'selected' : '' }}>
+                            {{ app()->getLocale() == 'ar' ? ($city->name_ar ?? '') : ($city->name_en ?? '') }}
+                        </option>
+                        @endforeach
+                    @endif
                 </select>
             </div>
 

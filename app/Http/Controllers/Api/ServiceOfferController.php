@@ -15,9 +15,9 @@ class ServiceOfferController extends BaseApiController
         return $this->executeApiWithTryCatch(function () use ($request) {
             $offers = ServiceOffer::query()
                 ->with(['service:id,title,slug,user_id', 'provider:id,name,avatar'])
-                ->when($request->user()->isProvider(), fn ($query) => $query->where('provider_id', $request->user()->id))
+                ->when($request->user()->isProvider(), fn($query) => $query->where('provider_id', $request->user()->id))
                 ->when(!$request->user()->isProvider(), function ($query) use ($request) {
-                    $query->whereHas('service', fn ($serviceQuery) => $serviceQuery->where('user_id', $request->user()->id));
+                    $query->whereHas('service', fn($serviceQuery) => $serviceQuery->where('user_id', $request->user()->id));
                 })
                 ->latest()
                 ->paginate($request->get('per_page', 15));
@@ -75,10 +75,16 @@ class ServiceOfferController extends BaseApiController
     public function accept(ServiceOffer $offer, Request $request)
     {
         return $this->executeApiWithTryCatch(function () use ($offer, $request) {
+            $user = $request->user();
             $serviceOwnerId = $offer->service->user_id;
 
-            if ($serviceOwnerId !== $request->user()->id) {
-                return $this->error('لا يمكنك تنفيذ هذا الإجراء', 403);
+            if ($serviceOwnerId !== $user->id) {
+                Log::warning('Unauthorized accept attempt', [
+                    'offer_id' => $offer->id,
+                    'service_owner_id' => $serviceOwnerId,
+                    'user_id' => $user->id,
+                ]);
+                return $this->error('لا يمكنك قبول هذا العرض. هذا العرض ليس لخدمتك', 403);
             }
 
             $offer->markAsAccepted();
@@ -95,10 +101,16 @@ class ServiceOfferController extends BaseApiController
     public function reject(ServiceOffer $offer, Request $request)
     {
         return $this->executeApiWithTryCatch(function () use ($offer, $request) {
+            $user = $request->user();
             $serviceOwnerId = $offer->service->user_id;
 
-            if ($serviceOwnerId !== $request->user()->id) {
-                return $this->error('لا يمكنك تنفيذ هذا الإجراء', 403);
+            if ($serviceOwnerId !== $user->id) {
+                Log::warning('Unauthorized reject attempt', [
+                    'offer_id' => $offer->id,
+                    'service_owner_id' => $serviceOwnerId,
+                    'user_id' => $user->id,
+                ]);
+                return $this->error('لا يمكنك رفض هذا العرض. هذا العرض ليس لخدمتك', 403);
             }
 
             $offer->update([
@@ -117,19 +129,39 @@ class ServiceOfferController extends BaseApiController
     public function deliver(ServiceOffer $offer, Request $request)
     {
         return $this->executeApiWithTryCatch(function () use ($offer, $request) {
-            if ($offer->provider_id !== $request->user()->id) {
-                return $this->error('لا يمكنك تنفيذ هذا الإجراء', 403);
+            $user = $request->user();
+            $serviceOwnerId = $offer->service->user_id;
+
+            // Log للتشخيص
+            Log::info('API Deliver offer attempt', [
+                'offer_id' => $offer->id,
+                'service_owner_id' => $serviceOwnerId,
+                'offer_provider_id' => $offer->provider_id,
+                'user_id' => $user->id,
+            ]);
+
+            // التحقق من أن المستخدم هو صاحب الخدمة (service owner)
+            if ($serviceOwnerId !== $user->id) {
+                Log::warning('Unauthorized deliver attempt', [
+                    'offer_id' => $offer->id,
+                    'service_owner_id' => $serviceOwnerId,
+                    'user_id' => $user->id,
+                ]);
+                return $this->error('لا يمكنك تسليم هذا العرض. هذا العرض ليس لخدمتك', 403);
             }
 
+            // التحقق من إمكانية التسليم
             if (!$offer->canBeDelivered()) {
-                return $this->error('لا يمكن تسليم هذا العرض حالياً', 422);
+                return $this->error('لا يمكن تسليم هذا العرض حالياً. يجب أن يكون العرض مقبولاً أولاً', 422);
             }
 
             $offer->markAsDelivered();
 
             Log::info('API Service offer delivered', [
                 'offer_id' => $offer->id,
-                'service_id' => $offer->service_id
+                'service_id' => $offer->service_id,
+                'service_owner_id' => $user->id,
+                'provider_id' => $offer->provider_id
             ]);
 
             return $this->success($offer->fresh(), 'تم تحديد العرض كمُسلم');
@@ -163,11 +195,3 @@ class ServiceOfferController extends BaseApiController
         }, 'حدث خطأ أثناء إضافة التقييم');
     }
 }
-
-
-
-
-
-
-
-

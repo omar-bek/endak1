@@ -20,11 +20,11 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::with(['parent', 'subCategories' => function($query) {
+        $categories = Category::with(['parent', 'subCategories' => function ($query) {
             $query->orderBy('name_ar');
         }])
-        ->orderBy('sort_order')
-        ->get();
+            ->orderBy('sort_order')
+            ->get();
 
         return view('admin.categories.index', compact('categories'));
     }
@@ -68,7 +68,15 @@ class CategoryController extends Controller
         Category::create($data);
 
         return redirect()->route('admin.categories.index')
-                         ->with('success', 'تم إنشاء القسم بنجاح');
+            ->with('success', 'تم إنشاء القسم بنجاح');
+    }
+
+    /**
+     * عرض قسم محدد (redirect إلى صفحة التعديل)
+     */
+    public function show(Category $category)
+    {
+        return redirect()->route('admin.categories.edit', $category);
     }
 
     /**
@@ -77,8 +85,8 @@ class CategoryController extends Controller
     public function edit(Category $category)
     {
         $categories = Category::whereNull('parent_id')
-                             ->where('id', '!=', $category->id)
-                             ->get();
+            ->where('id', '!=', $category->id)
+            ->get();
 
         return view('admin.categories.edit', compact('category', 'categories'));
     }
@@ -117,7 +125,7 @@ class CategoryController extends Controller
         $category->update($data);
 
         return redirect()->route('admin.categories.index')
-                         ->with('success', 'تم تحديث القسم بنجاح');
+            ->with('success', 'تم تحديث القسم بنجاح');
     }
 
     /**
@@ -133,7 +141,7 @@ class CategoryController extends Controller
         $category->delete();
 
         return redirect()->route('admin.categories.index')
-                         ->with('success', 'تم حذف القسم بنجاح');
+            ->with('success', 'تم حذف القسم بنجاح');
     }
 
     /**
@@ -146,6 +154,6 @@ class CategoryController extends Controller
         $status = $category->is_active ? 'مفعل' : 'معطل';
 
         return redirect()->route('admin.categories.index')
-                         ->with('success', "تم $status القسم بنجاح");
+            ->with('success', "تم $status القسم بنجاح");
     }
 }

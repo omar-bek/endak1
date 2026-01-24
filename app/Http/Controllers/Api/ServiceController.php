@@ -221,6 +221,31 @@ class ServiceController extends BaseApiController
         }, 'حدث خطأ أثناء جلب الخدمات');
     }
 
+    /**
+     * عرض خدمة محددة من خدمات المستخدم
+     */
+    public function showMyService(Request $request, int $id)
+    {
+        return $this->executeApiWithTryCatch(function () use ($request, $id) {
+            $service = $request->user()
+                ->services()
+                ->where('id', $id)
+                ->with([
+                    'category:id,name,slug',
+                    'subCategory:id,name_ar,name_en',
+                    'city:id,name_ar,name_en',
+                    'offers.provider:id,name,avatar',
+                ])
+                ->first();
+
+            if (!$service) {
+                return $this->error(null, 'الخدمة غير موجودة أو لا تخصك', 404);
+            }
+
+            return $this->success($service);
+        }, 'حدث خطأ أثناء جلب الخدمة');
+    }
+
     // ==================== Private Methods ====================
 
     /**
@@ -431,10 +456,49 @@ class ServiceController extends BaseApiController
             } else {
                 // التحقق من أن جميع الحقول المتاحة موجودة في custom_fields
                 foreach ($allFields as $field) {
+                    $fieldValue = null;
+
                     // إذا كان الحقل من نوع image، تحقق من الملفات المرفوعة أولاً
-                    if ($field->type === 'image' && $request->hasFile("custom_fields.{$field->name}")) {
-                        $fieldValue = $request->file("custom_fields.{$field->name}");
-                    } else {
+                    if ($field->type === 'image') {
+                        // البحث عن الملف باستخدام name أولاً
+                        if ($request->hasFile("custom_fields.{$field->name}")) {
+                            $fieldValue = $request->file("custom_fields.{$field->name}");
+                        }
+                        // ثم البحث باستخدام name_en
+                        elseif ($field->name_en && $request->hasFile("custom_fields.{$field->name_en}")) {
+                            $fieldValue = $request->file("custom_fields.{$field->name_en}");
+                        }
+                        // ثم البحث باستخدام name_ar
+                        elseif ($field->name_ar && $request->hasFile("custom_fields.{$field->name_ar}")) {
+                            $fieldValue = $request->file("custom_fields.{$field->name_ar}");
+                        }
+                        // البحث في جميع الملفات المرفوعة
+                        else {
+                            $allFiles = $request->allFiles();
+                            $fieldNameVariations = [
+                                $field->name,
+                                $field->name_en,
+                                $field->name_ar,
+                            ];
+
+                            foreach ($allFiles as $key => $file) {
+                                if (!is_object($file) || !method_exists($file, 'isValid')) {
+                                    continue;
+                                }
+
+                                $keyLower = strtolower($key);
+                                foreach ($fieldNameVariations as $variation) {
+                                    if ($variation && str_contains($keyLower, strtolower($variation))) {
+                                        $fieldValue = $file;
+                                        break 2;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // إذا لم نجد ملف مرفوع، نحاول جلب القيمة من custom_fields
+                    if (!$fieldValue) {
                         $fieldValue = $this->getFieldValue($customFields, $field);
                     }
 
@@ -1005,31 +1069,47 @@ class ServiceController extends BaseApiController
 
         foreach ($imageFields as $field) {
             $fieldName = $field->name;
-            $fieldValue = $processedFields[$fieldName] ?? null;
+
+            // البحث عن القيمة باستخدام name أو name_en
+            $fieldValue = $processedFields[$fieldName]
+                ?? $processedFields[$field->name_en]
+                ?? $processedFields[$field->name_ar]
+                ?? null;
 
             // البحث عن الملف المرفوع بطرق مختلفة
             $uploadedFile = null;
             $allFiles = $request->allFiles();
-            
+
             // إنشاء قائمة بجميع الاختلافات المحتملة لاسم الحقل
+            // الأولوية لـ name و name_en
             $fieldNameVariations = [
-                $fieldName,
+                $fieldName,  // name (الأولوية الأولى)
+                $field->name_en,  // name_en (الأولوية الثانية)
                 str_replace('_', '-', $fieldName),
+                str_replace('_', '-', $field->name_en),
                 strtolower($fieldName),
-                strtolower(str_replace('_', '-', $fieldName)),
-                $field->name_ar,
-                $field->name_en,
-                strtolower($field->name_ar),
                 strtolower($field->name_en),
+                strtolower(str_replace('_', '-', $fieldName)),
+                strtolower(str_replace('_', '-', $field->name_en)),
+                $field->name_ar,  // name_ar (الأولوية الثالثة)
+                strtolower($field->name_ar),
             ];
 
-            // الطريقة 1: custom_fields.fieldName
+            // الطريقة 1: custom_fields.fieldName (name)
             if ($request->hasFile("custom_fields.{$fieldName}")) {
                 $uploadedFile = $request->file("custom_fields.{$fieldName}");
             }
-            // الطريقة 2: custom_fields[fieldName]
+            // الطريقة 2: custom_fields.name_en
+            elseif ($field->name_en && $request->hasFile("custom_fields.{$field->name_en}")) {
+                $uploadedFile = $request->file("custom_fields.{$field->name_en}");
+            }
+            // الطريقة 3: custom_fields[fieldName] (name)
             elseif ($request->hasFile("custom_fields[{$fieldName}]")) {
                 $uploadedFile = $request->file("custom_fields[{$fieldName}]");
+            }
+            // الطريقة 4: custom_fields[name_en]
+            elseif ($field->name_en && $request->hasFile("custom_fields[{$field->name_en}]")) {
+                $uploadedFile = $request->file("custom_fields[{$field->name_en}]");
             }
             // الطريقة 3: البحث في جميع الملفات المرفوعة باستخدام الاختلافات
             else {
@@ -1037,15 +1117,17 @@ class ServiceController extends BaseApiController
                     if (!is_object($file) || !method_exists($file, 'isValid')) {
                         continue;
                     }
-                    
+
                     $keyLower = strtolower($key);
                     foreach ($fieldNameVariations as $variation) {
                         $variationLower = strtolower($variation);
                         // البحث المطابق الكامل أو الجزئي
-                        if ($keyLower === $variationLower || 
+                        if (
+                            $keyLower === $variationLower ||
                             $keyLower === "custom_fields.{$variationLower}" ||
                             $keyLower === "custom_fields[{$variationLower}]" ||
-                            str_contains($keyLower, $variationLower)) {
+                            str_contains($keyLower, $variationLower)
+                        ) {
                             $uploadedFile = $file;
                             Log::info('Found uploaded file', [
                                 'field_name' => $fieldName,
@@ -1104,7 +1186,7 @@ class ServiceController extends BaseApiController
                 continue;
             }
 
-            // إذا كانت القيمة اسم ملف فقط (مثل 
+            // إذا كانت القيمة اسم ملف فقط (مثل
             // نحاول البحث عن الملف المرفوع في الطلب
             if (is_string($fieldValue) && preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', $fieldValue)) {
                 // البحث عن الملف في جميع الملفات المرفوعة

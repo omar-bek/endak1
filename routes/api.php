@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController as ApiAuthController;
 use App\Http\Controllers\Api\CategoryController as ApiCategoryController;
 use App\Http\Controllers\Api\CategoryFieldController as ApiCategoryFieldController;
+use App\Http\Controllers\Api\CityController as ApiCityController;
 use App\Http\Controllers\Api\MessageController as ApiMessageController;
 use App\Http\Controllers\Api\NotificationController as ApiNotificationController;
 use App\Http\Controllers\Api\ServiceController as ApiServiceController;
@@ -96,6 +97,10 @@ Route::get('register', function () {
 
 Route::post('register', [ApiAuthController::class, 'register'])->name('api.register');
 
+// Public API endpoints (without v1 prefix)
+Route::get('categories/{category}/fields', [ApiCategoryFieldController::class, 'index'])->whereNumber('category');
+Route::get('categories/{category}/fields/grouped', [ApiCategoryFieldController::class, 'grouped'])->whereNumber('category');
+
 Route::prefix('v1')->name('api.v1.')->group(function () {
     Route::get('/status', function () {
         return response()->json([
@@ -119,6 +124,10 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
 
     Route::get('services', [ApiServiceController::class, 'index']);
     Route::get('services/{service}', [ApiServiceController::class, 'show'])->whereNumber('service');
+
+    // Cities endpoints
+    Route::get('cities', [ApiCityController::class, 'index']);
+    Route::get('cities/{id}', [ApiCityController::class, 'show'])->whereNumber('id');
 
     // Auth
     Route::get('auth/login', function () {
@@ -214,6 +223,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
 
         // Services
         Route::get('services/me', [ApiServiceController::class, 'myServices']);
+        Route::get('services/me/{id}', [ApiServiceController::class, 'showMyService'])->whereNumber('id');
         Route::post('services', [ApiServiceController::class, 'store']);
         Route::put('services/{service}', [ApiServiceController::class, 'update'])->whereNumber('service');
         Route::delete('services/{service}', [ApiServiceController::class, 'destroy'])->whereNumber('service');
@@ -230,7 +240,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         Route::get('notifications', [ApiNotificationController::class, 'index']);
         Route::post('notifications/mark-all-read', [ApiNotificationController::class, 'markAllAsRead']);
         Route::post('notifications/{notification}/read', [ApiNotificationController::class, 'markAsRead'])->whereNumber('notification');
-        Route::delete('notifications/{notification}', [ApiNotificationController::class, 'destroy'])->whereNumber('notification');
+        Route::delete('notifications/{notification}', [ApiNotificationController::class, 'destroy'])->whereNumber(parameters: 'notification');
 
         // Messages
         Route::get('messages', [ApiMessageController::class, 'index']);

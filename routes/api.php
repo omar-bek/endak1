@@ -124,8 +124,8 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
     Route::get('categories/{category}/fields/grouped', [ApiCategoryFieldController::class, 'grouped'])->whereNumber('category');
     Route::get('categories/{category}/fields/{field}', [ApiCategoryFieldController::class, 'show'])->whereNumber(['category', 'field']);
 
-    Route::get('services', [ApiServiceController::class, 'index']);
     Route::get('services/search', [ApiServiceController::class, 'search']);
+    Route::get('services', [ApiServiceController::class, 'index']);
     Route::get('services/{service}', [ApiServiceController::class, 'show'])->whereNumber('service');
 
     // Cities endpoints

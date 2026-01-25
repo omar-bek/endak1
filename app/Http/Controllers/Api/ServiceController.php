@@ -53,106 +53,144 @@ class ServiceController extends BaseApiController
     public function search(Request $request)
     {
         return $this->executeApiWithTryCatch(function () use ($request) {
-            $query = Service::query()
-                ->where('is_active', true)
-                ->with([
-                    'category:id,name,name_ar,name_en,slug',
-                    'subCategory:id,name_ar,name_en',
-                    'city:id,name_ar,name_en',
-                    'user:id,name,avatar,phone'
+            try {
+                $query = Service::query()
+                    ->where('is_active', true)
+                    ->with([
+                        'category:id,name,name_ar,name_en,slug',
+                        'subCategory:id,name_ar,name_en',
+                        'city:id,name_ar,name_en',
+                        'user:id,name,avatar,phone'
+                    ]);
+
+                // البحث النصي
+                if ($request->filled('search')) {
+                    $searchTerm = $request->get('search');
+                    $query->where(function ($q) use ($searchTerm) {
+                        $q->where('title', 'like', "%{$searchTerm}%")
+                            ->orWhere('description', 'like', "%{$searchTerm}%")
+                            ->orWhere('location', 'like', "%{$searchTerm}%");
+                    });
+                }
+
+                // تصفية حسب القسم
+                if ($request->filled('category')) {
+                    $categoryId = filter_var($request->get('category'), FILTER_VALIDATE_INT);
+                    if ($categoryId !== false) {
+                        $query->where('category_id', $categoryId);
+                    }
+                } elseif ($request->filled('category_id')) {
+                    $categoryId = filter_var($request->get('category_id'), FILTER_VALIDATE_INT);
+                    if ($categoryId !== false) {
+                        $query->where('category_id', $categoryId);
+                    }
+                }
+
+                // تصفية حسب القسم الفرعي
+                if ($request->filled('sub_category')) {
+                    $subCategoryId = filter_var($request->get('sub_category'), FILTER_VALIDATE_INT);
+                    if ($subCategoryId !== false) {
+                        $query->where('sub_category_id', $subCategoryId);
+                    }
+                } elseif ($request->filled('sub_category_id')) {
+                    $subCategoryId = filter_var($request->get('sub_category_id'), FILTER_VALIDATE_INT);
+                    if ($subCategoryId !== false) {
+                        $query->where('sub_category_id', $subCategoryId);
+                    }
+                }
+
+                // تصفية حسب المدينة
+                if ($request->filled('city')) {
+                    $cityId = filter_var($request->get('city'), FILTER_VALIDATE_INT);
+                    if ($cityId !== false) {
+                        $query->where('city_id', $cityId);
+                    }
+                } elseif ($request->filled('city_id')) {
+                    $cityId = filter_var($request->get('city_id'), FILTER_VALIDATE_INT);
+                    if ($cityId !== false) {
+                        $query->where('city_id', $cityId);
+                    }
+                }
+
+                // تصفية حسب المستخدم
+                if ($request->filled('user_id')) {
+                    $userId = filter_var($request->get('user_id'), FILTER_VALIDATE_INT);
+                    if ($userId !== false) {
+                        $query->where('user_id', $userId);
+                    }
+                }
+
+                // تصفية حسب السعر (نطاق)
+                if ($request->filled('min_price')) {
+                    $minPrice = filter_var($request->get('min_price'), FILTER_VALIDATE_FLOAT);
+                    if ($minPrice !== false) {
+                        $query->where('price', '>=', $minPrice);
+                    }
+                }
+                if ($request->filled('max_price')) {
+                    $maxPrice = filter_var($request->get('max_price'), FILTER_VALIDATE_FLOAT);
+                    if ($maxPrice !== false) {
+                        $query->where('price', '<=', $maxPrice);
+                    }
+                }
+
+                // الترتيب
+                $sortBy = $request->get('sort_by', 'latest'); // latest, oldest, price_asc, price_desc
+                switch ($sortBy) {
+                    case 'oldest':
+                        $query->oldest();
+                        break;
+                    case 'price_asc':
+                        $query->orderBy('price', 'asc');
+                        break;
+                    case 'price_desc':
+                        $query->orderBy('price', 'desc');
+                        break;
+                    case 'latest':
+                    default:
+                        $query->latest();
+                        break;
+                }
+
+                // Pagination
+                $perPage = $request->get('per_page', 12);
+                $perPage = filter_var($perPage, FILTER_VALIDATE_INT, [
+                    'options' => ['min_range' => 1, 'max_range' => 100, 'default' => 12]
                 ]);
 
-            // البحث النصي
-            if ($request->filled('search')) {
-                $searchTerm = $request->get('search');
-                $query->where(function ($q) use ($searchTerm) {
-                    $q->where('title', 'like', "%{$searchTerm}%")
-                        ->orWhere('description', 'like', "%{$searchTerm}%")
-                        ->orWhere('location', 'like', "%{$searchTerm}%");
-                });
+                $services = $query->paginate($perPage);
+
+                // إضافة معلومات إضافية للاستجابة
+                $response = [
+                    'services' => $services->items(),
+                    'pagination' => [
+                        'current_page' => $services->currentPage(),
+                        'last_page' => $services->lastPage(),
+                        'per_page' => $services->perPage(),
+                        'total' => $services->total(),
+                        'from' => $services->firstItem(),
+                        'to' => $services->lastItem(),
+                    ],
+                    'filters_applied' => [
+                        'search' => $request->get('search'),
+                        'category_id' => $request->get('category') ?? $request->get('category_id'),
+                        'sub_category_id' => $request->get('sub_category') ?? $request->get('sub_category_id'),
+                        'city_id' => $request->get('city') ?? $request->get('city_id'),
+                        'min_price' => $request->get('min_price'),
+                        'max_price' => $request->get('max_price'),
+                        'sort_by' => $sortBy,
+                    ],
+                ];
+
+                return $this->success($response, 'تم جلب نتائج البحث بنجاح');
+            } catch (\Exception $e) {
+                Log::error('Error in ServiceController@search', [
+                    'message' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                    'request' => $request->all(),
+                ]);
+                throw $e;
             }
-
-            // تصفية حسب القسم
-            if ($request->filled('category')) {
-                $query->where('category_id', $request->integer('category'));
-            } elseif ($request->filled('category_id')) {
-                $query->where('category_id', $request->integer('category_id'));
-            }
-
-            // تصفية حسب القسم الفرعي
-            if ($request->filled('sub_category')) {
-                $query->where('sub_category_id', $request->integer('sub_category'));
-            } elseif ($request->filled('sub_category_id')) {
-                $query->where('sub_category_id', $request->integer('sub_category_id'));
-            }
-
-            // تصفية حسب المدينة
-            if ($request->filled('city')) {
-                $query->where('city_id', $request->integer('city'));
-            } elseif ($request->filled('city_id')) {
-                $query->where('city_id', $request->integer('city_id'));
-            }
-
-            // تصفية حسب المستخدم
-            if ($request->filled('user_id')) {
-                $query->where('user_id', $request->integer('user_id'));
-            }
-
-            // تصفية حسب السعر (نطاق)
-            if ($request->filled('min_price')) {
-                $query->where('price', '>=', $request->numeric('min_price'));
-            }
-            if ($request->filled('max_price')) {
-                $query->where('price', '<=', $request->numeric('max_price'));
-            }
-
-            // الترتيب
-            $sortBy = $request->get('sort_by', 'latest'); // latest, oldest, price_asc, price_desc
-            switch ($sortBy) {
-                case 'oldest':
-                    $query->oldest();
-                    break;
-                case 'price_asc':
-                    $query->orderBy('price', 'asc');
-                    break;
-                case 'price_desc':
-                    $query->orderBy('price', 'desc');
-                    break;
-                case 'latest':
-                default:
-                    $query->latest();
-                    break;
-            }
-
-            // Pagination
-            $perPage = $request->get('per_page', 12);
-            $perPage = min(max($perPage, 1), 100); // Limit between 1 and 100
-
-            $services = $query->paginate($perPage);
-
-            // إضافة معلومات إضافية للاستجابة
-            $response = [
-                'services' => $services->items(),
-                'pagination' => [
-                    'current_page' => $services->currentPage(),
-                    'last_page' => $services->lastPage(),
-                    'per_page' => $services->perPage(),
-                    'total' => $services->total(),
-                    'from' => $services->firstItem(),
-                    'to' => $services->lastItem(),
-                ],
-                'filters_applied' => [
-                    'search' => $request->get('search'),
-                    'category_id' => $request->get('category') ?? $request->get('category_id'),
-                    'sub_category_id' => $request->get('sub_category') ?? $request->get('sub_category_id'),
-                    'city_id' => $request->get('city') ?? $request->get('city_id'),
-                    'min_price' => $request->get('min_price'),
-                    'max_price' => $request->get('max_price'),
-                    'sort_by' => $sortBy,
-                ],
-            ];
-
-            return $this->success($response, 'تم جلب نتائج البحث بنجاح');
         }, 'حدث خطأ أثناء البحث في الخدمات');
     }
 

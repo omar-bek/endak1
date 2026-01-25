@@ -223,6 +223,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         Route::post('auth/logout', [ApiAuthController::class, 'logout']);
         Route::get('auth/profile', [ApiAuthController::class, 'profile']);
         Route::put('auth/profile', [ApiAuthController::class, 'updateProfile']);
+        Route::post('auth/complete-profile', [ApiAuthController::class, 'completeProfile']);
 
         // Services
         Route::get('services/me', [ApiServiceController::class, 'myServices']);

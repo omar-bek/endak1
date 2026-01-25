@@ -25,10 +25,19 @@ abstract class BaseApiController
         } catch (Exception $e) {
             Log::error('API Error', [
                 'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return $this->error(null, $errorMessage, 500);
+            // في وضع التطوير، أظهر تفاصيل الخطأ
+            $errorDetails = config('app.debug') ? [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ] : null;
+
+            return $this->error($errorDetails, $errorMessage, 500);
         }
     }
 

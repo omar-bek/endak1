@@ -24,7 +24,7 @@ class ServiceController extends BaseApiController
         return $this->executeApiWithTryCatch(function () use ($request) {
             $services = Service::query()
                 ->where('is_active', true)
-                ->with(['category:id,name,slug', 'subCategory:id,name_ar,name_en', 'city:id,name_ar,name_en', 'user:id,name,avatar'])
+                ->with(['category:id,name,name_en,slug', 'subCategory:id,name_ar,name_en', 'city:id,name_ar,name_en', 'user:id,name,avatar'])
                 ->when($request->filled('category_id'), fn($q) => $q->where('category_id', $request->integer('category_id')))
                 ->when($request->filled('sub_category_id'), fn($q) => $q->where('sub_category_id', $request->integer('sub_category_id')))
                 ->when($request->filled('city_id'), fn($q) => $q->where('city_id', $request->integer('city_id')))
@@ -57,7 +57,7 @@ class ServiceController extends BaseApiController
                 $query = Service::query()
                     ->where('is_active', true)
                     ->with([
-                        'category:id,name,name_ar,name_en,slug',
+                        'category:id,name,name_en,slug',
                         'subCategory:id,name_ar,name_en',
                         'city:id,name_ar,name_en',
                         'user:id,name,avatar,phone'
@@ -201,7 +201,7 @@ class ServiceController extends BaseApiController
     {
         return $this->executeApiWithTryCatch(function () use ($service) {
             $service->load([
-                'category:id,name,slug',
+                'category:id,name,name_en,slug',
                 'subCategory:id,name_ar,name_en',
                 'city:id,name_ar,name_en',
                 'user:id,name,avatar',

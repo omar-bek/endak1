@@ -219,10 +219,13 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
 
     Route::post('auth/register', [ApiAuthController::class, 'register']);
 
+    // Google Login
+    Route::post('auth/google', [ApiAuthController::class, 'googleLogin']);
+
     Route::middleware('api.token')->group(function () {
         Route::post('auth/logout', [ApiAuthController::class, 'logout']);
         Route::get('auth/profile', [ApiAuthController::class, 'profile']);
-        Route::put('auth/profile', [ApiAuthController::class, 'updateProfile']);
+        Route::post('auth/profile', [ApiAuthController::class, 'updateProfile']);
         Route::post('auth/complete-profile', [ApiAuthController::class, 'completeProfile']);
 
         // Services

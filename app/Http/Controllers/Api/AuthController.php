@@ -7,6 +7,8 @@ use App\Models\ProviderProfile;
 use App\Models\ProviderCategory;
 use App\Models\ProviderCity;
 use App\Models\SystemSetting;
+use App\Models\Category;
+use App\Models\City;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -177,6 +179,88 @@ class AuthController extends BaseApiController
     }
 
     /**
+     * جلب بيانات الملف الشخصي لإكماله
+     * GET /api/v1/auth/complete-profile
+     */
+    public function getCompleteProfile(Request $request)
+    {
+        return $this->executeApiWithTryCatch(function () use ($request) {
+            /** @var User $user */
+            $user = $request->user();
+
+            // Load user with all relationships
+            $user->load([
+                'providerProfile',
+                'providerCategories' => function ($query) {
+                    $query->with(['category:id,name,name_en,slug,icon,image']);
+                },
+                'providerCities' => function ($query) {
+                    $query->with(['city:id,name_ar,name_en,slug']);
+                }
+            ]);
+
+            // جلب الأقسام والمدن المتاحة
+            $categories = Category::query()
+                ->where('is_active', true)
+                ->whereNull('parent_id')
+                ->with([
+                    'children' => fn($query) => $query->where('is_active', true)->orderBy('sort_order'),
+                ])
+                ->orderBy('sort_order')
+                ->get(['id', 'name', 'name_en', 'slug', 'icon', 'image', 'sort_order']);
+
+            $cities = City::query()
+                ->where('is_active', true)
+                ->orderBy('sort_order')
+                ->orderBy('name_ar')
+                ->get(['id', 'name_ar', 'name_en', 'slug', 'sort_order']);
+
+            // جلب الحد الأقصى
+            $maxCategories = SystemSetting::get('provider_max_categories', 3);
+            $maxCities = SystemSetting::get('provider_max_cities', 5);
+
+            return $this->success([
+                'user' => $user,
+                'available_categories' => $categories->map(function ($category) {
+                    return [
+                        'id' => $category->id,
+                        'name' => $category->name,
+                        'name_en' => $category->name_en,
+                        'slug' => $category->slug,
+                        'icon' => $category->icon,
+                        'image' => $category->image ? asset('storage/' . $category->image) : null,
+                        'sort_order' => $category->sort_order ?? 0,
+                        'children' => $category->children->map(function ($child) {
+                            return [
+                                'id' => $child->id,
+                                'name' => $child->name,
+                                'name_en' => $child->name_en,
+                                'slug' => $child->slug,
+                                'icon' => $child->icon,
+                                'image' => $child->image ? asset('storage/' . $child->image) : null,
+                                'sort_order' => $child->sort_order ?? 0,
+                            ];
+                        }),
+                    ];
+                }),
+                'available_cities' => $cities->map(function ($city) {
+                    return [
+                        'id' => $city->id,
+                        'name_ar' => $city->name_ar,
+                        'name_en' => $city->name_en,
+                        'slug' => $city->slug ?? null,
+                        'sort_order' => $city->sort_order ?? 0,
+                    ];
+                }),
+                'limits' => [
+                    'max_categories' => $maxCategories,
+                    'max_cities' => $maxCities,
+                ],
+            ]);
+        }, 'حدث خطأ أثناء جلب بيانات الملف الشخصي');
+    }
+
+    /**
      * إكمال الملف الشخصي
      * POST /api/v1/auth/complete-profile
      */
@@ -227,7 +311,16 @@ class AuthController extends BaseApiController
 
                 DB::commit();
 
-                $user->load(['providerProfile', 'providerCategories', 'providerCities']);
+                // Load user with all relationships including nested category and city details
+                $user->load([
+                    'providerProfile',
+                    'providerCategories' => function ($query) {
+                        $query->with(['category:id,name,name_en,slug,icon,image']);
+                    },
+                    'providerCities' => function ($query) {
+                        $query->with(['city:id,name_ar,name_en,slug']);
+                    }
+                ]);
 
                 Log::info('API User profile completed', [
                     'user_id' => $user->id,
@@ -240,6 +333,74 @@ class AuthController extends BaseApiController
                 throw $e;
             }
         }, 'حدث خطأ أثناء إكمال الملف الشخصي');
+    }
+
+    /**
+     * جلب الأقسام والمدن لإكمال الملف الشخصي
+     * GET /api/v1/auth/complete-profile/data
+     */
+    public function getCompleteProfileData(Request $request)
+    {
+        return $this->executeApiWithTryCatch(function () {
+            // جلب الأقسام النشطة
+            $categories = Category::query()
+                ->where('is_active', true)
+                ->whereNull('parent_id')
+                ->with([
+                    'children' => fn($query) => $query->where('is_active', true)->orderBy('sort_order'),
+                ])
+                ->orderBy('sort_order')
+                ->get(['id', 'name', 'name_en', 'slug', 'icon', 'image', 'sort_order']);
+
+            // جلب المدن النشطة
+            $cities = City::query()
+                ->where('is_active', true)
+                ->orderBy('sort_order')
+                ->orderBy('name_ar')
+                ->get(['id', 'name_ar', 'name_en', 'slug', 'sort_order']);
+
+            // جلب الحد الأقصى للأقسام والمدن
+            $maxCategories = SystemSetting::get('provider_max_categories', 3);
+            $maxCities = SystemSetting::get('provider_max_cities', 5);
+
+            return $this->success([
+                'categories' => $categories->map(function ($category) {
+                    return [
+                        'id' => $category->id,
+                        'name' => $category->name,
+                        'name_en' => $category->name_en,
+                        'slug' => $category->slug,
+                        'icon' => $category->icon,
+                        'image' => $category->image ? asset('storage/' . $category->image) : null,
+                        'sort_order' => $category->sort_order ?? 0,
+                        'children' => $category->children->map(function ($child) {
+                            return [
+                                'id' => $child->id,
+                                'name' => $child->name,
+                                'name_en' => $child->name_en,
+                                'slug' => $child->slug,
+                                'icon' => $child->icon,
+                                'image' => $child->image ? asset('storage/' . $child->image) : null,
+                                'sort_order' => $child->sort_order ?? 0,
+                            ];
+                        }),
+                    ];
+                }),
+                'cities' => $cities->map(function ($city) {
+                    return [
+                        'id' => $city->id,
+                        'name_ar' => $city->name_ar,
+                        'name_en' => $city->name_en,
+                        'slug' => $city->slug ?? null,
+                        'sort_order' => $city->sort_order ?? 0,
+                    ];
+                }),
+                'limits' => [
+                    'max_categories' => $maxCategories,
+                    'max_cities' => $maxCities,
+                ],
+            ]);
+        }, 'حدث خطأ أثناء جلب بيانات إكمال الملف الشخصي');
     }
 
     /**
@@ -397,9 +558,9 @@ class AuthController extends BaseApiController
     private function getUpdateProfileValidationRules(Request $request, User $user): array
     {
         $userRules = [
-            'name' => ['sometimes', 'string', 'max:255'],
-            'phone' => ['sometimes', 'nullable', 'string', 'max:20', 'unique:users,phone,' . $user->id],
-            'bio' => ['sometimes', 'nullable', 'string'],
+                'name' => ['sometimes', 'string', 'max:255'],
+                'phone' => ['sometimes', 'nullable', 'string', 'max:20', 'unique:users,phone,' . $user->id],
+                'bio' => ['sometimes', 'nullable', 'string'],
             'email' => ['sometimes', 'email', 'unique:users,email,' . $user->id],
             'avatar' => ['sometimes', 'nullable'],
             'password' => ['sometimes', 'nullable', 'string', 'min:8', 'confirmed'],

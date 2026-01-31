@@ -222,10 +222,14 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
     // Google Login
     Route::post('auth/google', [ApiAuthController::class, 'googleLogin']);
 
+    // Public endpoint for getting categories and cities for profile completion
+    
+
     Route::middleware('api.token')->group(function () {
         Route::post('auth/logout', [ApiAuthController::class, 'logout']);
         Route::get('auth/profile', [ApiAuthController::class, 'profile']);
         Route::post('auth/profile', [ApiAuthController::class, 'updateProfile']);
+        Route::get('auth/complete-profile', [ApiAuthController::class, 'getCompleteProfile']);
         Route::post('auth/complete-profile', [ApiAuthController::class, 'completeProfile']);
 
         // Services

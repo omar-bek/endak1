@@ -275,9 +275,8 @@ class AuthController extends BaseApiController
             /** @var User $user */
             $user = $request->user();
 
-            // Load user with all relationships
+            // Load user categories and cities
             $user->load([
-                'providerProfile',
                 'providerCategories' => function ($query) {
                     $query->with(['category:id,name,name_en,slug,icon,image']);
                 },
@@ -286,14 +285,31 @@ class AuthController extends BaseApiController
                 }
             ]);
 
-            // Get available categories and cities
-            $profileData = $this->getAvailableProfileData();
+            // Format user categories
+            $userCategories = $user->providerCategories->map(function ($providerCategory) {
+                return [
+                    'id' => $providerCategory->category->id,
+                    'name' => $providerCategory->category->name,
+                    'name_en' => $providerCategory->category->name_en,
+                    'slug' => $providerCategory->category->slug,
+                    'icon' => $providerCategory->category->icon,
+                    'image' => $providerCategory->category->image ? asset('storage/' . $providerCategory->category->image) : null,
+                ];
+            });
+
+            // Format user cities
+            $userCities = $user->providerCities->map(function ($providerCity) {
+                return [
+                    'id' => $providerCity->city->id,
+                    'name_ar' => $providerCity->city->name_ar,
+                    'name_en' => $providerCity->city->name_en,
+                    'slug' => $providerCity->city->slug ?? null,
+                ];
+            });
 
             return $this->success([
-                'user' => $user,
-                'available_categories' => $profileData['categories'],
-                'available_cities' => $profileData['cities'],
-                'limits' => $profileData['limits'],
+                'categories' => $userCategories,
+                'cities' => $userCities,
             ]);
         }, 'حدث خطأ أثناء جلب بيانات الملف الشخصي');
     }
@@ -329,9 +345,8 @@ class AuthController extends BaseApiController
 
                 DB::commit();
 
-                // Load user with all relationships
+                // Load user categories and cities
                 $user->load([
-                    'providerProfile',
                     'providerCategories' => function ($query) {
                         $query->with(['category:id,name,name_en,slug,icon,image']);
                     },
@@ -340,12 +355,37 @@ class AuthController extends BaseApiController
                     }
                 ]);
 
+                // Format user categories
+                $userCategories = $user->providerCategories->map(function ($providerCategory) {
+                    return [
+                        'id' => $providerCategory->category->id,
+                        'name' => $providerCategory->category->name,
+                        'name_en' => $providerCategory->category->name_en,
+                        'slug' => $providerCategory->category->slug,
+                        'icon' => $providerCategory->category->icon,
+                        'image' => $providerCategory->category->image ? asset('storage/' . $providerCategory->category->image) : null,
+                    ];
+                });
+
+                // Format user cities
+                $userCities = $user->providerCities->map(function ($providerCity) {
+                    return [
+                        'id' => $providerCity->city->id,
+                        'name_ar' => $providerCity->city->name_ar,
+                        'name_en' => $providerCity->city->name_en,
+                        'slug' => $providerCity->city->slug ?? null,
+                    ];
+                });
+
                 Log::info('API User profile completed', [
                     'user_id' => $user->id,
                     'user_type' => $user->user_type,
                 ]);
 
-                return $this->success($user, 'تم إكمال الملف الشخصي بنجاح');
+                return $this->success([
+                    'categories' => $userCategories,
+                    'cities' => $userCities,
+                ], 'تم إكمال الملف الشخصي بنجاح');
             } catch (Exception $e) {
                 DB::rollBack();
                 throw $e;

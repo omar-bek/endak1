@@ -449,9 +449,9 @@ class AuthController extends BaseApiController
             $maxCities = SystemSetting::get('provider_max_cities', 5);
 
             $rules = array_merge($rules, [
-                'bio' => ['required', 'string', 'max:1000'],
-                'phone' => ['required', 'string', 'max:20'],
-                'address' => ['required', 'string', 'max:500'],
+                'bio' => ['nullable', 'string', 'max:1000'],
+                'phone' => ['nullable', 'string', 'max:20'],
+                'address' => ['nullable', 'string', 'max:500'],
                 'categories' => ['required', 'array', 'min:1', 'max:' . $maxCategories],
                 'categories.*' => ['required', 'exists:categories,id'],
                 'cities' => ['required', 'array', 'min:1', 'max:' . $maxCities],
@@ -485,24 +485,37 @@ class AuthController extends BaseApiController
             $user->update(['avatar' => $avatarPath]);
         }
 
-        // Update user phone
-        if (isset($validated['phone'])) {
+        // Update user phone if provided
+        if (isset($validated['phone']) && $validated['phone'] !== null) {
             $user->update(['phone' => $validated['phone']]);
+        }
+
+        // Prepare provider profile data
+        $providerData = [
+            'max_categories' => $maxCategories,
+            'max_cities' => $maxCities,
+            'is_verified' => SystemSetting::get('provider_auto_approve', false),
+            'is_active' => SystemSetting::get('provider_auto_approve', false),
+        ];
+
+        // Add optional fields if provided
+        if (isset($validated['bio'])) {
+            $providerData['bio'] = $validated['bio'];
+        }
+        if (isset($validated['phone'])) {
+            $providerData['phone'] = $validated['phone'];
+        }
+        if (isset($validated['address'])) {
+            $providerData['address'] = $validated['address'];
+        }
+        if (isset($validated['working_hours'])) {
+            $providerData['working_hours'] = $validated['working_hours'];
         }
 
         // Create or update provider profile
         ProviderProfile::updateOrCreate(
             ['user_id' => $user->id],
-            [
-                'bio' => $validated['bio'],
-                'phone' => $validated['phone'],
-                'address' => $validated['address'],
-                'working_hours' => $validated['working_hours'] ?? null,
-                'max_categories' => $maxCategories,
-                'max_cities' => $maxCities,
-                'is_verified' => SystemSetting::get('provider_auto_approve', false),
-                'is_active' => SystemSetting::get('provider_auto_approve', false),
-            ]
+            $providerData
         );
 
         // Delete old categories and cities
